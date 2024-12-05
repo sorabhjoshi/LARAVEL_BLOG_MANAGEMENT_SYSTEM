@@ -1,13 +1,13 @@
 @extends('Blogbackend.components.layout')
 
-@section('title', 'Users List')
+
 
 @section('content')
 <link rel="stylesheet" href='{{asset('css/users.css')}}'>
 <div class="container mt-4">
     <h2>Users List</h2>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <table id="user-tuable" class="user-table">
+    <table id="user-table" class="user-table">
         <thead class="thead-dark">
             <tr>
                 <th>ID</th>

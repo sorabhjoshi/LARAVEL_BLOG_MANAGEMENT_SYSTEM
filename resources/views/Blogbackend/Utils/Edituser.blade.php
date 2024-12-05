@@ -3,43 +3,67 @@
 @section('content')
 <div class="form-container">
     <h2>Edit User Details</h2>
-    <form action="{{ route('updateuser', $user->id) }}" method="post">
+    
+            
+        
+    <form action="{{ route('updateuser', $userdata->id) }}" method="POST">
         @csrf
-        @method('POST') <!-- Use POST method for the update -->
-
+        @method('PUT') 
+        
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+            <input type="text" id="name" name="name" value="{{  $userdata->name }}" >
+            @error('name')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
         
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+            <input type="email" id="email" name="email" value="{{ $userdata->email}}" >
+            @error('email')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group">
-            <label for="phone_no">Phone Number:</label>
-            <input type="text" id="phone_no" name="phone" value="{{ old('phone', $user->phoneno) }}" required>
+            <label for="phoneno">Phone Number:</label>
+            <input type="text" id="phone_no" name="phoneno" value="{{ $userdata->phoneno }}" >
+            @error('phoneno')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group">
             <label for="gender">Gender:</label>
-            <input type="text" id="gender" name="gender" value="{{ old('gender', $user->gender) }}" required>
+            <input type="text" id="gender" name="gender" value="{{  $userdata->gender }}" >
+            @error('gender')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group">
             <label for="city">City:</label>
-            <input type="text" id="city" name="city" value="{{ old('city', $user->city) }}" required>
+            <input type="text" id="city" name="city" value="{{  $userdata->city }}" >
+            @error('city')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group">
             <label for="state">State:</label>
-            <input type="text" id="state" name="state" value="{{ old('state', $user->state) }}" required>
+            <input type="text" id="state" name="state" value="{{  $userdata->state }}" >
+            @error('state')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group">
             <label for="country">Country:</label>
-            <input type="text" id="country" name="country" value="{{ old('country', $user->country) }}" required>
+            <input type="text" id="country" name="country" value="{{  $userdata->country }}" >
+            @error('country')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
         </div>
 
         <div class="form-group full-width">
@@ -58,12 +82,16 @@
         min-height: 100vh;
     }
     .error-message {
-        color: red;   /* Red color for error messages */
-        font-size: 14px;  /* Optional: Adjust the font size */
-        margin-top: 5px;  /* Optional: Add some spacing above the error message */
+        color: red;   
+        font-size: 14px;  
+        margin-top: 5px;  
     }
-    
-    /* Inner form container */
+    .text-danger{
+        color: red;   
+        font-size: 14px;  
+        margin-top: 5px;
+    }
+   
     .form-container {
         width: 90%;
         max-width: 600px;

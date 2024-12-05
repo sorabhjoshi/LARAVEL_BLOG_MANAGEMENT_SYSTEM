@@ -1,5 +1,7 @@
 <?php
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Register;
+use App\Http\Controllers\Blogs;
 use App\Http\Controllers\Datatable;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +25,18 @@ Route::get('/Myprofile', function () {
     return view('Blogbackend.Myprofile');
 })->name('Myprofile');
 
+Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser']);
+
+Route::view('/AddBlog', 'Blogbackend.Utils.AddBlog');
+Route::view('/EditUser','Blogbackend.Utils.Edituser');
+Route::get('/Edituser/{id}', [UserController::class, 'editUser']);
+
+Route::post('/AddBlog', [Blogs::class,'addblogdata']);
+Route::post('/getblogAjax', [Datatable::class, 'getblogAjax']);
 Route::post('/getUsersAjax', [Datatable::class, 'getUsersAjax']);
 Route::post('/updateprofile', [Register::class,'updateprofile']);
+Route::put('/updateuser/{id}', [UserController::class, 'updateuser'])->name('updateuser');
+
 
 Route::get('/updateprofile', function () {
     return view('Blogbackend.Updateprofile');
