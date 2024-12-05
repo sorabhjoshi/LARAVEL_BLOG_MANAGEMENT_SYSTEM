@@ -1,0 +1,36 @@
+/* Ensure the container takes up the full height */
+body, html {
+    height: 100%;
+}
+
+/* Flexbox to arrange form and image side by side */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Style the form container */
+/* .col-md-6:first-child {
+    padding: 40px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+} */
+
+ img {
+    width: 530px;
+    height: 400px;
+    border-radius: 8px;
+}
+form{
+    width: 300px;
+}

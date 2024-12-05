@@ -1,0 +1,55 @@
+.box{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    height: 70px;
+    font-size: 20px;
+}
+input{
+    font-size: 22px;
+    height: 30px;
+    border: .2px solid black;
+    border-radius: 3px;
+}
+
+.profilecontainer{
+    padding: 20px;
+    height: 60vh;
+    width: 60vw;
+    background-color: antiquewhite;
+    border-radius: 7px;
+    box-shadow:  4px 0 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    flex-direction: column;gap: 20px;
+}
+.blah{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+
+}
+.content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.update{
+    width: 200px;
+    height: 30px;
+    margin: 20px auto;
+    background-color: rgb(18, 168, 18);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    justify-self: center;
+}
+
+.update :hover{
+    cursor: pointer;
+    background-color: rgb(9, 141, 9);
+}
