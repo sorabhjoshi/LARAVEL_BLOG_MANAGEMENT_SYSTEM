@@ -37,7 +37,7 @@ box-shadow: none !important;
 
     .sidebar {
         width: 250px;
-        background-color: #2d3e50; /* New Dark Blue */
+        background-color: #2d3e50; 
         color: white;
         height: 100%;
         position: fixed;
@@ -57,7 +57,7 @@ box-shadow: none !important;
     }
 
     
-/* Add smooth transitions for dropdown */
+
 .dropdown-container {
     display: none;
     
@@ -85,18 +85,18 @@ box-shadow: none !important;
     }
 
     .sidebar a:hover, .sidebar .dropdown-btn:hover {
-        background-color: #4b5c70; /* Light Blue on Hover */
+        background-color: #4b5c70; 
         transform: translateX(5px);
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
     }
 
     .sidebar a.active, .sidebar .dropdown-btn.active {
-        background-color: #1c2a38; /* Darker Blue for Active */
+        background-color: #1c2a38; 
     }
 
     .dropdown-container {
         display: none;
-        background-color: #3a4b60; /* Slightly Lighter Blue for Dropdown */
+        background-color: #3a4b60; 
         padding-left: 8px;
         margin: 5px;
     }
@@ -107,7 +107,7 @@ box-shadow: none !important;
     }
 
     .dropdown-container a:hover {
-        background-color: #4b5c70; /* Light Blue on Hover */
+        background-color: #4b5c70; 
     }
 
     .dropdown-icon {

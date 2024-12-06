@@ -14,9 +14,9 @@
 
 <link rel="stylesheet" href='{{asset('css/addblog.css')}}'>
 <div class="form-container">
-    <h2>Add Blog</h2>
+    <h2>Add News</h2>
     
-    <form action="/AddBlog" method="post" enctype="multipart/form-data">
+    <form action="/AddNews" method="post" enctype="multipart/form-data">
         @csrf
         <label for="author_name">Author Name:</label>
         <input type="text" id="author_name" name="author_name" >
@@ -40,7 +40,7 @@
         <textarea id="description" name="content"></textarea>
         @error('content')
                     <div class="text-danger">{{ $message }}</div>
-        @enderror
+                @enderror
 
         <label for="category">Category:</label>
         <select id="Category" name="category" >

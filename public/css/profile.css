@@ -9,6 +9,9 @@ input{
     font-size: 22px;
     height: 30px;
     border: .2px solid black;
+    background-color: whitesmoke;
+    color: black;
+    padding: 3px;
     border-radius: 3px;
 }
 

@@ -185,7 +185,7 @@
     .edit-btn,
     .delete-btn {
         margin: 5px;
-        padding: 8px 16px;
+        padding: 5px 10px;
         font-size: 14px;
         text-decoration: none;
         border-radius: 4px;
@@ -228,3 +228,50 @@
             font-size: 12px;
         }
     }
+.table-responsive {
+    overflow-x: none; /* Enable horizontal scrolling */
+    width: 100%;
+}
+
+.user-table {
+    width: 100%;
+    min-width: 800px; /* Ensure a minimum width for the table */
+    border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .addnews {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .addnews h2 {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .filter-container input[type="date"],
+    .filter-container button {
+        width: 100%; /* Full width on smaller screens */
+    }
+
+    .user-table th,
+    .user-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

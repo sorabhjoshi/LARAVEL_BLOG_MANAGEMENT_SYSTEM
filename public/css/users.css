@@ -52,12 +52,47 @@
         font-weight: bold;
     }
 
-    /* Center the buttons */
+   
     .button-cell {
         text-align: center;
     }
+    .filter-container h4{
+        margin: 0;
+        padding: 0;
+        padding-bottom: 10px;
+    }
+    .filter{
+        display: flex;
+        gap: 10px;
+    }
+    
+.filter-container input[type="date"]:focus {
+    border-color: var(--primary-color);
+}
 
-    /* Edit and Delete button styles */
+.filter-container button {
+    padding: 6px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+        .filter-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start !important;
+        justify-content: center;
+        background-color: #c3c3c3;
+        padding: 20px;
+        border-radius: 7px;
+        width: 95%;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+   
     .edit-btn, .delete-btn {
         padding: 8px 16px;
         font-size: 14px;
@@ -67,46 +102,66 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
+    .filter-container input {
+        padding: 5px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    .filter-container button {
+        padding: 6px 10px;
+        font-size: 14px;
+        background-color: #5ca1e3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-    /* Edit button */
+   
     .edit-btn {
-        background-color: #66bb6a;  /* Softer green */
+        background-color: #66bb6a;  
         color: white;
         border: 1px solid #66bb6a;
     }
+    .filter-container button:hover {
+        background-color: #3681ca;
+    }
 
-    /* Edit button hover effect */
+   
     .edit-btn:hover {
-        background-color: #5caa5b;  /* Slightly darker green */
+        background-color: #5caa5b;  
         border: 1px solid #5caa5b;
     }
 
-    /* Delete button */
+   
     .delete-btn {
-        background-color: #ef5350;  /* Softer red */
+        background-color: #ef5350;  
         color: white;
         border: 1px solid #ef5350;
     }
 
-    /* Delete button hover effect */
+   
     .delete-btn:hover {
-        background-color: #e53935;  /* Slightly darker red */
+        background-color: #e53935; 
         border: 1px solid #e53935;
     }
 
-    /* Delete button active effect */
+    
     .delete-btn:active {
-        background-color: #d32f2f;  /* Even darker red */
+        background-color: #d32f2f; 
     } #user-table {
-        width: 80% !important; /* Adjust the width percentage as needed */
-        margin: 0 auto; /* Center the table horizontally */
+        width: 80% !important; 
+        margin: 0 auto; 
     }
 
     #user-table th, #user-table td {
-        text-align: center; /* Align text to the center */
+        text-align: center;
     }
 
-    /* Responsive adjustments */
+  
     @media (max-width: 768px) {
         .user-table th, .user-table td {
             padding: 8px;
