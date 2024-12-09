@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/bootstrap-5.3.3-dist/css/bootstrap.css">
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
-    <title>Register</title>
+    <title>Login</title>
 </head>
 <body>
     <div class="container ">

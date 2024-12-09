@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
-use App\Models\News;
-use App\Models\Newscat;
-use App\Models\Pages;
+namespace App\Http\Controllers\Admin;
+use App\Models\Admin\News;
+use App\Models\Admin\Newscat;
+use App\Models\Admin\Pages;
+use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -34,7 +35,8 @@ public function addnewsdata(Request $request)
         if ($existingSlugCount > 0) {
             $slug = $slug . '-' . time();
         }
-        $user = session('user');
+        $user = Auth::user();
+
         News::create([
             'authorname' => $request->input('author_name'),
             'title' => $request->input('title'),
@@ -173,7 +175,8 @@ public function addpagedata(Request $request)
         if ($existingSlugCount > 0) {
             $slug = $slug . '-' . time();
         }
-    $user = session('user');
+    $user = Auth::user();
+
     Pages::create([
         'author' => $request->input('authorname'),
         'title' => $request->input('title'),

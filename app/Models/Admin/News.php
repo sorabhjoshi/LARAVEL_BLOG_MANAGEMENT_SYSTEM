@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pages extends Model
+class News extends Model
 {
-    protected $table = 'pages';
+    protected $table = 'news';
     use HasFactory;
 
     protected $fillable = [
-        'author',
+        'authorname',
         'userid',
         'slug',
         'title',
-        'description'
+        'image',
+        'description',
+        'category',
     ];
 }

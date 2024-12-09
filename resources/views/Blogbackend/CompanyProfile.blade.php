@@ -1,40 +1,36 @@
 @extends('Blogbackend.components.layout')
+@section('title', 'Company')
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="{{ asset('css/blog.css') }}">
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="addnews">
         <h2>Company List</h2>
         <div>
             <a href="Blog_website/Home" class="btn btn-primary me-2">View Site</a>
             <a href="/AddCompany" class="btn btn-success">Add Company</a>
         </div>
     </div>
+   
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="card p-3 mb-4">
+    <div class="filter-container">
         <h4>Filter</h4>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <label for="startDate" class="form-label">Start Date:</label>
-                <input type="date" id="startDate" class="form-control">
-            </div>
-            <div class="col-md-3">
-                <label for="endDate" class="form-label">End Date:</label>
-                <input type="date" id="endDate" class="form-control">
-            </div>
-            <div class="col-md-3 align-self-end">
-                <button id="filterButton" class="btn btn-primary w-100">Apply Filter</button>
-            </div>
+        <div class="filter">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+            <button id="filterButton">Filter</button>
         </div>
     </div>
 
     <div class="table-responsive">
         <table id="user-table" class="table table-striped table-bordered">
-            <thead class="table-dark">
+            <thead class="thead-dark">
                 <tr>
                     <th>#</th>
                     <th>Name</th>
@@ -51,7 +47,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+
 <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -133,7 +129,7 @@
             table.ajax.reload();
         });
 
-        $('#user-table').on('click', '.view-address-btn', function () {
+        const table2=$('#user-table').on('click', '.view-address-btn', function () {
             var companyid = $(this).data('company-id');
             $('#save-address').data('company-id', companyid);
             $('#addressModal').modal('show');
@@ -175,8 +171,10 @@
         });
 
         $('#add-row-btn').on('click', function () {
+            
         const newRow = `
             <div class="form-row">
+                 <input type="hidden" name="id[]">
                 <label for="Address">Address:</label>
                 <input type="text" name="Address[]" required>
                 <label for="Latitude">Latitude:</label>
@@ -211,8 +209,8 @@
             success: function (response) {
                 if (response.status === 'success') {
                     alert('Data saved successfully!');
-                    $('#address-overlay').fadeOut();
-                    table.ajax.reload();
+                    $('#addressModal').modal('hide');
+                    table2.ajax.reload();
                 } else {
                     alert(response.message || 'Failed to save data');
                 }
@@ -222,6 +220,8 @@
             }
         });
     });
+
+    
 
 
         $('#address-form').on('click', '.delete-address-btn', function () {

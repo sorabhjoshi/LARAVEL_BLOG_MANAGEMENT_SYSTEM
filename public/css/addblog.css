@@ -101,7 +101,11 @@
         transform: translateY(1px);
     }
 
-   
+    .navbar-nav{
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 10px;
+    }
     @media (max-width: 768px) {
         .content {
             padding: 20px;

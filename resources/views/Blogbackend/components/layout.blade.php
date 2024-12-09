@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>@yield('title', 'Default Title')</title>
     <link rel="stylesheet" href='{{asset('css/navbar.css')}}'>
+    <link rel="stylesheet" href="{{ asset('css/blog.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('bootstrap-5.3.3-dist\css\bootstrap.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Bebas+Neue&family=Oswald:wght@200..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Teko:wght@300..700&display=swap" rel="stylesheet">
@@ -24,7 +26,7 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="sidebar-content"> 
-                <a class="headerimg" href="/"><img
+                <a class="headerimg" href="{{ route('home') }}"><img
                         src="https://www.absglobaltravel.com/public/images/footer-abs-logo.webp"
                         alt="Profile Picture"></a>
 
@@ -59,7 +61,7 @@
                 </div>
                 <a href="{{ route('Pages') }}">Pages</a>
                 <a href="{{ route('Company') }}">Company Profile</a>
-                <a class="logout" href="{{ route('home') }}">Logout</a>
+                <a class="logout" href="{{ route('Logout') }}">Logout</a>
             </div>
         </aside>
 

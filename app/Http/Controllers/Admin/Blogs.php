@@ -1,8 +1,11 @@
 <?php
-
-namespace App\Http\Controllers;
-use App\Models\Blog;
-use App\Models\Blogcat;
+namespace App\Http\Controllers\Admin;
+use App\Models\Admin\Blog;
+use App\Models\Admin\Blogcat;
+use App\Models\Admin\News;
+use App\Models\Admin\Register_model;
+use App\Models\Admin\User;
+use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -10,7 +13,8 @@ class Blogs extends Controller
 {
     public function addblogdata(Request $request)
 {
-    $user = session('user');
+    $user = Auth::user();
+
     if (!$user) {
         return redirect()->route('login')->withErrors('Please login to add a blog');
     }
@@ -169,6 +173,17 @@ public function deleteblogcat($id){
     
 }
 
-
+public function dashboard(){
+    $category= Blog::getBlogCategories();
+    $users = Register_model::count();
+    $news = News::count();
+    $blogs = Blog::count();
+    return view('Blogbackend.Home', [
+        'category' => $category,
+        'users' => $users,
+        'news' => $news,
+        'blogs' => $blogs,
+    ]);
+}
 
 }

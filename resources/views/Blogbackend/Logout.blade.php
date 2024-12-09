@@ -1,7 +1,7 @@
 @extends('Blogbackend.components.layout')
 
 
-@section('title', 'Home Page')
+@section('title', 'Logout')
 
 @section('content')
     <h1>Welcome to the logout Page</h1>

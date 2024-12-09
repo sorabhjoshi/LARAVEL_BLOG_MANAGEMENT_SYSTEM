@@ -27,3 +27,9 @@ body, html {
 form{
     width: 300px;
 }
+
+.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+}

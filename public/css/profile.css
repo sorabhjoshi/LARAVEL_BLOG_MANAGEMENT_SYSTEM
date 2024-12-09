@@ -34,3 +34,8 @@ input{
     align-items: center;
     flex-direction: column;
 }
+.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+}

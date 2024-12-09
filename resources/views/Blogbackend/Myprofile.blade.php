@@ -1,13 +1,12 @@
 @extends('Blogbackend.components.layout')
 
-
-@section('title', 'Home Page')
+@section('title', 'My Profile')
 
 @section('content')
 @php
     $user = session('user');
 @endphp
-<link rel="stylesheet" href="css/profile.css">
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 <h1>Profile Details</h1>
     <div class="profilecontainer">
        

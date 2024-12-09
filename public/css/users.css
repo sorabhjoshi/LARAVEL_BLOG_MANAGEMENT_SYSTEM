@@ -80,6 +80,12 @@
     font-size: 12px;
     transition: background-color 0.3s ease;
 }
+.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+    
+}
         .filter-container {
         display: flex;
         flex-direction: column;
@@ -88,7 +94,7 @@
         background-color: #c3c3c3;
         padding: 20px;
         border-radius: 7px;
-        width: 95%;
+        width: 100%;
         gap: 10px;
         margin-bottom: 10px;
     }
@@ -100,7 +106,16 @@
         border-radius: 4px;
         display: inline-block;
         cursor: pointer;
+        color: black !;
         transition: all 0.3s ease;
+    }
+    .btn-warning:hover{
+        color: rgb(255, 255, 255);
+    }
+    .delete-btn:hover {
+        background-color: #e53935;
+        border: 1px solid #e53935;
+        color: rgb(255, 255, 255);
     }
     .filter-container input {
         padding: 5px;
@@ -139,7 +154,6 @@
    
     .delete-btn {
         background-color: #ef5350;  
-        color: white;
         border: 1px solid #ef5350;
     }
 
@@ -153,7 +167,7 @@
     .delete-btn:active {
         background-color: #d32f2f; 
     } #user-table {
-        width: 80% !important; 
+        /* width: 80% !important;  */
         margin: 0 auto; 
     }
 

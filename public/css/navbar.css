@@ -194,8 +194,13 @@ box-shadow: none !important;
     }
     .logout:hover{
         background-color: #b84b4b !important;
-        
+        color: white;
 }
 .logout{
     border: none !important;
+}
+.navbar-nav{
+    display: flex !important;
+    flex-direction: row !important;
+    padding-bottom: 10px;
 }

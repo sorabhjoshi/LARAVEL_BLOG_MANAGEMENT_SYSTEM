@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
-use App\Models\Companyaddress;
-use App\Models\Newscat;
-use App\Models\Pages;
+namespace App\Http\Controllers\Admin;
+use App\Models\Admin\Companyaddress;
+use App\Models\Admin\Newscat;
+use App\Models\Admin\Pages;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\Blog;
-use App\Models\Blogcat;
-use App\Models\News;
-use App\Models\Companydata;
+use App\Models\Admin\Blog;
+use App\Models\Admin\Blogcat;
+use App\Models\Admin\News;
+use App\Models\Admin\Companydata;
 use Illuminate\Http\Request;
-use App\Models\Register_model;
+use App\Models\Admin\Register_model;
 
 class Datatable extends Controller
 {
@@ -32,7 +32,7 @@ class Datatable extends Controller
     
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/Deleteuser/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -58,7 +58,7 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/Deleteblog/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -84,7 +84,7 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -112,7 +112,7 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editblogcat/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/Editblogcat/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/Deleteblogcat/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -139,7 +139,7 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editnewscat/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/Editnewscat/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/Deletenewscat/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -165,7 +165,7 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editpages/' . $row->id . '" class="btn btn-sm edit-btn">Edit</a>';
+                    return '<a href="/Editpages/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="/Deletepages/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
@@ -179,15 +179,13 @@ class Datatable extends Controller
     public function getcomAjax(Request $request)
 {
     try {
-        // Initialize the query
+      
         $query = Companydata::select('id', 'name', 'type', 'email', 'created_at');
 
-        // Apply date filtering if provided
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $query->whereBetween('created_at', [$request->startDate, $request->endDate]);
         }
 
-        // Process the query for DataTables
         return DataTables::of($query)
             ->addColumn('edit', function ($row) {
                 return '<a href="/Editcompany/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
@@ -230,23 +228,60 @@ public function deleteAddress(Request $request)
 
     return response()->json(['status' => 'error']);
 }
-
-public function savecompanyaddress(Request $request)
+public function saveCompanyAddress(Request $request)
 {
-    if (    $userdata = News::find($request->input('id'))) {
-    $userdata->latitude = $request->input('latitude');
-    $userdata->longitude = $request->input('longitude');
-    $userdata->mobile = $request->input('mobile');
-    $userdata->address = $request->input('address');
-    $userdata->companyid = $request->input('companyid');
-    $userdata->save();
-    return redirect()->route('Company')->with('success', 'Blog updated successfully!');
-    }else {
-        return redirect()->back()->withErrors('error', 'Blog updated unsuccessful');
+
+    \Log::error('POST Data: ', $request->all());
+
+    $companyId = $request->input('company_id');
+    $ids = $request->input('id');
+    $addresses = $request->input('Address');
+    $latitudes = $request->input('Latitude');
+    $longitudes = $request->input('Longitude');
+    $mobiles = $request->input('Mobile');
+
+    $data = [];
+    for ($i = 0; $i < count($addresses); $i++) {
+        $data[] = [
+            'companyid' => $companyId,
+            'id' => $ids[$i] ?? null, 
+            'address' => $addresses[$i],
+            'latitude' => $latitudes[$i],
+            'longitude' => $longitudes[$i],
+            'mobile' => $mobiles[$i]
+        ];
     }
 
-   
+    try {
+        foreach ($data as $row) {
+            $id = $row['id'];
+            unset($row['id']); 
+
+            if ($id) {
+                
+                $existingRow = \DB::table('companyaddress')->find($id);
+
+                if ($existingRow) {
+                    
+                    \DB::table('companyaddress')->where('id', $id)->update($row);
+                } else {
+                    
+                    \DB::table('companyaddress')->insert($row);
+                }
+            } else {
+                
+                \DB::table('companyaddress')->insert($row);
+            }
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Data saved successfully']);
+    } catch (\Exception $e) {
+        \Log::error('Error saving company address: ' . $e->getMessage());
+        return response()->json(['status' => 'error', 'message' => 'Failed to save data.']);
+    }
 }
+
+
 
 
 

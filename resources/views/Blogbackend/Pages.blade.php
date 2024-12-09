@@ -1,12 +1,13 @@
 @extends('Blogbackend.components.layout')
+@section('title', 'Pages')
 @section('content')
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
 <div class="container mt-4">
     <div class="addnews">
         <h2>Pages List</h2>
         <div>
-            <a href="Blog_website/Home"><button>View Site</button></a>
-            <a href="/AddPage"><button>Add Page</button></a>
+            <a href="Blog_website/Home" class="btn btn-primary me-2">View Site</a>
+            <a href="/AddPage" class="btn btn-success">Add Page</a>
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\Companydata;
+use App\Models\Admin\Companydata;
 class companydatas extends Controller
 {
     public function addcompanydata(Request $request){

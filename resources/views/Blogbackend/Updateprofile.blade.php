@@ -1,13 +1,11 @@
 @extends('Blogbackend.components.layout')
-
-
-@section('title', 'Home Page')
+@section('title', 'Update Profile')
 
 @section('content')
 @php
     $user = session('user');
 @endphp
-<link rel="stylesheet" href="css/updateprofile.css">
+<link rel="stylesheet" href="{{ asset('css/updateprofile.css') }}">
 <h1>Update Details</h1>
 <div class="profilecontainer">
     <form action="/updateprofile" method="post">
