@@ -6,7 +6,7 @@
     <div class="addnews">
         <h2>Blogs Category List</h2>
         <div>
-            <a href="Blog_website/Home" class="btn btn-primary me-2">View Site</a>
+            <a href="{{ route('frontend') }}" class="btn btn-primary me-2">View Site</a>
             <a href="/AddBlogCat" class="btn btn-success">Add Blog Category</a>
         </div>
     </div>

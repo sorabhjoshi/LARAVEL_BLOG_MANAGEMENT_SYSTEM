@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Models\Admin\Register_model;
+use App\Models\Register_model;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
