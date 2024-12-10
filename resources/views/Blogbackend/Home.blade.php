@@ -27,12 +27,16 @@
     </div>
 </section>
 
+
+@endsection
+@section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const categories = @json($category);
-    const labels = categories.map(item => item.category);
+    console.log(categories);
+    const labels = categories.map(item => item.categorytitle);
     const data = categories.map(item => item.count);
-
+    console.log(data);
     const ctx = document.getElementById('blogCategoryChart').getContext('2d');
     new Chart(ctx, {
         type: 'pie',

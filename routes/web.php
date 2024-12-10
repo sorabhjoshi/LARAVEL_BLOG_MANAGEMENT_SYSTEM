@@ -5,7 +5,10 @@ use App\Http\Controllers\Admin\companydatas;
 use App\Http\Controllers\Admin\Newsarticle;
 use App\Http\Controllers\Admin\Datatable;
 use App\Http\Controllers\Admin\Register;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
+use App\Http\Controllers\Frontend\Newsfront;
 use App\Http\Controllers\UserController;
 use App\Models\Admin\Register_model;
 // Auth routes
@@ -37,10 +40,12 @@ Route::middleware('auth')->group(function () {
     // Add routes
     Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany');
     Route::view('/AddPage', 'Blogbackend.Utils.AddPage');
-    Route::view('/AddNewsCat', 'Blogbackend.Utils.AddNewsCat');
+    Route::view('/AddNewCat', 'Blogbackend.Utils.AddNewsCat');
     Route::view('/AddBlogCat', 'Blogbackend.Utils.AddBlogCat');
     Route::view('/AddNews', 'Blogbackend.Utils.AddNews');
-    Route::view('/AddBlog', 'Blogbackend.Utils.AddBlog');
+    Route::get('/AddNews', [Newsarticle::class, 'addnews']);
+    Route::get('/AddBlog', [Blogs::class, 'addblog']);
+    // Route::view('/AddBlog', 'Blogbackend.Utils.AddBlog')->name('AddBlog');
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser');
 
     // Edit and update routes
@@ -98,7 +103,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/Admin/News', function () {
         return view('Blogbackend.News');
-    })->name('News');
+    })->name('Newsarticle');
 
     Route::get('/Admin/NewsCat', function () {
         return view('Blogbackend.NewsCat');
@@ -115,7 +120,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/Admin/Logout', [Register::class, 'logout'])->name('Logout');
 });
 
+
+
+
+
+
 // Frontend routes (no auth required)
 Route::get('/', [Home::class, 'dashboard'])->name('frontend');
 
+Route::get('/About', function () {
+    return view('Frontend.About');
+})->name('About');
 
+Route::get('/ContactUs', function () {
+    return view('Frontend.Contact');
+})->name('Contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::get('/News', [Newsfront::class, 'shownews'])->name('News');
+
+Route::get('/Blogs', [blogfront::class, 'showblog'])->name('Blogs');
+
+Route::get('News/{article}', [Newsfront::class, 'showsinglenews']);
+
+Route::get('Blog/{article}', [blogfront::class, 'showsingleblog']);
+
+Route::get('Blog/Category/{article}', [blogfront::class, 'showcategory']);
+
+Route::get('News/Category/{article}', [Newsfront::class, 'showcategory']);

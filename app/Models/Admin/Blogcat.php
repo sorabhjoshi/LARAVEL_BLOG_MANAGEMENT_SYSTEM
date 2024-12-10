@@ -15,5 +15,9 @@ class Blogcat extends Model
         'metakeywords',
         'metadescription'
     ];
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'category', 'id');
+    }
     
 }

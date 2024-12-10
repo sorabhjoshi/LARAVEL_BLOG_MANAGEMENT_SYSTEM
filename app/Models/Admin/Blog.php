@@ -18,6 +18,10 @@ class Blog extends Model
         'description',
         'category',
     ];
+   public function category()
+{
+    return $this->belongsTo(Blogcat::class, 'category', 'id');
+}
 
     public static function getBlogCategories()
     {

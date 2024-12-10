@@ -52,7 +52,8 @@ public function addnewsdata(Request $request)
 
 public function editnews($id){
         $userdata = News::find($id);
-        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata]);
+        $Catdata = Newscat::select('categorytitle','id')->get();
+        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata]);
 }
 
 public function updatenews(Request $request)
@@ -224,6 +225,10 @@ public function updatepagedata(Request $request)
         }else{
             return redirect()->back()->withErrors('error', 'Page update error!');
         }
+}
+public function addnews(){
+    $Catdata = Newscat::select('categorytitle','id')->get();
+  return view('Blogbackend/Utils/AddNews', compact('Catdata'));
 }
 
 }

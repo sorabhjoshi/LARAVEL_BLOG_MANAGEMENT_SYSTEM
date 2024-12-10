@@ -18,4 +18,8 @@ class News extends Model
         'description',
         'category',
     ];
+    public function category()
+{
+    return $this->belongsTo(Newscat::class, 'category', 'id');
+}
 }

@@ -6,6 +6,7 @@ use App\Models\Admin\News;
 use App\Models\Admin\Register_model;
 use App\Models\Admin\User;
 use Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -67,7 +68,8 @@ public function deleteblog($id){
 }
 public function editblog($id){
          $userdata = Blog::find($id);
-         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata]);
+         $Catdata = Blogcat::select('categorytitle', 'id')->get();
+         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata]);
 }
 
 public function updateblog(Request $request)
@@ -185,5 +187,12 @@ public function dashboard(){
         'blogs' => $blogs,
     ]);
 }
+
+public function addblog(Request $request)
+{
+    $Catdata = Blogcat::select('categorytitle', 'id')->get();
+    return view('Blogbackend/Utils/AddBlog', compact('Catdata'));
+}
+
 
 }

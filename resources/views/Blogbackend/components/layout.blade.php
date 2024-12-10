@@ -56,7 +56,7 @@
                     <span class="dropdown-icon" aria-hidden="true"></span>
                 </button>
                 <div class="dropdown-container">
-                    <a href="{{ route('News') }}">News</a>
+                    <a href="{{ route('Newsarticle') }}">News</a>
                     <a href="{{ route('NewsCat') }}">News-Categories</a>
                 </div>
                 <a href="{{ route('Pages') }}">Pages</a>
@@ -80,7 +80,7 @@
         </main>
     </div>
 </div>
-
+@yield('js')
 <script>
    document.addEventListener('DOMContentLoaded', function() {
 

@@ -15,4 +15,8 @@ class Newscat extends Model
         'metakeywords',
         'metadescription'
     ];
+    public function news()
+    {
+        return $this->hasMany(News::class, 'category', 'id');
+    }
 }

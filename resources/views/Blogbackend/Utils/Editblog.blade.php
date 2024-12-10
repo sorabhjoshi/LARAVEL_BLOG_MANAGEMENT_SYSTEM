@@ -1,16 +1,7 @@
 @extends('Blogbackend.components.layout')
 
 @section('content')
-<script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"
-    referrerpolicy="origin"></script>
-<script>
-    tinymce.init({
-        selector: '#description',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-        toolbar_mode: 'floating',
-        height: 200
-    });
-</script>
+
 
 <link rel="stylesheet" href='{{asset('css/addblog.css')}}'>
 <div class="form-container">
@@ -51,10 +42,10 @@
 
         <label for="category">Category:</label>
         <select id="Category" name="category" >
-            <option value="value={{$userdata->authorname}}"  selected>{{$userdata->authorname}}</option>
-            <option value="life">life</option>
-            <option value="tech">tech </option>
-            <option value="war">war</option>
+            <option value="value={{$userdata->authorname}}"  selected >{{$userdata->authorname}}</option>
+            @foreach ($Catdata as $item)
+            <option value="{{ $item->id }}">{{ $item->categorytitle }}</option>
+        @endforeach
         </select>
         @error('category')
                 <div class="text-danger">{{ $message }}</div>
@@ -65,4 +56,16 @@
         </div>
     </form>
 </div>
+@endsection
+@section('js')
+<script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#description',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+        height: 200
+    });
+</script>
 @endsection

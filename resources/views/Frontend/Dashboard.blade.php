@@ -12,7 +12,7 @@
     <p class="lead">Explore our latest blogs and stay updated with the latest news.</p>
     <div>
       <a href="{{ url('Blogs') }}" class="btn btn-primary m-2">Our Blogs</a>
-      <a href="{{ url('NewsArticles') }}" class="btn btn-secondary m-2">News</a>
+      <a href="{{ url('News') }}" class="btn btn-secondary m-2">News</a>
     </div>
   </div>
 
@@ -32,7 +32,7 @@
                 <div class="card h-100 card-custom">
                   <img src="{{ asset($user->image) }}" class="card-img-top" alt="{{ $user->Title }}">
                   <div class="card-body">
-                    <a href="{{ url('Blog_website/Blog/View/' . $user->id) }}" class="text-decoration-none text-dark">
+                    <a href="{{ url('Blog/' . $user->slug) }}" class="text-decoration-none text-dark">
                       <h5 class="card-title">{{ $user->title }}</h5>
                       <p class="card-text">
                         {{ Str::limit(strip_tags($user->description), 100) }}...
@@ -54,7 +54,7 @@
                 <div class="card h-100 card-custom">
                   <img src="{{ asset( $new->image) }}" class="card-img-top" alt="{{ $new->title }}">
                   <div class="card-body">
-                    <a href="{{ url('Blog_website/News/View/' . $new->id) }}" class="text-decoration-none text-dark">
+                    <a href="{{ url('News/' . $new->slug) }}" class="text-decoration-none text-dark">
                       <h5 class="card-title">{{ $new->title }}</h5>
                       <p class="card-text">
                         {{ Str::limit(strip_tags($new->description), 100) }}...
@@ -84,7 +84,7 @@
             @foreach ($news->take(4) as $new)
               <li class="li-container">
                 <img src="{{ asset( $new->image) }}" class="card-img-top">
-                <a href="{{ url('Blog_website/News/View/' . $new->id) }}" class="text-decoration-none text-dark">
+                <a href="{{ url('News/' . $new->slug) }}" class="text-decoration-none text-dark">
                   <h5 class="card-title">{{ $new->title }}</h5>
                 </a>
               </li>
@@ -92,7 +92,7 @@
             @foreach ($users->take(4) as $user)
               <li class="li-container">
                 <img src="{{ asset( $user->image) }}" class="card-img-top">
-                <a href="{{ url('Blog_website/Blog/View/' . $user->id) }}">
+                <a href="{{ url('Blog/' . $user->slug) }}">
                   <h5 class="card-title">{{ $user->title }}</h5>
                 </a>
               </li>

@@ -17,8 +17,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="Blog_website/Home">
-            <img src="img/Joshi.png" alt="Logo">
+        <a class="navbar-brand" href="{{ route('frontend') }}">
+          <img src="{{ asset('img/Joshi.png') }}" alt="Logo">
+
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,19 +27,19 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="Blog_website/Home">Home</a>
+                    <a class="nav-link" href="{{ route('frontend') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Blog_website/AboutPage">About</a>
+                    <a class="nav-link" href="{{ route('About') }}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Blog_website/NewsArticles">News</a>
+                    <a class="nav-link" href="{{ route('News') }}">News</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Blog_website/ContactUS">Contact</a>
+                    <a class="nav-link" href="{{ route('Contact') }}">Contact</a>
                 </li> 
                 <li class="nav-item">
-                    <a class="nav-link" href="Blog_website/Blogs">Blogs</a>
+                    <a class="nav-link" href="{{ route('Blogs') }}">Blogs</a>
                 </li>
                 <?php if (!empty($pages)): ?>
                     <?php foreach ($pages as $page): ?>
@@ -50,14 +51,14 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <li class="nav-item">
-                        <span class="nav-link">No pages available</span>
+                        {{-- <span class="nav-link">No pages available</span> --}}
                     </li>
                 <?php endif; ?>
             </ul>
         </div>
     </div>
 </nav>
-
+@yield('bread')
 <main class="content2">
     @yield('content2')
 </main>
@@ -72,16 +73,16 @@
         </div>
         <div class="col-md-4 mb-3">
           <h5>Quick Links</h5>
-          <ul class="list-styled">
-            <li><a href="Blog_website/Home" class="text-white">Home</a></li>
-            <li><a href="Blog_website/Blogs" class="text-white">Blogs</a></li>
-            <li><a href="Blog_website/AboutPage" class="text-white">About</a></li>
-            <li><a href="Blog_website/ContactUS" class="text-white">Contact</a></li>
+          <ul class="list-styled"> 
+            <li><a href="{{ route('frontend') }}" class="text-white">Home</a></li>
+            <li><a href="{{ route('Blogs') }}" class="text-white">Blogs</a></li>
+            <li><a href="{{ route('About') }}" class="text-white">About</a></li>
+            <li><a href="{{ route('Contact') }}" class="text-white">Contact</a></li>
           </ul>
         </div>
         <div class="col-md-4 mb-3">
           <h5>Contact Us</h5>
-          <p>Email: <a href="Blog_website/ContactUS" class="text-white">sorabhjoshi11@gmail.com</a></p>
+          <p>Email: <a href="{{ route('Contact') }}" class="text-white">sorabhjoshi11@gmail.com</a></p>
           <p>Phone: 9982541337</p>
         </div>
       </div>
@@ -103,14 +104,19 @@
 
  
   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-  
+  @yield('js')
 </body>
 </html>
 <style>
+  .content2
+  {
+    flex-direction: column
+  }
     a img {
       height: 50px;
       width: auto;
     }
+    
     * {
       font-family: "Teko", sans-serif;
       font-optical-sizing: auto;

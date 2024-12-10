@@ -1,16 +1,7 @@
 @extends('Blogbackend.components.layout')
 
 @section('content')
-<script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"
-    referrerpolicy="origin"></script>
-<script>
-    tinymce.init({
-        selector: '#description',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-        toolbar_mode: 'floating',
-        height: 200
-    });
-</script>
+
 <link rel="stylesheet" href='{{asset('css/addblogcat.css')}}'>
 <div class="form-container">
     <h2>Add Page</h2>
@@ -40,4 +31,17 @@
         </div>
     </form>
 </div>
+@endsection
+
+@section('js')
+<script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#description',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+        height: 200
+    });
+</script>
 @endsection
