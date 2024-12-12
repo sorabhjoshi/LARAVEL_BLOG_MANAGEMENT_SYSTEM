@@ -4,8 +4,8 @@
 
 <div class="bread">
   <h3 style="text-self:right;">Blog Design</h3>
-  <p><a href='Blog_website/Home'>Home</a> >> <a
-      href='Blog_website/Blogs'>Blog Design</a> >> <a href="#"><?= htmlspecialchars($blog['title']); ?></a></p>
+  <p><a href='{{ route('frontend') }}'>Home</a> >> <a
+      href='{{ route('Blogs') }}'>Blog Design</a> >> <a href="#"><?= htmlspecialchars($blog['title']); ?></a></p>
 
 </div>
 <main>

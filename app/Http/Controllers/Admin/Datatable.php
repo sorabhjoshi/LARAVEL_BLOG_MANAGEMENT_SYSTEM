@@ -154,7 +154,7 @@ class Datatable extends Controller
     {
         try {
             
-            $query = Pages::select('id','title', 'userid', 'slug','description','author','created_at');
+            $query = Pages::select('id','title', 'userid', 'slug','author','created_at');
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');
                 $endDate = $request->input('endDate');

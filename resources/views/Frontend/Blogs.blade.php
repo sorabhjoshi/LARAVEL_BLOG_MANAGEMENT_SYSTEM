@@ -55,7 +55,7 @@
                 </ul>
                 <img class="img" src="https://colorlib.com/wp/wp-content/uploads/sites/2/colorlib-custom-web-design.png.avif" alt="">
 
-                <!-- Social Tags Section -->
+             
                 <div class="socialtags">
                     <h4>Follow Us</h4>
                     <ul class="list-unstyled">
@@ -66,7 +66,7 @@
                         <li><a href="#"><i class="fab fa-youtube"></i></a></li>
                     </ul>
 
-                    <!-- Related Blog Posts Section -->
+                    
                     <ul class="list">
                         @foreach ($Blogs as $Blog)
                             <li class="li-container">
@@ -87,20 +87,63 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
-        let itemsToShow = 3;
-        let totalItems = $(".featured").length;
+        let itemsToShow = 3; 
+        let offset = 3;
 
         $("#load-more").on("click", function(e) {
             e.preventDefault();
 
-            $(".featured:hidden").slice(0, itemsToShow).slideDown();
-
-            if ($(".featured:hidden").length === 0) {
-                $("#load-more").hide();
-            }
+           
+            $.ajax({
+                url: '/ajaxblogs', 
+                type: 'GET',
+                data: {
+                    offset: offset,  
+                    limit: itemsToShow 
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        const blogs = response.data; 
+                        console.log(response);
+                        console.log(offset);
+                        if (blogs.length > 0) {
+                           console.log(blogs);
+                            blogs.forEach(function(blog) {
+                                const blogHtml = `
+                                    <div class="col featured">
+                                        <div class="card h-100 card-custom">
+                                            <img src="${blog.image}" class="card-img-top" alt="${blog.title}">
+                                            <div class="card-body">
+                                                <a href="/Blog/${blog.slug}" class="text-decoration-none text-dark">
+                                                    <h5 class="card-title">${blog.title}</h5>
+                                                    <p class="card-text">
+                                                        ${blog.description}
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                $('#blogs-container').append(blogHtml); 
+                            });
+                            offset += itemsToShow;
+                            if (offset >= response.count) {
+                                $('#load-more').hide();
+                            }
+                        }
+                    } else {
+                        alert('Failed to load blogs.');
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while loading more blogs.');
+                }
+            });
         });
     });
 </script>
+
 @endsection
 
 <style>

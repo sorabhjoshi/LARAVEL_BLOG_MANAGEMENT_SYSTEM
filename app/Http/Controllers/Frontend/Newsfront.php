@@ -6,6 +6,7 @@ use App\Models\Admin\Blog;
 use App\Models\Admin\News;
 use App\Models\Admin\Newscat;
 use Illuminate\Http\Request;
+use Str;
 
 class Newsfront
 {
@@ -39,5 +40,27 @@ class Newsfront
     $sidenews = News::all();
     return view('Frontend.Newscat', ['News' => $News, 'categories' => $categories,'sidenews'=> $sidenews]);
 }
-    
+public function loadMoreNews(Request $request)
+{
+    $offset = $request->input('offset', 0);  
+    $limit = $request->input('limit', 3);  
+
+    $news = News::skip($offset)->take($limit)->get();  
+    $count = News::count();
+ 
+    $data = $news->map(function ($news) {
+        return [
+            'title' => $news->title,
+            'slug' => $news->slug,
+            'image' => asset($news->image),  
+            'description' => Str::limit(strip_tags($news->description), 100, '...')
+        ];
+    });
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $data,
+        'count'=>$count,
+    ]);
+}
 }

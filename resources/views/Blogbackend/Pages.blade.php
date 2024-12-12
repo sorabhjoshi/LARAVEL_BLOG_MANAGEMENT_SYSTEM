@@ -28,7 +28,6 @@
                 <th>Title</th>
                 <th>Userid</th>
                 <th>Slug</th>
-                <th>Description</th>
                 <th>Author</th>
                 <th>Created At</th>
                 <th>Edit</th>
@@ -82,7 +81,6 @@
                 { data: 'title', name: 'title' },
                 { data: 'userid', name: 'userid' },
                 { data: 'slug', name: 'slug' },
-                { data: 'description', name: 'description' },
                 { data: 'author', name: 'author' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'edit', orderable: false, searchable: false },

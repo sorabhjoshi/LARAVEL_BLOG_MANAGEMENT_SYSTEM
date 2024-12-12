@@ -80,20 +80,63 @@
 </main>
 @endsection
 @section('js')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
  $(document).ready(function() {
         let itemsToShow = 3;
         let totalItems = $(".featured").length;
+        let offset = 3;
 
         $("#load-more").on("click", function(e) {
             e.preventDefault();
 
-            $(".featured:hidden").slice(0, itemsToShow).slideDown();
-
-            if ($(".featured:hidden").length === 0) {
-                $("#load-more").hide();
-            }
+           
+            $.ajax({
+                url: '/ajaxnews', 
+                type: 'GET',
+                data: {
+                    offset: offset,  
+                    limit: itemsToShow 
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        const news = response.data;  
+                        if (news.length > 0) {
+                           
+                          news.forEach(function(news) {
+                                const newsHtml = `
+                                    <div class="col featured">
+                                        <div class="card h-100 card-custom">
+                                            <img src="${news.image}" class="card-img-top" alt="${news.title}">
+                                            <div class="card-body">
+                                                <a href="/Blog/${news.slug}" class="text-decoration-none text-dark">
+                                                    <h5 class="card-title">${news.title}</h5>
+                                                    <p class="card-text">
+                                                        ${news.description}
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                $('#news-container').append(newsHtml); 
+                            });
+                            offset += itemsToShow;
+                            if (offset >= response.count) {
+                                $('#load-more').hide();
+                            }
+                        }
+                    } else {
+                        alert('Failed to load blogs.');
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while loading more blogs.');
+                }
+            });
         });
+        
     });
 </script>
 @endsection<style>

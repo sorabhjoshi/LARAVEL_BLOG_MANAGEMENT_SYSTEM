@@ -9,6 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
+use App\Http\Controllers\Frontend\Pages;
 use App\Http\Controllers\UserController;
 use App\Models\Admin\Register_model;
 // Auth routes
@@ -20,14 +21,20 @@ Route::get('/login', function () {
     return view('Login');
 })->name('login');
 Route::post('/login', [Register::class, 'login']);
-
+// Auth::routes();
 // Routes that require authentication
 Route::middleware('auth')->group(function () {
+    Route::resource('roles', RoleController::class);
+
+    Route::resource('users', UserController::class);
+
+    Route::resource('products', ProductController::class);
+
     Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
     Route::get('/Admin/Myprofile', function () {
         return view('Blogbackend.Myprofile');
     })->name('Myprofile');
-
+ 
     // Delete routes
     Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser']);
     Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog']);
@@ -147,3 +154,8 @@ Route::get('Blog/{article}', [blogfront::class, 'showsingleblog']);
 Route::get('Blog/Category/{article}', [blogfront::class, 'showcategory']);
 
 Route::get('News/Category/{article}', [Newsfront::class, 'showcategory']);
+
+Route::get('/Page/{pages}', [Pages::class, 'showpage']);
+
+Route::get('/ajaxblogs', [blogfront::class, 'loadMoreBlogs'])->name('ajaxblogs');
+Route::get('/ajaxnews', [Newsfront::class, 'loadMoreNews'])->name('ajaxnews');

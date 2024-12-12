@@ -44,14 +44,14 @@
                 <?php if (!empty($pages)): ?>
                     <?php foreach ($pages as $page): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="Blog_website/Page/">
+                          <a class="nav-link" href="{{ url('Page/' . urlencode($page['slug'])) }}">
                                 <?php echo htmlspecialchars($page['title']); ?>
                             </a>
                         </li>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <li class="nav-item">
-                        {{-- <span class="nav-link">No pages available</span> --}}
+                        <span class="nav-link">No pages available</span>
                     </li>
                 <?php endif; ?>
             </ul>

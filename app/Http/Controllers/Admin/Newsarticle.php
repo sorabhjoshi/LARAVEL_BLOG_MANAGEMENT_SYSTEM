@@ -47,7 +47,7 @@ public function addnewsdata(Request $request)
             'userid' => $user->id, 
         ]);
     
-        return redirect()->route('News')->with('success', 'Blog updated successfully!');
+        return redirect()->route('Newsarticle')->with('success', 'Blog updated successfully!');
 }
 
 public function editnews($id){
@@ -97,13 +97,13 @@ public function updatenews(Request $request)
 
     $userdata->save(); 
 
-    return redirect()->route('News')->with('success', 'Blog updated successfully!');
+    return redirect()->route('Newsarticle')->with('success', 'Blog updated successfully!');
 }
 
 public function deletenews($id){
     $userdata = News::find($id);
     if ($userdata->delete()) {
-        return redirect()->route('News')->with('success', 'User updated successfully!');
+        return redirect()->route('Newsarticle')->with('success', 'User updated successfully!');
     } else {
         return redirect()->back()->with('error', 'Blog not found.');
     }
