@@ -227,8 +227,6 @@ public function updatepagedata(Request $request)
         }
 }
 public function addnews(){
-    // $Catdata = Blogcat::select('categorytitle', 'id')->get();
-    // return view('Blogbackend/Utils/AddBlog', compact('Catdata'));
     $Catdata = Newscat::select('categorytitle','id')->get();
   return view('Blogbackend/Utils/AddNews', compact('Catdata'));
 }

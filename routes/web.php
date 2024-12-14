@@ -1,14 +1,23 @@
 <?php
+<<<<<<< HEAD
   
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
 use App\Http\Controllers\Admin\Datatable;
 use App\Http\Controllers\Admin\Newsarticle;
+=======
+
+use App\Http\Controllers\Admin\Blogs;
+use App\Http\Controllers\Admin\companydatas;
+use App\Http\Controllers\Admin\Newsarticle;
+use App\Http\Controllers\Admin\Datatable;
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
 use App\Http\Controllers\Admin\Register;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\HomeController;
@@ -28,15 +37,36 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
     Route::resource('products', ProductController::class);
+=======
+use App\Http\Controllers\Frontend\Pages;
+use App\Http\Controllers\UserController;
+use App\Models\Admin\Register_model;
+// Auth routes
+Route::get('/register', function () {
+    return view('Register');
+});
+Route::post('/register', [Register::class, 'registers']);
+Route::get('/login', function () {
+    return view('Login');
+})->name('login');
+Route::post('/login', [Register::class, 'login']);
+// Auth::routes();
+// Routes that require authentication
+Route::middleware('auth')->group(function () {
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
     Route::resource('roles', RoleController::class);
 
     Route::resource('users', UserController::class);
 
     Route::resource('products', ProductController::class);
 
+<<<<<<< HEAD
 
     Route::view('/home', 'home')->name('home');
     // Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
+=======
+    Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
     Route::get('/Admin/Myprofile', function () {
         return view('Blogbackend.Myprofile');
     })->name('Myprofile');
@@ -51,6 +81,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany']);
 
     // Add routes
+<<<<<<< HEAD
     Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany')->name('AddCompany');
     Route::view('Admin/Pages/AddPage', 'Blogbackend.Utils.AddPage')->name('addpages');
     Route::view('Admin/NewsCat/AddNewCat', 'Blogbackend.Utils.AddNewsCat')->name('AddNewCat');
@@ -58,6 +89,15 @@ Route::group(['middleware' => ['auth']], function() {
     Route::view('Admin/News/AddNews', 'Blogbackend.Utils.AddNews')->name('AddNews');
     Route::get('/AddNews', [Newsarticle::class, 'addnews'])->name('AddNews');
     Route::get('/AddBlog', [Blogs::class, 'addblog'])->name('addblog');
+=======
+    Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany');
+    Route::view('/AddPage', 'Blogbackend.Utils.AddPage');
+    Route::view('/AddNewCat', 'Blogbackend.Utils.AddNewsCat');
+    Route::view('/AddBlogCat', 'Blogbackend.Utils.AddBlogCat');
+    Route::view('/AddNews', 'Blogbackend.Utils.AddNews');
+    Route::get('/AddNews', [Newsarticle::class, 'addnews']);
+    Route::get('/AddBlog', [Blogs::class, 'addblog']);
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
     // Route::view('/AddBlog', 'Blogbackend.Utils.AddBlog')->name('AddBlog');
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser');
 
@@ -138,6 +178,7 @@ Route::group(['middleware' => ['auth']], function() {
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -149,6 +190,10 @@ Route::group(['middleware' => ['auth']], function() {
 // Frontend routes (no auth required)
 Route::get('/dashboard', [Home::class, 'dashboard'])->name('Dashboardfront');
 Route::get('/frontend', [Home::class, 'dashboard'])->name('frontend');
+=======
+// Frontend routes (no auth required)
+Route::get('/', [Home::class, 'dashboard'])->name('frontend');
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
 
 Route::get('/About', function () {
     return view('Frontend.About');

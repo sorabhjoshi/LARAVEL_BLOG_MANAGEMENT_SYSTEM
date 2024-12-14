@@ -6,9 +6,14 @@
     <div class="addnews">
         <h2>Blogs List</h2>
         <div>
+<<<<<<< HEAD
            
             <a href="{{route('Dashboardfront')}}" class="btn btn-primary me-2">View Site</a>
             <a href="{{ route('addblog') }}" class="btn btn-success">Add Blog</a>
+=======
+            <a href="{{ route('frontend') }}" class="btn btn-primary me-2">View Site</a>
+            <a href="/AddBlog" class="btn btn-success">Add Blog</a>
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">

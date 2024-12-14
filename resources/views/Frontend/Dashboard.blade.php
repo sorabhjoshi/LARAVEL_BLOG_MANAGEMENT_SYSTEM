@@ -168,7 +168,11 @@
   /* Main image container styling */
   .img-container {
     position: relative;
+<<<<<<< HEAD
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('img/default.jpg');
+=======
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('img/photo-1503694978374-8a2fa686963a.avif');
+>>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
     background-size: cover;
     background-position: center;
     padding: 70px 20px;

@@ -30,7 +30,7 @@ class Datatable extends Controller
                 }
             }
     
-            return \Yajra\DataTables\DataTables::of($query)
+            return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
                 })
