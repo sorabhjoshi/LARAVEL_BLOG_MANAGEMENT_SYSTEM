@@ -13,18 +13,20 @@ return new class extends Migration
     {
         Schema::create('blogs', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->default('default-slug'); // Default slug
-            $table->integer('user_id')->default(0);         // Default user ID
-            $table->string('title')->default('Untitled');   // Default title
-            $table->string('image')->default('default.jpg'); // Default image
-            $table->string('authorname')->default('Anonymous'); // Default author name
-            $table->string('description')->default('No description available.'); // Default description
-            $table->integer('category')->default(1);        // Default category ID
-            $table->enum('status', ['active', 'inactive'])->default('inactive'); // Default status
+            $table->string('slug');
+            $table->integer('user_id');
+            $table->string('title');
+            $table->string('image');
+            $table->string('authorname');
+            $table->longText('description');
+            $table->integer('category');
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('blogs');
