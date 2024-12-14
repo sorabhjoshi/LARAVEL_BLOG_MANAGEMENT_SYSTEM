@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('Blogbackend.components.layout')
 @section('content')
 <style>
     .content {

@@ -9,6 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
+use App\Models\Admin\Pages;
 use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\HomeController;
@@ -22,7 +23,7 @@ Route::get('/', function () {
   
 Auth::routes();
   
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
   
 Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
@@ -35,11 +36,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('products', ProductController::class);
 
 
-    Route::view('/home', 'home')->name('home');
-    // Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
-    Route::get('/Admin/Myprofile', function () {
-        return view('Blogbackend.Myprofile');
-    })->name('Myprofile');
+    // Route::view('/home', 'home')->name('home');
+    Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
+   
+    Route::get('/Admin/Myprofile', [Register::class, 'myprofile'])->name('Myprofile');
  
     // Delete routes
     Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser']);
@@ -98,9 +98,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/UpdateBlog', [Blogs::class, 'updateblog']);
 
     // Basic routes of pages
-    Route::get('/Admin/updateprofile', function () {
-        return view('Blogbackend.Updateprofile');
-    })->name('updateprofile');
+    
 
     Route::get('/Admin/Users', function () {
         return view('Blogbackend.Users');

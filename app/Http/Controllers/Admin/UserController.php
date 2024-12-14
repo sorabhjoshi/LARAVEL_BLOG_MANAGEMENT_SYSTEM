@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function editUser($id)
     {
-        $userdata = Register_model::find($id);
+        $userdata = \App\Models\Admin\Register_model::find($id);
         
         if ($userdata) {
             return view('Blogbackend.Utils.Edituser', ['userdata' => $userdata]);

@@ -46,7 +46,9 @@
             color: #333;
             background-color: #f4f4f4;
         }
-
+        .container{
+            width: 98% !important;
+        }
         .dashboard-container {
             display: flex;
             height: 100%;
@@ -144,7 +146,7 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            min-height: 100%;
+            min-height: 120vh;
         }
 
         .navbar {
@@ -159,7 +161,7 @@
         .navbar-nav {
             display: flex;
             list-style-type: none;
-            margin: 10px;
+            /* margin: 10px; */
             padding: 0;
         }
 
@@ -181,9 +183,12 @@
 
         .content {
             padding: 0 20px 0 20px;
+            height: 100%;
             flex-grow: 1;
         }
-
+        .overview-section{
+            padding: 20px;
+        }
         .menu-toggle {
             display: none;
             background: none;
@@ -241,12 +246,17 @@
                     <span class="dropdown-icon" aria-hidden="true"></span>
                 </button>
                 <div class="dropdown-container">
+                    <a class="nav-link" href="{{ route('Myprofile') }}">My Profile</a>
                     @auth
+                    @if(auth()->user()->hasRole('Admin'))
                     {{-- <a href="{{ route('updateprofile') }}">Update Profile</a> --}}
                     <a class="nav-link" href="{{ route('users.index') }}">Manage Users</a>
                     <a class="nav-link" href="{{ route('roles.index') }}">Manage Role</a>
+                    @endif
                     @endauth
                 </div>
+                @if(auth()->user()->hasRole(['Blogs-team','Admin']))
+
 
                 <button class="dropdown-btn">
                     Blogs
@@ -256,6 +266,9 @@
                     <a href="{{ route('Blog') }}">Blog</a>
                     <a href="{{ route('BlogCat') }}">Blog-Categories</a>
                 </div>
+                
+                @endif
+                @if(auth()->user()->hasRole(['News-team','Admin']))
                 <button class="dropdown-btn">
                     News
                     <span class="dropdown-icon" aria-hidden="true"></span>
@@ -264,7 +277,7 @@
                     <a href="{{ route('Newsarticle') }}">News</a>
                     <a href="{{ route('NewsCat') }}">News-Categories</a>
                 </div>
-
+                @endif
                 <a href="{{ route('Pages') }}">Pages</a>
                 <a href="{{ route('Company') }}">Company Profile</a>
                 <a class="dropdown-item" href="{{ route('logout') }}"

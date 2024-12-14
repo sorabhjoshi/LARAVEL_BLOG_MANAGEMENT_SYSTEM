@@ -2,13 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Admin\Register_model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class Register extends Controller
-{
+{   public function myprofile(){
+    $userid = Auth::user();
+    $user = User::find($userid->id);
+        $roles = Role::pluck('name','name')->all();
+        $userRole = $user->roles->pluck('name','name')->all();
+    
+        return view('Blogbackend.Updateprofile',compact('user','roles','userRole'));
+}
     public function register(Request $request)
     {
         $request->validate([
@@ -32,18 +41,13 @@ class Register extends Controller
         return redirect()->back()->with('error', 'Failed to save data.');
     }
 
-    public function updateProfile(Request $request)
+    public function updateprofile(Request $request)
     {
         $user = Auth::user();
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'gender' => 'required|string',
             'email' => "required|email|unique:users,email,{$user->id}",
-            'city' => 'required|string',
-            'state' => 'required|string',
-            'country' => 'required|string',
-            'phone' => 'required|string',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 
@@ -56,7 +60,7 @@ class Register extends Controller
         }
 
         if ($user->save()) {
-            return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+            return redirect()->route('Myprofile')->with('success', 'Profile updated successfully!');
         }
 
         return redirect()->back()->with('error', 'Failed to update profile.');

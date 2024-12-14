@@ -247,16 +247,19 @@
                     <a class="nav-link" href="{{ route('roles.index') }}">Manage Role</a>
                     @endauth
                 </div>
+                @if(auth()->user()->hasRole('blogs-team'))
+
 
                 <button class="dropdown-btn">
-                    Blogs
+                    Blogs1
                     <span class="dropdown-icon" aria-hidden="true"></span>
                 </button>
                 <div class="dropdown-container">
                     <a href="{{ route('Blog') }}">Blog</a>
                     <a href="{{ route('BlogCat') }}">Blog-Categories</a>
                 </div>
-
+                
+                @endif
                 <button class="dropdown-btn">
                     News
                     <span class="dropdown-icon" aria-hidden="true"></span>

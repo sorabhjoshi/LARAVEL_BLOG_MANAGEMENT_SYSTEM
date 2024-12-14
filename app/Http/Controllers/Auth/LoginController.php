@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Blog;
+use App\Models\Admin\Register_model;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,15 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+
+     public function dashboard(){
+        
+    }
+    protected function redirectTo()
+    {
+        return route('home'); // Redirects to a predefined route
+    }
+    
 
     /**
      * Create a new controller instance.
@@ -37,7 +47,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        // Store user-specific data in the session
+        
         session([
             'user_id' => $user->id,
             'user_name' => $user->name,
@@ -46,6 +56,6 @@ class LoginController extends Controller
         ]);
 
         // Redirect to the intended page or home
-        return redirect()->intended($this->redirectTo);
+        return redirect()->intended($this->redirectTo());
     }
 }

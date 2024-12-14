@@ -14,9 +14,9 @@ input{
 
 .profilecontainer{
     padding: 20px;
-    background-color: antiquewhite;
+    /* background-color: antiquewhite; */
     border-radius: 7px;
-    box-shadow:  4px 0 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow:  4px 0 6px rgba(0, 0, 0, 0.1); */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,3 +56,4 @@ input{
     cursor: pointer;
     background-color: rgb(9, 141, 9);
 }
+

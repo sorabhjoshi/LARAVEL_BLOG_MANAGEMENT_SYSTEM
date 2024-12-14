@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('Blogbackend.components.layout')
 
 @section('content')
 <div class="row">

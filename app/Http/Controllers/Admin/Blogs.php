@@ -175,21 +175,20 @@ public function deleteblogcat($id){
     
 }
 
-public function dashboard(){
-    $category= Blog::getBlogCategories();
+public function dashboard()
+{
+    $category = Blog::getBlogCategories();
     $users = Register_model::count();
     $news = News::count();
     $blogs = Blog::count();
-    return view('Blogbackend.Home', [
-        'category' => $category,
-        'users' => $users,
-        'news' => $news,
-        'blogs' => $blogs,
-    ]);
+
+    return view('Blogbackend.Home', compact('category', 'users', 'news', 'blogs'));
 }
+
 
 public function addblog(Request $request)
 {
+    // dd(auth()->user());
     $Catdata = Blogcat::select('categorytitle', 'id')->get();
     return view('Blogbackend/Utils/AddBlog', compact('Catdata'));
 }
