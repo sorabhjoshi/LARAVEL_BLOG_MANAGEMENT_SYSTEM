@@ -47,7 +47,7 @@ class Datatable extends Controller
     public function getblogAjax(Request $request)
     {
         try {
-            $query = Blog::select('id','slug','userid', 'title', 'authorname', 'category','created_at');
+            $query = Blog::select('id','slug','user_id', 'title', 'authorname', 'category','created_at');
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');
                 $endDate = $request->input('endDate');
@@ -73,7 +73,7 @@ class Datatable extends Controller
     public function getnewsAjax(Request $request)
     {
         try {
-            $query = News::select('id','slug','userid', 'title', 'authorname', 'description','created_at','category');
+            $query = News::select('id','slug','user_id', 'title', 'authorname', 'description','created_at','category');
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');
                 $endDate = $request->input('endDate');

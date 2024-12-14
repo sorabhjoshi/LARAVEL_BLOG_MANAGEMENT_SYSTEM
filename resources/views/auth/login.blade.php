@@ -17,7 +17,7 @@
             justify-content: center;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
+            /* height: 100vh; */
             margin: 0;
             padding: 0;
         }

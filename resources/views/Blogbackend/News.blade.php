@@ -6,13 +6,8 @@
     <div class="addnews">
         <h2>News List</h2>
         <div>
-<<<<<<< HEAD
             <a href="{{route('Dashboardfront')}}" class="btn btn-primary me-2">View Site</a>
             <a href="{{ route('AddNews') }}" class="btn btn-success">Add News</a>
-=======
-            <a href="{{ route('frontend') }}" class="btn btn-primary me-2">View Site</a>
-            <a href="/AddNews" class="btn btn-success">Add News</a>
->>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -84,7 +79,7 @@
                     }
                 },
                 { data: 'slug', name: 'slug' },
-                { data: 'userid', name: 'userid' },
+                { data: 'user_id', name: 'user_id' },
                 { data: 'title', name: 'title' },
                 { data: 'authorname', name: 'authorname' },
                 { data: 'category', name: 'category' },
