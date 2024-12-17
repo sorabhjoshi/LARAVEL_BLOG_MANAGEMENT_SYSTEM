@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
 use App\Http\Controllers\Admin\Datatable;
+use App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Admin\Newsarticle;
 use App\Http\Controllers\Admin\Register;
 use App\Http\Controllers\ContactController;
@@ -49,8 +50,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/Deletenewscat/{id}', [Newsarticle::class, 'deletenewscat']);
     Route::get('/Deletepages/{id}', [Newsarticle::class, 'deletepages']);
     Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany']);
-
+    Route::get('Admin/Modules/DeleteModule/{id}', [Modules::class, 'DeleteModule']);
+    
     // Add routes
+    Route::get('Admin/Addmodule', [Modules::class, 'Addmodule'])->name('addmodule');
     Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany')->name('AddCompany');
     Route::view('Admin/Pages/AddPage', 'Blogbackend.Utils.AddPage')->name('addpages');
     Route::view('Admin/NewsCat/AddNewCat', 'Blogbackend.Utils.AddNewsCat')->name('AddNewCat');
@@ -62,6 +65,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser');
 
     // Edit and update routes
+    // Modules/EditModule/
+
+    Route::get('Admin/Modules/EditModule/{id}', [Modules::class, 'editmodule'])->name('editmodule');
+    Route::get('Modules/AddPermissions/{id}', 'ModulesController@addPermissions')->name('addpermissions');
     Route::get('/Editcompany/{id}', [companydatas::class, 'editcompany']);
     Route::get('/Editpages/{id}', [Newsarticle::class, 'editpages']);
     Route::get('/Editnewscat/{id}', [Newsarticle::class, 'editnewscat']);
@@ -79,8 +86,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/AddCompanyData', [companydatas::class, 'addcompanydata']);
     Route::post('/UpdateNewsCat', [Newsarticle::class, 'updatenewscat']);
     Route::post('/UpdateCompanyData', [companydatas::class, 'updatecompanydata']);
-
+    Route::post('Admin/modulesstore', [Modules::class, 'store'])->name('modulesstore');
+    Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit');
     // Ajax routes
+    
+    Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
     Route::post('/deleteAddress', [Datatable::class, 'deleteAddress']);
     Route::post('/getAddressData', [Datatable::class, 'getaddressdata']);
@@ -96,9 +106,13 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/UpdateNews', [Newsarticle::class, 'updatenews']);
     Route::post('/UpdatePageData', [Newsarticle::class, 'updatepagedata']);
     Route::post('/UpdateBlog', [Blogs::class, 'updateblog']);
+    Route::post('/save-permissions', [Datatable::class, 'savePermissions'])->name('savePermissions');
 
     // Basic routes of pages
     
+    Route::get('/Admin/Modules', function () {
+        return view('Blogbackend.Modules');
+    })->name('Modules');
 
     Route::get('/Admin/Users', function () {
         return view('Blogbackend.Users');

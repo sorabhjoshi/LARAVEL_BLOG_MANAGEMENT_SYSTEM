@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Companyaddress;
+use App\Models\Admin\Module;
+use App\Models\Admin\Modules;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
+use App\Models\Admin\permissions;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
@@ -97,6 +100,38 @@ class Datatable extends Controller
     }
 
     
+    public function getmoduleAjax(Request $request)
+{
+    try {
+        $query = Module::select('id', 'modulesname', 'parent_id', 'permissions', 'updated_at', 'created_at');
+        
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if (!empty($startDate) && !empty($endDate)) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        return DataTables::of($query)
+            ->addColumn('addpermissions', function ($row) {
+                return '<button class="btn btn-sm btn-success " id="permissionsbtn" data-module-id="' . $row->id . '">Add Permissions</button>';
+            })
+            ->addColumn('edit', function ($row) {
+                return '<a href="Modules/EditModule/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+            })
+            ->addColumn('delete', function ($row) {
+                return '<a href="Modules/DeleteModule/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+            })
+            ->rawColumns(['addpermissions', 'edit', 'delete'])
+            ->make(true);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
     public function getblogcatAjax(Request $request)
     {
         try {
@@ -281,8 +316,24 @@ public function saveCompanyAddress(Request $request)
     }
 }
 
+public function savePermissions(Request $request)
+    {
+        
+        $validated = $request->validate([
+            'permissions' => 'required|array', 
+            'module_id' => 'required|integer', 
+            'guard_name' => 'required|string', 
+        ]);
+        foreach ($validated['permissions'] as $permission) {
+            permissions::create([
+                'name' => $permission,
+                'module_id' => $validated['module_id'], 
+                'guard_name' => $validated['guard_name'], 
+            ]);
+        }
 
-
+        return response()->json(['success' => true]);
+    }
 
 
 }

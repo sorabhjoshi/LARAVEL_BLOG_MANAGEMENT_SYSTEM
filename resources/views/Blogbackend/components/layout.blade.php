@@ -278,6 +278,7 @@
                     <a href="{{ route('NewsCat') }}">News-Categories</a>
                 </div>
                 @endif
+                <a href="{{ route('Modules') }}">Modules</a>
                 <a href="{{ route('Pages') }}">Pages</a>
                 <a href="{{ route('Company') }}">Company Profile</a>
                 <a class="dropdown-item" href="{{ route('logout') }}"

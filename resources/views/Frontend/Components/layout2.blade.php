@@ -50,9 +50,9 @@
                         </li>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <span class="nav-link">No pages available</span>
-                    </li>
+                    </li> --}}
                 <?php endif; ?>
             </ul>
         </div>

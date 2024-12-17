@@ -28,6 +28,7 @@ class PagesServiceProvider extends ServiceProvider
         // Share $pages data with specific views
         View::composer('Frontend.Components.layout2', function ($view) {
             $pages = Pages::all();
+            // dd($pages);
             $view->with('pages', $pages);
         });
     }
