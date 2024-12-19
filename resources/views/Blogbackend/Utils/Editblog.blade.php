@@ -42,11 +42,7 @@
 
         <label for="category">Category:</label>
         <select id="Category" name="category" >
-<<<<<<< HEAD
             <option value="{{$userdata->category}}"  selected >Selected</option>
-=======
-            <option value="value={{$userdata->authorname}}"  selected >{{$userdata->authorname}}</option>
->>>>>>> 021908dff41cbfdfe4823b97e24c1226c69e77f2
             @foreach ($Catdata as $item)
             <option value="{{ $item->id }}">{{ $item->categorytitle }}</option>
         @endforeach

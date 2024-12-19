@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\CheckPermissions;
+use App\Models\Menu;
+use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\View;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        
+        
     }
 }

@@ -35,10 +35,10 @@ class Datatable extends Controller
     
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/Deleteuser/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/Deleteuser/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -61,10 +61,10 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i></a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/Deleteblog/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/Deleteblog/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -87,10 +87,10 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i> </a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -101,36 +101,43 @@ class Datatable extends Controller
 
     
     public function getmoduleAjax(Request $request)
-{
-    try {
-        $query = Module::select('id', 'modulesname', 'parent_id', 'permissions', 'updated_at', 'created_at');
-        
-        if ($request->has('startDate') && $request->has('endDate')) {
-            $startDate = $request->input('startDate');
-            $endDate = $request->input('endDate');
-
-            if (!empty($startDate) && !empty($endDate)) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
+    {
+        try {
+            $query = Module::select('id', 'modulesname', 'parent_id',  'updated_at', 'created_at');
+            
+            if ($request->has('startDate') && $request->has('endDate')) {
+                $startDate = $request->input('startDate');
+                $endDate = $request->input('endDate');
+    
+                if (!empty($startDate) && !empty($endDate)) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
             }
+    
+            return DataTables::of($query)
+                ->addColumn('addpermissions', function ($row) {
+                    return '<button class="btn btn-sm btn-success" id="permissionsbtn" data-module-id="' . $row->id . '">
+                                <i class="fas fa-key"></i> 
+                            </button>';
+                })
+                ->addColumn('edit', function ($row) {
+                    return '<a href="Modules/EditModule/' . $row->id . '" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> 
+                            </a>';
+                })
+                ->addColumn('delete', function ($row) {
+                    return '<a href="Modules/DeleteModule/' . $row->id . '" class="btn btn-sm btn-danger delete-btn">
+                                <i class="fas fa-trash-alt"></i> 
+                            </a>';
+                })
+                ->rawColumns(['addpermissions', 'edit', 'delete']) // Allow raw HTML
+                ->make(true);
+    
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return DataTables::of($query)
-            ->addColumn('addpermissions', function ($row) {
-                return '<button class="btn btn-sm btn-success " id="permissionsbtn" data-module-id="' . $row->id . '">Add Permissions</button>';
-            })
-            ->addColumn('edit', function ($row) {
-                return '<a href="Modules/EditModule/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
-            })
-            ->addColumn('delete', function ($row) {
-                return '<a href="Modules/DeleteModule/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
-            })
-            ->rawColumns(['addpermissions', 'edit', 'delete'])
-            ->make(true);
-
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
+    
 
     public function getblogcatAjax(Request $request)
     {
@@ -147,10 +154,10 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editblogcat/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/Editblogcat/' . $row->id . '" class="btn btn-sm btn-warning">  <i class="fas fa-edit"></i></a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/Deleteblogcat/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/Deleteblogcat/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i> </a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -174,10 +181,10 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editnewscat/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/Editnewscat/' . $row->id . '" class="btn btn-sm btn-warning">  <i class="fas fa-edit"></i> </a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/Deletenewscat/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/Deletenewscat/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -200,10 +207,10 @@ class Datatable extends Controller
             }
             return DataTables::of($query)
                 ->addColumn('edit', function ($row) {
-                    return '<a href="/Editpages/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                    return '<a href="/Editpages/' . $row->id . '" class="btn btn-sm btn-warning">   <i class="fas fa-edit"></i> </a>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="/Deletepages/' . $row->id . '" class="btn btn-sm delete-btn">Delete</a>';
+                    return '<a href="/Deletepages/' . $row->id . '" class="btn btn-sm delete-btn">   <i class="fas fa-trash-alt"></i> </a>';
                 })
                 ->rawColumns(['edit', 'delete'])
                 ->make(true);
@@ -223,7 +230,7 @@ class Datatable extends Controller
 
         return DataTables::of($query)
             ->addColumn('edit', function ($row) {
-                return '<a href="/Editcompany/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
+                return '<a href="/Editcompany/' . $row->id . '" class="btn btn-sm btn-warning">   <i class="fas fa-edit"></i> </a>';
             })
             ->addColumn('address', function ($row) {
                 return '<button data-company-id="' . $row->id . '" 
@@ -232,7 +239,7 @@ class Datatable extends Controller
                         </button>';
             })
             ->addColumn('delete', function ($row) {
-                return '<a href="/Deletecompany/' . $row->id . '" class="btn btn-sm btn-danger">Delete</a>';
+                return '<a href="/Deletecompany/' . $row->id . '" class="btn btn-sm btn-danger"> <i class="fas fa-trash-alt"></i> </a>';
             })
             ->rawColumns(['edit', 'address', 'delete'])
             ->make(true);
@@ -317,23 +324,67 @@ public function saveCompanyAddress(Request $request)
 }
 
 public function savePermissions(Request $request)
-    {
-        
-        $validated = $request->validate([
-            'permissions' => 'required|array', 
-            'module_id' => 'required|integer', 
-            'guard_name' => 'required|string', 
-        ]);
-        foreach ($validated['permissions'] as $permission) {
-            permissions::create([
-                'name' => $permission,
-                'module_id' => $validated['module_id'], 
-                'guard_name' => $validated['guard_name'], 
-            ]);
-        }
+{
+    $moduleId = $request->module_id;
+    $guardName = $request->guard_name;
+    $permissions = $request->permissions;
 
-        return response()->json(['success' => true]);
+    foreach ($permissions as $permission) {
+        if (isset($permission['id'])) {
+            // Update existing permission
+            \DB::table('permissions')
+                ->where('id', $permission['id'])
+                ->update([
+                    'name' => $permission['name'],
+                    'module_id' => $moduleId,
+                    'guard_name' => $guardName,
+                    'updated_at' => now(),
+                ]);
+        } else {
+            // Create new permission
+            \DB::table('permissions')->insert([
+                'name' => $permission['name'],
+                'module_id' => $moduleId,
+                'guard_name' => $guardName,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } 
     }
 
+    return response()->json(['success' => true]);
+}
+
+
+public function ShowPermissions(Request $request){
+    $validated = $request->validate([
+        'module_id' => 'required|integer', 
+    ]);
+    $moduledata = permissions::where('module_id', $request->input('module_id'))->get();
+    return response()->json(['status' => 'success', 'data' => $moduledata]);
+}
+
+public function deletePermission(Request $request)
+{
+    $validated = $request->validate([
+        'permission_id' => 'required|integer',
+    ]);
+
+    try {
+        $permission = permissions::findOrFail($validated['permission_id']);
+        $permission->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission deleted successfully.',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting permission.',
+            'error' => $e->getMessage(),
+        ]);
+    }
+}
 
 }

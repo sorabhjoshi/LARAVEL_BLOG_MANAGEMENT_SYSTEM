@@ -27,7 +27,7 @@
         @enderror
 
         <div class="form-group full-width">
-            <button type="submit">Add Category</button>
+            <button type="submit">Add Page</button>
         </div>
     </form>
 </div>

@@ -1,7 +1,10 @@
 <?php
 
 return [
-
+'aliases' => [
+    // ...
+    'Auth' => Illuminate\Support\Facades\Auth::class,
+],
     /*
     |--------------------------------------------------------------------------
     | Application Name

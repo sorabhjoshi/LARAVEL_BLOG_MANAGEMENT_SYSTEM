@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Models\blog;
+use App\Models\menu;
+use App\Models\page;
+use App\Models\newspost;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
+
+class MenuController extends Controller
+{
+    
+    function addmenubar($id){
+        $menu = \App\Models\Admin\Menu::whereid($id)->first();
+        $finalmenu_output = json_decode($menu, true);
+        if ($finalmenu_output ) {
+            return view('Blogbackend.Menu', compact('finalmenu_output'));
+        } else {
+            return redirect()->route('updatemenu')->with('error', 'Blog not found');
+        }
+    }
+
+   
+}

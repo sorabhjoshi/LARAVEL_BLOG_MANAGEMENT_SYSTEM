@@ -44,7 +44,7 @@ public function addnewsdata(Request $request)
             'description' => $request->input('content'),
             'category' => $request->input('category'),
             'slug' => $slug,
-            'userid' => $user->id, 
+            'user_id' => $user->id, 
         ]);
     
         return redirect()->route('Newsarticle')->with('success', 'Blog updated successfully!');

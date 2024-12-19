@@ -14,7 +14,9 @@
     <title>Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('bootstrap-5.3.3-dist/css/bootstrap.css') }}">
-
+    <?php
+    use Illuminate\Support\Facades\Route;
+    ?>
     <style>
         body {
             background-color: #f4f7fc;

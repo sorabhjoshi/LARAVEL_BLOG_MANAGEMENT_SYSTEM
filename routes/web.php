@@ -1,20 +1,22 @@
 <?php
-  
+
+  use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\Admin\Datatable;
 use App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Admin\Newsarticle;
 use App\Http\Controllers\Admin\Register;
 use App\Http\Controllers\ContactController;
+
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
 use App\Models\Admin\Pages;
-use Illuminate\Support\Facades\Route;
   
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RoleController;
+// use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
    
@@ -23,73 +25,64 @@ Route::get('/', function () {
 });
   
 Auth::routes();
-  
+
+// Route::view('Forbidden-403', 'Blogbackend.error')->name('errors');
+
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
   
+
 Route::group(['middleware' => ['auth']], function() {
-    Route::resource('roles', RoleController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('roles', RoleController::class);
+    Route::resource('roles', RoleController::class)->middleware('role:Admin');
+    Route::resource('users', UserController::class)->middleware('role:Admin');
+    Route::resource('products', ProductController::class)->middleware('role:Admin|Manager');
 
-    Route::resource('users', UserController::class);
-
-    Route::resource('products', ProductController::class);
-
-
-    // Route::view('/home', 'home')->name('home');
     Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
-   
     Route::get('/Admin/Myprofile', [Register::class, 'myprofile'])->name('Myprofile');
- 
+
     // Delete routes
-    Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser']);
-    Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog']);
-    Route::get('/DeleteNews/{id}', [Newsarticle::class, 'deletenews']);
-    Route::get('/Deleteblogcat/{id}', [Blogs::class, 'deleteblogcat']);
-    Route::get('/Deletenewscat/{id}', [Newsarticle::class, 'deletenewscat']);
-    Route::get('/Deletepages/{id}', [Newsarticle::class, 'deletepages']);
-    Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany']);
-    Route::get('Admin/Modules/DeleteModule/{id}', [Modules::class, 'DeleteModule']);
-    
+    Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser'])->middleware('role:Admin');
+    Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog'])->middleware('role:Admin|Blog-team');
+    Route::get('/DeleteNews/{id}', [Newsarticle::class, 'deletenews'])->middleware('role:Admin|News-team');
+    Route::get('/Deleteblogcat/{id}', [Blogs::class, 'deleteblogcat'])->middleware('role:Admin|Blog-team');
+    Route::get('/Deletenewscat/{id}', [Newsarticle::class, 'deletenewscat'])->middleware('role:Admin|News-team');
+    Route::get('/Deletepages/{id}', [Newsarticle::class, 'deletepages'])->middleware('role:Admin');
+    Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany'])->middleware('role:Admin');
+    Route::get('Admin/Modules/DeleteModule/{id}', [Modules::class, 'DeleteModule'])->middleware('role:Admin');
+
     // Add routes
-    Route::get('Admin/Addmodule', [Modules::class, 'Addmodule'])->name('addmodule');
-    Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany')->name('AddCompany');
-    Route::view('Admin/Pages/AddPage', 'Blogbackend.Utils.AddPage')->name('addpages');
-    Route::view('Admin/NewsCat/AddNewCat', 'Blogbackend.Utils.AddNewsCat')->name('AddNewCat');
-    Route::view('Admin/BlogCat/AddBlogCat', 'Blogbackend.Utils.AddBlogCat')->name('AddBlogCat');
-    Route::view('Admin/News/AddNews', 'Blogbackend.Utils.AddNews')->name('AddNews');
-    Route::get('/AddNews', [Newsarticle::class, 'addnews'])->name('AddNews');
-    Route::get('/AddBlog', [Blogs::class, 'addblog'])->name('addblog');
-    // Route::view('/AddBlog', 'Blogbackend.Utils.AddBlog')->name('AddBlog');
-    Route::view('/EditUser', 'Blogbackend.Utils.Edituser');
+    Route::get('Admin/Addmodule', [Modules::class, 'Addmodule'])->name('addmodule')->middleware('role:Admin');
+    Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany')->name('AddCompany')->middleware('role:Admin');
+    Route::view('Admin/Pages/AddPage', 'Blogbackend.Utils.AddPage')->name('addpages')->middleware('role:Admin');
+    Route::view('Admin/NewsCat/AddNewCat', 'Blogbackend.Utils.AddNewsCat')->name('AddNewCat')->middleware('role:Admin|News-team');
+    Route::view('Admin/BlogCat/AddBlogCat', 'Blogbackend.Utils.AddBlogCat')->name('AddBlogCat')->middleware('role:Admin|Blog-team');
+    Route::view('Admin/News/AddNews', 'Blogbackend.Utils.AddNews')->name('AddNews')->middleware('role:Admin|News-team');
+    Route::get('/AddNews', [Newsarticle::class, 'addnews'])->name('AddNews')->middleware('role:Admin|News-team');
+    Route::get('/AddBlog', [Blogs::class, 'addblog'])->name('addblog')->middleware('role:Admin|Blog-team');
+    Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
-    // Modules/EditModule/
-
-    Route::get('Admin/Modules/EditModule/{id}', [Modules::class, 'editmodule'])->name('editmodule');
-    Route::get('Modules/AddPermissions/{id}', 'ModulesController@addPermissions')->name('addpermissions');
-    Route::get('/Editcompany/{id}', [companydatas::class, 'editcompany']);
-    Route::get('/Editpages/{id}', [Newsarticle::class, 'editpages']);
-    Route::get('/Editnewscat/{id}', [Newsarticle::class, 'editnewscat']);
-    Route::get('/Editblogcat/{id}', [Blogs::class, 'editblogcat']);
-    Route::get('/Edituser/{id}', [UserController::class, 'editUser']);
-    Route::get('/Editblog/{id}', [Blogs::class, 'editblog']);
-    Route::view('/Editblog', 'Blogbackend.Utils.Editblog')->name('Editblog');
-    Route::get('/EditNews/{id}', [Newsarticle::class, 'editnews']);
-    Route::post('/AddNews', [Newsarticle::class, 'addnewsdata']);
-    Route::post('/AddBlog', [Blogs::class, 'addblogdata']);
-    Route::post('/AddBlogCat', [Blogs::class, 'addblogcat']);
-    Route::post('/UpdateBlogCat', [Blogs::class, 'updateblogcat']);
-    Route::post('/AddNewsCatdata', [Newsarticle::class, 'addnewscatdata']);
-    Route::post('/AddPageData', [Newsarticle::class, 'addpagedata']);
-    Route::post('/AddCompanyData', [companydatas::class, 'addcompanydata']);
-    Route::post('/UpdateNewsCat', [Newsarticle::class, 'updatenewscat']);
-    Route::post('/UpdateCompanyData', [companydatas::class, 'updatecompanydata']);
-    Route::post('Admin/modulesstore', [Modules::class, 'store'])->name('modulesstore');
-    Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit');
+    Route::get('Admin/Modules/EditModule/{id}', [Modules::class, 'editmodule'])->name('editmodule')->middleware('role:Admin');
+    Route::get('Modules/AddPermissions/{id}', 'ModulesController@addPermissions')->name('addpermissions')->middleware('role:Admin');
+    Route::get('/Editcompany/{id}', [companydatas::class, 'editcompany'])->middleware('role:Admin');
+    Route::get('/Editpages/{id}', [Newsarticle::class, 'editpages'])->middleware('role:Admin');
+    Route::get('/Editnewscat/{id}', [Newsarticle::class, 'editnewscat'])->middleware('role:Admin|News-team');
+    Route::get('/Editblogcat/{id}', [Blogs::class, 'editblogcat'])->middleware('role:Admin|Blog-team');
+    Route::get('/Edituser/{id}', [UserController::class, 'editUser'])->middleware('role:Admin');
+    Route::get('/Editblog/{id}', [Blogs::class, 'editblog'])->middleware('role:Admin|Blog-team');
+    Route::view('/Editblog', 'Blogbackend.Utils.Editblog')->name('Editblog')->middleware('role:Admin|Blog-team');
+    Route::get('/EditNews/{id}', [Newsarticle::class, 'editnews'])->middleware('role:Admin|News-team');
+    Route::post('/AddNews', [Newsarticle::class, 'addnewsdata'])->middleware('role:Admin|News-team');
+    Route::post('/AddBlog', [Blogs::class, 'addblogdata'])->middleware('role:Admin|Blog-team');
+    Route::post('/AddBlogCat', [Blogs::class, 'addblogcat'])->middleware('role:Admin|Blog-team');
+    Route::post('/UpdateBlogCat', [Blogs::class, 'updateblogcat'])->middleware('role:Admin|Blog-team');
+    Route::post('/AddNewsCatdata', [Newsarticle::class, 'addnewscatdata'])->middleware('role:Admin|News-team');
+    Route::post('/AddPageData', [Newsarticle::class, 'addpagedata'])->middleware('role:Admin');
+    Route::post('/AddCompanyData', [companydatas::class, 'addcompanydata'])->middleware('role:Admin');
+    Route::post('/UpdateNewsCat', [Newsarticle::class, 'updatenewscat'])->middleware('role:Admin|News-team');
+    Route::post('/UpdateCompanyData', [companydatas::class, 'updatecompanydata'])->middleware('role:Admin');
+    Route::post('Admin/modulesstore', [Modules::class, 'store'])->name('modulesstore')->middleware('role:Admin');
+    Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit')->middleware('role:Admin');
     // Ajax routes
-    
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
     Route::post('/deleteAddress', [Datatable::class, 'deleteAddress']);
@@ -103,13 +96,14 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/getUsersAjax', [Datatable::class, 'getUsersAjax']);
     Route::post('/updateprofile', [Register::class, 'updateprofile']);
     Route::put('/updateuser/{id}', [UserController::class, 'updateuser'])->name('updateuser');
-    Route::post('/UpdateNews', [Newsarticle::class, 'updatenews']);
-    Route::post('/UpdatePageData', [Newsarticle::class, 'updatepagedata']);
-    Route::post('/UpdateBlog', [Blogs::class, 'updateblog']);
-    Route::post('/save-permissions', [Datatable::class, 'savePermissions'])->name('savePermissions');
+    Route::post('/UpdateNews', [Newsarticle::class, 'updatenews'])->middleware('role:Admin|News-team');
+    Route::post('/UpdatePageData', [Newsarticle::class, 'updatepagedata'])->middleware('role:Admin');
+    Route::post('/UpdateBlog', [Blogs::class, 'updateblog'])->middleware('role:Admin|Blog-team');
+    Route::post('/storepermission', [Datatable::class, 'savePermissions'])->name('storepermission')->middleware('role:Admin');
+    Route::post('/show-permissions', [Datatable::class, 'ShowPermissions'])->name('ShowPermissions')->middleware('role:Admin');
+    Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
 
     // Basic routes of pages
-    
     Route::get('/Admin/Modules', function () {
         return view('Blogbackend.Modules');
     })->name('Modules');
@@ -120,19 +114,19 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/Admin/Blog', function () {
         return view('Blogbackend.Blog');
-    })->name('Blog');
+    })->name('Blog')->middleware('role:Admin|Blog-team');
 
     Route::get('/Admin/BlogCat', function () {
         return view('Blogbackend.BlogCat');
-    })->name('BlogCat');
+    })->name('BlogCat')->middleware('role:Admin|Blog-team');
 
     Route::get('/Admin/News', function () {
         return view('Blogbackend.News');
-    })->name('Newsarticle');
+    })->name('Newsarticle')->middleware('role:Admin|News-team');
 
     Route::get('/Admin/NewsCat', function () {
         return view('Blogbackend.NewsCat');
-    })->name('NewsCat');
+    })->name('NewsCat')->middleware('role:Admin|News-team');
 
     Route::get('/Admin/Pages', function () {
         return view('Blogbackend.Pages');
@@ -142,7 +136,7 @@ Route::group(['middleware' => ['auth']], function() {
         return view('Blogbackend.CompanyProfile');
     })->name('Company');
 
-    Route::get('/Admin/Logout', [Register::class, 'logout'])->name('Logout');
+    Route::get('/Admin/Logout', [Register::class, 'logout'])->name('Logout')->middleware('role:Admin|User');
 });
 
 

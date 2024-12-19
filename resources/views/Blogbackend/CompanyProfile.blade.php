@@ -47,7 +47,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -59,16 +58,7 @@
                 <form id="address-form">
                     <input type="hidden" id="company_id" name="company_id">
                     <div id="form-fields-container">
-                        <div class="form-row">
-                                <label for="Address" class="form-label">Address:</label>
-                                <input type="text" id="Address" name="Address[]" class="form-control" required>
-                                <label for="Latitude" class="form-label">Latitude:</label>
-                                <input type="text" id="Latitude" name="Latitude[]" class="form-control">
-                                <label for="Longitude" class="form-label">Longitude:</label>
-                                <input type="text" id="Longitude" name="Longitude[]" class="form-control" required>
-                                <label for="Mobile" class="form-label">Mobile:</label>
-                                <input type="text" id="Mobile" name="Mobile[]" class="form-control" required>
-                        </div>
+                        <!-- Form rows will be populated here -->
                     </div>
                 </form>
             </div>
@@ -80,7 +70,6 @@
         </div>
     </div>
 </div>
-
 
 @endsection
 @section('js')
@@ -132,7 +121,7 @@
             table.ajax.reload();
         });
 
-        const table2=$('#user-table').on('click', '.view-address-btn', function () {
+        $('#user-table').on('click', '.view-address-btn', function () {
             var companyid = $(this).data('company-id');
             $('#save-address').data('company-id', companyid);
             $('#addressModal').modal('show');
@@ -146,25 +135,43 @@
                         const addressData = response.data;
                         $('#address-form').empty();
 
-                        addressData.forEach(function (address, index) {
+                        if (addressData.length > 0) {
+                            addressData.forEach(function (address) {
+                                const newRow = `
+                                    <div class="form-row" data-id="${address.id}">
+                                        <input type="hidden" name="id[]" value="${address.id}">
+                                        <label for="Address">Address:</label>
+                                        <input type="text" name="Address[]" value="${address.address}" required>
+                                        <label for="Latitude">Latitude:</label>
+                                        <input type="text" name="Latitude[]" value="${address.latitude}">
+                                        <label for="Longitude">Longitude:</label>
+                                        <input type="text" name="Longitude[]" value="${address.longitude}" required>
+                                        <label for="Mobile">Mobile:</label>
+                                        <input type="text" name="Mobile[]" value="${address.mobile}" required>
+                                        <button type="button" class="delete-address-btn">Delete</button>
+                                    </div>
+                                `;
+                                $('#address-form').append(newRow);
+                            });
+                        } else {
                             const newRow = `
-                                <div class="form-row" data-id="${address.id}">
-                                    <input type="hidden" name="id[]" value="${address.id}">
+                                <div class="form-row" data-id="">
+                                    <input type="hidden" name="id[]">
                                     <label for="Address">Address:</label>
-                                    <input type="text" name="Address[]" value="${address.address}" required>
+                                    <input type="text" name="Address[]" value="" required>
                                     <label for="Latitude">Latitude:</label>
-                                    <input type="text" name="Latitude[]" value="${address.latitude}">
+                                    <input type="text" name="Latitude[]" value="">
                                     <label for="Longitude">Longitude:</label>
-                                    <input type="text" name="Longitude[]" value="${address.longitude}" required>
+                                    <input type="text" name="Longitude[]" value="" required>
                                     <label for="Mobile">Mobile:</label>
-                                    <input type="text" name="Mobile[]" value="${address.mobile}" required>
+                                    <input type="text" name="Mobile[]" value="" required>
                                     <button type="button" class="delete-address-btn">Delete</button>
                                 </div>
                             `;
                             $('#address-form').append(newRow);
-                        });
+                        }
                     } else {
-                        alert('Address field is empty');
+                        alert('Failed to fetch address data');
                     }
                 },
                 error: function () {
@@ -174,87 +181,81 @@
         });
 
         $('#add-row-btn').on('click', function () {
-            
-        const newRow = `
-            <div class="form-row">
-                 <input type="hidden" name="id[]">
-                <label for="Address">Address:</label>
-                <input type="text" name="Address[]" required>
-                <label for="Latitude">Latitude:</label>
-                <input type="text" name="Latitude[]">
-                <label for="Longitude">Longitude:</label>
-                <input type="text" name="Longitude[]" required>
-                <label for="Mobile">Mobile:</label>
-                <input type="text" name="Mobile[]" required>
-                <button type="button" class="delete-address-btn">Delete</button>
-            </div>`;
-        $('#address-form').append(newRow);
-    });
-    $('#save-address').on('click', function () {
-        var companyid = $(this).data('company-id');
-        var formData = $('#address-form').serializeArray();  
-
-        var data = {};
-        formData.forEach(function (item) {
-            if (!data[item.name]) {
-                data[item.name] = [];
-            }
-            data[item.name].push(item.value);
+            const newRow = `
+                <div class="form-row">
+                    <input type="hidden" name="id[]">
+                    <label for="Address">Address:</label>
+                    <input type="text" name="Address[]" required>
+                    <label for="Latitude">Latitude:</label>
+                    <input type="text" name="Latitude[]">
+                    <label for="Longitude">Longitude:</label>
+                    <input type="text" name="Longitude[]" required>
+                    <label for="Mobile">Mobile:</label>
+                    <input type="text" name="Mobile[]" required>
+                    <button type="button" class="delete-address-btn">Delete</button>
+                </div>`;
+            $('#address-form').append(newRow);
         });
 
-        data.company_id = companyid;
-        console.log(data);
-        $.ajax({
-            url: '/saveCompanyAddress',
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    alert('Data saved successfully!');
-                    $('#addressModal').modal('hide');
-                    table2.ajax.reload();
-                } else {
-                    alert(response.message || 'Failed to save data');
+        $('#save-address').on('click', function () {
+            var companyid = $(this).data('company-id');
+            var formData = $('#address-form').serializeArray();  
+
+            var data = {};
+            formData.forEach(function (item) {
+                if (!data[item.name]) {
+                    data[item.name] = [];
                 }
-            },
-            error: function () {
-                alert('An error occurred while saving the data');
-            }
-        });
-    });
+                data[item.name].push(item.value);
+            });
 
-    
-
-
-        $('#address-form').on('click', '.delete-address-btn', function () {
-        var row = $(this).closest('.form-row'); 
-        var addressId = row.find('input[name="id[]"]').val(); 
-
-        if (confirm("Are you sure you want to delete this address?")) {
+            data.company_id = companyid;
             $.ajax({
-                url: '/deleteAddress', 
+                url: '/saveCompanyAddress',
                 type: 'POST',
-                data: {
-                    id: addressId
-                },
+                data: data,
+                dataType: 'json',
                 success: function (response) {
                     if (response.status === 'success') {
-                        alert('Address deleted successfully');
-                        row.remove(); 
+                        alert('Data saved successfully!');
+                        $('#addressModal').modal('hide');
+                        table.ajax.reload();
                     } else {
-                        alert('Failed to delete address');
+                        alert(response.message || 'Failed to save data');
                     }
                 },
                 error: function () {
-                    alert('An error occurred while deleting the address');
+                    alert('An error occurred while saving the data');
                 }
             });
-        }
-    });
+        });
+
+        $('#address-form').on('click', '.delete-address-btn', function () {
+            var row = $(this).closest('.form-row'); 
+            var addressId = row.find('input[name="id[]"]').val(); 
+
+            if (confirm("Are you sure you want to delete this address?")) {
+                $.ajax({
+                    url: '/deleteAddress', 
+                    type: 'POST',
+                    data: { id: addressId },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            row.remove(); 
+                        } else {
+                            alert(response.message || 'Failed to delete the address');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while deleting the address');
+                    }
+                });
+            }
+        });
     });
 </script>
 @endsection
+
 <style>
     #address-overlay {
      position: fixed;

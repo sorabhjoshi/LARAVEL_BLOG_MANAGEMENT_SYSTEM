@@ -4,7 +4,6 @@
 
 @section('content')
 <style>
-    /* Modal Styling */
 #modal {
     display: none; /* Ensure modal is hidden by default */
     position: fixed;
@@ -12,13 +11,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Darker background for better contrast */
-    z-index: 9999; /* Ensures the modal is on top */
-    /* display: flex; */
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
+    background: rgba(0, 0, 0, 0.6); 
+    z-index: 9999; 
+    align-items: center; 
+    justify-content: center; 
     transition: opacity 0.3s ease;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column; 
 }
 
 /* Modal Content */
@@ -77,7 +75,9 @@
 .modal-buttons-container .btn {
     width: 48%; /* Buttons will take up half of the container */
 }
-
+.input-row label{
+    margin-bottom: 10px;
+}
 </style>
 
 <div class="container mt-4">
@@ -106,7 +106,6 @@
                     <th>ID</th>
                     <th>Module Name</th>
                     <th>Parent ID</th>
-                    <th>Permissions</th>
                     <th>Created At</th>
                     <th>Updated At</th>
                     <th>Add Permissions</th>
@@ -119,7 +118,6 @@
     </div>
 </div>
 
-<!-- Modal Structure -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <button id="closeModal">&times;</button>
@@ -131,7 +129,6 @@
             </div>
         </div>
         
-        <!-- Buttons inside modal -->
         <div class="modal-buttons-container">
             <button id="AddMore" class="btn btn-primary">Add More</button>
             <button id="savePermissions" class="btn btn-success">Save</button>
@@ -144,129 +141,209 @@
 
 <script>
     $(document).ready(function () {
-    // Setup CSRF token for AJAX requests
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    // Initialize DataTable
-    const table = $('#user-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '/getmoduleAjax',
-            type: 'POST',
-            data: function (d) {
-                d.startDate = $('#startDate').val();
-                d.endDate = $('#endDate').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        const table = $('#user-table').DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true, // Enable pagination
+            ordering: true, // Enable ordering
+            ajax: {
+                url: '/getmoduleAjax',
+                type: 'POST',
+                data: function (d) {
+                    d.startDate = $('#startDate').val();
+                    d.endDate = $('#endDate').val();
+                    d.start = d.start;
+                    d.length = d.length;
+                },
+                dataSrc: function (json) {
+                    return json.data; // Ensure the correct data is returned
+                }
+            },
+            pageLength: 5, // Adjust the number of rows per page if needed
+            order: [[1, 'asc']], // Default ordering: column 1 (Module Name) in ascending order
+            columns: [
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                },
+                { data: 'modulesname', name: 'modulesname' },
+                { data: 'parent_id', name: 'parent_id' },
+                { data: 'updated_at', name: 'updated_at' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'addpermissions', orderable: false, searchable: false },
+                { data: 'edit', orderable: false, searchable: false },
+                { data: 'delete', orderable: false, searchable: false },
+            ],
+            lengthMenu: [5, 10, 25, 50], // Options for rows per page
+        });
+
+        $('#filterButton').on('click', function () {
+            table.ajax.reload();
+        });
+
+        $('#user-table').on('click', '#permissionsbtn', function () {
+    var moduleid = $(this).data('module-id');
+    $('#savePermissions').data('module-id', moduleid);
+
+    $.ajax({
+        url: '{{ route('ShowPermissions') }}',
+        type: 'POST', 
+        data: {
+            module_id: moduleid,
+            _token: $('meta[name="csrf-token"]').attr('content')
         },
-        pageLength: 5,
-        columns: [
-            {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1 + meta.settings._iDisplayStart;
-                }
-            },
-            { data: 'modulesname', name: 'modulesname' },
-            { data: 'parent_id', name: 'parent_id' },
-            { data: 'permissions', name: 'permissions' },
-            { data: 'updated_at', name: 'updated_at' },
-            { data: 'created_at', name: 'created_at' },
-            { data: 'addpermissions', orderable: false, searchable: false },
-            { data: 'edit', orderable: false, searchable: false },
-            { data: 'delete', orderable: false, searchable: false },
-        ],
-    });
+        success: function (response) {
+            const permissionsContainer = $('.input-container'); 
+            permissionsContainer.empty(); // Clear previous content
 
-    // Filter button functionality
-    $('#filterButton').on('click', function () {
-        table.ajax.reload();
-    });
-
-   
-    $('#user-table').on('click', '#permissionsbtn', function () {
-        var moduleid = $(this).data('module-id');
-        $('#savePermissions').data('module-id', moduleid);
-        $('#modal').css('display', 'flex').hide().fadeIn(300);  
-    });
-
-  
-    $('#closeModal').on('click', function () {
-        $('#modal').fadeOut(300, function () {
-            $('#modal').css('display', 'none');  
-        });
-    });
-
-  
-    $('#AddMore').on('click', function () {
-        const newRow = `
-            <div class="input-row">
-                <label>Permission Name</label>
-                <input type="text" value="">
-            </div>`;
-        $('.input-container').append(newRow);  
-    });
-
-
-    $('#savePermissions').on('click', function () {
-        var moduleid = $(this).data('module-id');
-        let permissions = [];
-        let moduleId = moduleid;
-        let guardName = 'web'; 
-
-      
-        $('.input-container input').each(function () {
-            const permission = $(this).val().trim();
-            if (permission) {
-                permissions.push(permission);
+            if (response.status === 'success' && response.data.length > 0) {
+                const permissionsData = response.data;
+                permissionsData.forEach(permission => {
+                    const newRow = `
+                        <div class="input-row">
+                            <label>Permission Name</label>
+                            <input type="text" value="${permission.name}" data-permission-id="${permission.id}" class="permission-input">
+                            <button class="delete-permission btn btn-danger" data-permission-id="${permission.id}">Delete</button>
+                        </div>`;
+                    permissionsContainer.append(newRow);
+                });
+            } else {
+                // Add a blank input row when no permissions exist
+                const newRow = `
+                    <div class="input-row">
+                        <label>Permission Name</label>
+                        <input type="text" value="" class="permission-input">
+                    </div>`;
+                permissionsContainer.append(newRow);
             }
-        });
 
-        if (permissions.length === 0) {
-            alert('Please add at least one permission.');
-            return;
+            $('#modal').css('display', 'flex').hide().fadeIn(300);
+        },
+        error: function (error) {
+            console.error('Error fetching permissions:', error);
+            alert('An error occurred. Please try again.');
         }
-
-    
-        console.log({
-            permissions: permissions,
-            module_id: moduleId,
-            guard_name: guardName
-        });
-
-       
-        $.ajax({
-            url: '{{ route('savePermissions') }}', 
-            type: 'POST',
-            data: {
-                permissions: permissions,
-                module_id: moduleId,
-                guard_name: guardName,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                console.log(response); 
-                if (response.success) {
-                    alert('Permissions saved successfully!');
-                    $('#modal').fadeOut(); 
-                } else {
-                    alert('There was an error saving the permissions.');
-                }
-            },
-            error: function (error) {
-                console.error('Error saving permissions:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
     });
 });
 
-</script>
 
+        $('#closeModal').on('click', function () {
+            $('#modal').fadeOut(300, function () {
+                $('#modal').css('display', 'none');
+            });
+        });
+
+        $('#AddMore').on('click', function () {
+            const newRow = `
+                <div class="input-row">
+                    <label>Permission Name</label>
+                    <input type="text" value="">
+                </div>`;
+            $('.input-container').append(newRow);  
+        });
+
+        $('#savePermissions').on('click', function () {
+            var moduleid = $(this).data('module-id');
+            let permissions = [];
+            let moduleId = moduleid;
+            let guardName = 'web';
+
+            $('.input-container .input-row').each(function () {
+                const permissionName = $(this).find('input').val().trim();
+                const permissionId = $(this).find('input').data('permission-id') || null; 
+                if (permissionName) {
+                    permissions.push({
+                        id: permissionId,
+                        name: permissionName
+                    });
+                }
+            });
+
+            if (permissions.length === 0) {
+                alert('Please add at least one permission.');
+                return;
+            }
+
+            console.log({
+                permissions: permissions,
+                module_id: moduleId,
+                guard_name: guardName
+            });
+
+            $.ajax({
+                url: '/storepermission',
+                type: 'POST',
+                data: {
+                    permissions: permissions,
+                    module_id: moduleId,
+                    guard_name: guardName,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success === true) {
+                        alert('Permissions saved successfully.');
+                        $('#modal').fadeOut(300, function () {
+                            $('#modal').css('display', 'none');
+                        });
+                        table.ajax.reload(); 
+                    } else {
+                        alert('Failed to save permissions.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while saving permissions.');
+                }
+            });
+        });
+        $(document).ready(function () {
+    // Existing setup code here...
+
+    // Handle delete functionality for permissions
+    $('.input-container').on('click', '.delete-permission', function () {
+        const permissionId = $(this).data('permission-id');
+
+        if (!permissionId) {
+            alert('This permission has not been saved yet and cannot be deleted.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete this permission?')) {
+            $.ajax({
+                url: '{{ route('deletePermission') }}', // Backend route to handle permission deletion
+                type: 'POST',
+                data: {
+                    permission_id: permissionId,
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                success: function (response) {
+                    if (response.success === true) {
+                        alert('Permission deleted successfully.');
+                        // Remove the row from the DOM
+                        $(`.delete-permission[data-permission-id="${permissionId}"]`).closest('.input-row').remove();
+                    } else {
+                        alert('Failed to delete permission.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while deleting the permission.');
+                },
+            });
+        }
+    });
+
+    // Existing modal and save functionality code here...
+});
+
+    });
+</script>
 @endsection

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/blog.css') }}">
     <link rel="stylesheet" href="{{ asset('bootstrap-5.3.3-dist/css/bootstrap.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
         .headerimg {
@@ -251,7 +252,7 @@
                     @if(auth()->user()->hasRole('Admin'))
                     {{-- <a href="{{ route('updateprofile') }}">Update Profile</a> --}}
                     <a class="nav-link" href="{{ route('users.index') }}">Manage Users</a>
-                    <a class="nav-link" href="{{ route('roles.index') }}">Manage Role</a>
+                    
                     @endif
                     @endauth
                 </div>
@@ -267,6 +268,7 @@
                     <a href="{{ route('BlogCat') }}">Blog-Categories</a>
                 </div>
                 
+                
                 @endif
                 @if(auth()->user()->hasRole(['News-team','Admin']))
                 <button class="dropdown-btn">
@@ -278,9 +280,21 @@
                     <a href="{{ route('NewsCat') }}">News-Categories</a>
                 </div>
                 @endif
-                <a href="{{ route('Modules') }}">Modules</a>
+
+                <button class="dropdown-btn">
+                    Setting
+                    <span class="dropdown-icon" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-container">
+                    <a href="{{ route('Modules') }}">Modules</a>
+                    <a href="{{ route('Company') }}">Company Profile</a>
+                    @if(auth()->user()->hasRole(['Admin']))
+                    <a class="nav-link" href="{{ route('roles.index') }}">Manage Role</a>
+                    @endif
+                </div>
+                
                 <a href="{{ route('Pages') }}">Pages</a>
-                <a href="{{ route('Company') }}">Company Profile</a>
+                
                 <a class="dropdown-item" href="{{ route('logout') }}"
                                            onclick="event.preventDefault();
                                                          document.getElementById('logout-form').submit();">

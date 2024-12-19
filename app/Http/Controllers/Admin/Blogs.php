@@ -14,34 +14,49 @@ class Blogs extends Controller
 {
     public function addblogdata(Request $request)
 {
-    $user = Auth::user();
-
-    if (!$user) {
+    $userdata = \Illuminate\Support\Facades\Auth::user();
+    
+    if (!$userdata) {
         return redirect()->route('login')->withErrors('Please login to add a blog');
     }
 
+    // Validate the incoming request
     $request->validate([
         'author_name' => 'required|string|max:255',
         'title' => 'required|string|max:255',
-        'image' => 'required',
+        'image' => 'required|image|max:2048', // Added image validation (e.g., size limit, type)
         'content' => 'required|string',
         'category' => 'required|string',
     ]);
 
     $imagePath = null;
     if ($request->hasFile('image')) {
+        // Handle the image upload
         $image = $request->file('image');
         $imageName = time() . '_' . $image->getClientOriginalName();
         $imagePath = 'images/' . $imageName;
         $image->move(public_path('images'), $imageName);
     }
 
+    // Generate a unique slug based on the title
     $slug = Str::slug($request->input('title'));
     $existingSlugCount = Blog::where('slug', $slug)->count();
     if ($existingSlugCount > 0) {
-        $slug = $slug . '-' . time();
+        $slug = $slug . '-' . time(); // If slug exists, append timestamp to make it unique
     }
-
+    print_r($userdata->id);
+    // Insert the blog data
+    // $data = [
+    //     'authorname' => $request->input('author_name'),
+    //     'title' => $request->input('title'),
+    //     'image' => $imagePath,
+    //     'description' => $request->input('content'),
+    //     'category' => $request->input('category'),
+    //     'slug' => $slug,
+    //     'user_id' => $userdata->id,
+    // ];
+    
+    // dd($data);
     Blog::create([
         'authorname' => $request->input('author_name'),
         'title' => $request->input('title'),
@@ -49,11 +64,14 @@ class Blogs extends Controller
         'description' => $request->input('content'),
         'category' => $request->input('category'),
         'slug' => $slug,
-        'userid' => $user->id,  // Store the user ID here
+        'user_id' => $userdata->id,  
     ]);
 
-    return redirect()->route('Blog')->with('success', 'User updated successfully!');
+    // dd(\DB::getQueryLog());
+
+    return redirect()->route('Blog')->with('success', 'Blog added successfully!');
 }
+
 
 
 
