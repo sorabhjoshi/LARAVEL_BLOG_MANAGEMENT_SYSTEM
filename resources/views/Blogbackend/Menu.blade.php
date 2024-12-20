@@ -1,137 +1,160 @@
 @extends('Blogbackend.components.layout')
+
+@section('title', 'Menulist')
+
 @section('content')
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script src="/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="{{ asset('css/blog.css') }}">
+
+<div class="news-container">
+    <h1 class="news-heading">Menu List</h1>
+    <p>
+        <a href="{{ route('addmenutable') }}" class="news-link">Add Menu</a>
+    </p>
+</div>
+
+<div class="table-container">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <table id="blogTable" class="animated-table">
+        <thead>
+            <tr>
+                <th>S no</th>
+                <th>Category</th>
+                <th>Permission</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Add Menu</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@endsection
+
+@section('js')
+<!-- Load DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<!-- Initialize DataTables -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Ensure that the CSRF token is correctly included
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Initialize DataTable after the page is ready
+    $('#blogTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('menudatatable') }}',
+            type: 'POST',
+        },
+        pageLength: 5,
+        columns: [
+            {
+                data: null, // This column is for the auto-incrementing number
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + 1 + meta.settings._iDisplayStart; // Calculate row number
+                }
+            },
+            { data: 'category', name: 'category' },
+            { data: 'permission', name: 'permission' },
+            { data: 'edit', orderable: false, searchable: false },
+            { data: 'delete', orderable: false, searchable: false },
+            { data: 'addmenu', orderable: false, searchable: false }
+        ],
+    });
+});
+</script>
+@endsection
+
 <style>
-    .card .card-header + .card-body, .card .card-header + .card-content > .card-body:first-of-type {
-    padding-top: 0;
-    margin-left: -135px;
-    width: 118%;
+    /* Styling for the container */
+.news-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.news-heading {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Styling for the "Add Menu" link */
+.news-link {
+    font-size: 1.2rem;
+    color: #007bff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.news-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Styling for the table */
+.table-container {
+    margin-top: 20px;
+}
+
+.animated-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.animated-table th, .animated-table td {
+    text-align: left;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.animated-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.animated-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.animated-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.animated-table td {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Add a custom style to the DataTables pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #007bff;
+    color: white;
 }
 </style>
-<div class="container">
-<ul id="myEditor" class="sortableLists list-group" style="width:38%; margin-top:-30px;">
-</ul>
-<?php
-
-$id = $finalmenu_output['id'];
-
-$finalmenu_output = json_decode($finalmenu_output['json_output'] ,true);
-
-?>
-<div class="card border-primary mb-3"  style="margin-top:-30%;">
-    <div class="card-header bg-primary text-white">Edit item</div>
-
-        <div class="card-body">
-       <!-- start  -->
-       <form id="frmEdit" class="form-horizontal">
-        <div class="form-group">
-        <label for="text">Text</label>
-        <div class="input-group">
-        <input type="text" class="form-control item-menu" name="text" id="text" placeholder="Text">
-        <div class="input-group-append">
-        <button type="button" id="myEditor_icon" class="btn btn-outline-secondary"></button>
-        </div>
-        </div>
-        <input type="hidden" name="icon" class="item-menu">
-        </div>
-        <div class="form-group">
-        <label for="href">URL</label>
-        <input type="text" class="form-control item-menu" id="href" name="href" placeholder="URL">
-        </div>
-        <div class="form-group">
-        <label for="target">Target</label>
-        <select name="target" id="target" class="form-control item-menu">
-        <option value="_self">Self</option>
-        <option value="_blank">Blank</option>
-        <option value="_top">Top</option>
-        </select>
-        </div>
-        <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" name="title" class="form-control item-menu" id="title" placeholder="Title">
-        </div>
-        <div class="form-group">
-        <label for="title">Permission </label>
-        <input type="text" name="Permission" class="form-control item-menu" id="Permission" placeholder="Permission">
-        </div>
-        <div class="card-footer">
-        <button type="button" id="btnUpdate" class="btn btn-primary" disabled><i class="fas fa-sync-alt"></i> Update</button>
-        <button type="button" id="btnAdd" class="btn btn-success"><i class="fas fa-plus"></i> Add</button>
-    </div>
-        </form>
-        </div>
-
-        </div>
-</div>
-
-
-</div>
-<div class="output-section" style="margin-top:-24%; margin-left:-11px">
-            
-            <form action="/updatejsondata" method="POST" class="json-form" style=" margin-left: 84px;
-                width: 45%;
-                margin-top: 249px;
-            ">
-                @csrf<h3>Generated Menu JSON</h3>
-            <button type="button" id="outputbtn" class="btn btn-success">Output </button><br><br>
-            <!-- <button type="button" id="remove" class="btn btn-danger">remove </button> -->
-            <br><br>
-            <textarea id="myTextarea" class="form-control" rows="8" name="json_output"  required></textarea>
-            <input type="hidden" name="id" value="<?php echo $id ;?>">
-            <input type="submit" value="save"class="btn btn-primary">
-            </form>
-        </div>
-@endsection
-@section('js')
-
- <script>
-  var iconPickerOptions = { searchText: "Buscar...", labelHeader: "{0}/{1}" };
-  var sortableListOptions = {
-      placeholderCss: { 'background-color': "#cccccc" }
-  };
-
-  var arrayjson = <?php echo json_encode($finalmenu_output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>;
-
-  var editor = new MenuEditor('myEditor', {
-      listOptions: sortableListOptions,
-      iconPicker: iconPickerOptions,
-      maxLevel: 2,
-      formOptions: {
-          icon: 'input[name="icon"]',  
-          text: '#text',
-          href: '#href',
-          target: '#target',
-          title: '#title'
-      }
-  });
-
-  editor.setForm($('#frmEdit'));
-  editor.setUpdateButton($('#btnUpdate'));
-  editor.setData(arrayjson);
-
-  // Update item
-  $("#btnUpdate").click(function () {
-      editor.update();
-  });
-
-  // Add item
-  $('#btnAdd').click(function () {
-      editor.add();
-  });
-
-  // Output menu as a string
-  $("#outputbtn").click(function () {
-      var str = editor.getString();
-      $("#myTextarea").text(str);
-  });
-
-  // Initialize Icon Picker
-  $('#myEditor_icon').iconpicker({
-      placement: 'bottomLeft',
-      animation: true
-  }).on('iconpickerSelected', function (event) {
-      $('input[name="icon"]').val(event.iconpickerValue);
-  });
-</script>
-
-
-@endsection

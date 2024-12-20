@@ -3,7 +3,10 @@
 return [
 'aliases' => [
     // ...
+    'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+
     'Auth' => Illuminate\Support\Facades\Auth::class,
+    'Str' => Illuminate\Support\Str::class,
 ],
     /*
     |--------------------------------------------------------------------------
@@ -122,6 +125,7 @@ return [
     */
 
     'maintenance' => [
+        
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],

@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ContactFormMail extends Mailable
+class mailer extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -14,6 +14,8 @@ class ContactFormMail extends Mailable
 
     /**
      * Create a new message instance.
+     *
+     * @return void
      */
     public function __construct($data)
     {
@@ -22,11 +24,13 @@ class ContactFormMail extends Mailable
 
     /**
      * Build the message.
+     *
+     * @return $this
      */
     public function build()
     {
-        return $this->subject($this->data['subject'])
-                    ->view('emails.contact')
+        return $this->subject('New Contact Form Submission')
+                    ->view('Frontend.contact-form')
                     ->with('data', $this->data);
     }
 }

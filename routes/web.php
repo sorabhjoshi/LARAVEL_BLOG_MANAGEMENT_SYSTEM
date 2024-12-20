@@ -1,6 +1,8 @@
 <?php
 
-  use Illuminate\Support\Facades\Route;
+  use App\Http\Controllers\mailcontroller;
+use App\Http\Controllers\Admin\Menulist;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
 use App\Http\Controllers\MenuController;
@@ -8,7 +10,7 @@ use App\Http\Controllers\Admin\Datatable;
 use App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Admin\Newsarticle;
 use App\Http\Controllers\Admin\Register;
-use App\Http\Controllers\ContactController;
+// use App\Http\Controllers\ContactController;
 
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
@@ -19,7 +21,9 @@ use App\Models\Admin\Pages;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
-   
+Route::post('/contact', [mailcontroller::class, 'sendContactForm'])->name('contact.send');
+Route::get('/contact', [mailcontroller::class, 'sendContactForm'])->name('contact.send');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -35,11 +39,14 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class)->middleware('role:Admin');
     Route::resource('users', UserController::class)->middleware('role:Admin');
     Route::resource('products', ProductController::class)->middleware('role:Admin|Manager');
-
-    Route::get('/Dashboard', [Blogs::class, 'dashboard'])->name('home');
+    
+   
+    Route::get('Admin/Dashboard', [Blogs::class, 'dashboard'])->name('home');
     Route::get('/Admin/Myprofile', [Register::class, 'myprofile'])->name('Myprofile');
 
     // Delete routes
+
+Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.menu');
     Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser'])->middleware('role:Admin');
     Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog'])->middleware('role:Admin|Blog-team');
     Route::get('/DeleteNews/{id}', [Newsarticle::class, 'deletenews'])->middleware('role:Admin|News-team');
@@ -50,6 +57,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('Admin/Modules/DeleteModule/{id}', [Modules::class, 'DeleteModule'])->middleware('role:Admin');
 
     // Add routes
+    
+    Route::get('Admin/Menu/Addmenu/{id}', [Menulist::class, 'Addmenubar'])->name('Addmenu')->middleware('role:Admin');
+    Route::post('Admin/addmenutabledata', [Menulist::class, 'store'])->name('addmenutabledata')->middleware('role:Admin');
+    Route::view('/Addmenutable', 'Blogbackend.Utils.Addmenutable')->name('addmenutable')->middleware('role:Admin');
     Route::get('Admin/Addmodule', [Modules::class, 'Addmodule'])->name('addmodule')->middleware('role:Admin');
     Route::view('/AddCompany', 'Blogbackend.Utils.AddCompany')->name('AddCompany')->middleware('role:Admin');
     Route::view('Admin/Pages/AddPage', 'Blogbackend.Utils.AddPage')->name('addpages')->middleware('role:Admin');
@@ -61,6 +72,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
+    Route::put('/updatemenu/{id}', [Menulist::class, 'update'])->name('updatemenu');
+    Route::post('/updatejsondata', [Menulist::class, 'updatejsondata']);
+    Route::get('/Editmenutable/{id}', [Menulist::class, 'edit'])->middleware('role:Admin');
     Route::get('Admin/Modules/EditModule/{id}', [Modules::class, 'editmodule'])->name('editmodule')->middleware('role:Admin');
     Route::get('Modules/AddPermissions/{id}', 'ModulesController@addPermissions')->name('addpermissions')->middleware('role:Admin');
     Route::get('/Editcompany/{id}', [companydatas::class, 'editcompany'])->middleware('role:Admin');
@@ -83,6 +97,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('Admin/modulesstore', [Modules::class, 'store'])->name('modulesstore')->middleware('role:Admin');
     Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit')->middleware('role:Admin');
     // Ajax routes
+    
+    
+    Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
     Route::post('/deleteAddress', [Datatable::class, 'deleteAddress']);
@@ -108,6 +125,10 @@ Route::group(['middleware' => ['auth']], function() {
         return view('Blogbackend.Modules');
     })->name('Modules');
 
+    Route::get('Admin/Menulist', function(){
+        return view('Blogbackend.Menu');
+    })->name('menulist');
+
     Route::get('/Admin/Users', function () {
         return view('Blogbackend.Users');
     })->name('Users');
@@ -118,7 +139,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/Admin/BlogCat', function () {
         return view('Blogbackend.BlogCat');
-    })->name('BlogCat')->middleware('role:Admin|Blog-team');
+    })->name('Blogscat')->middleware('role:Admin|Blog-team');
 
     Route::get('/Admin/News', function () {
         return view('Blogbackend.News');
@@ -126,11 +147,11 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/Admin/NewsCat', function () {
         return view('Blogbackend.NewsCat');
-    })->name('NewsCat')->middleware('role:Admin|News-team');
+    })->name('Newscat')->middleware('role:Admin|News-team');
 
     Route::get('/Admin/Pages', function () {
         return view('Blogbackend.Pages');
-    })->name('Pages');
+    })->name('Page');
 
     Route::get('/Admin/Company', function () {
         return view('Blogbackend.CompanyProfile');
@@ -163,7 +184,7 @@ Route::get('/About', function () {
 Route::get('/ContactUs', function () {
     return view('Frontend.Contact');
 })->name('Contact');
-Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
 Route::get('/News', [Newsfront::class, 'shownews'])->name('News');
 
 Route::get('/Blogs', [blogfront::class, 'showblog'])->name('Blogs');
@@ -175,6 +196,7 @@ Route::get('Blog/{article}', [blogfront::class, 'showsingleblog']);
 Route::get('Blog/Category/{article}', [blogfront::class, 'showcategory']);
 
 Route::get('News/Category/{article}', [Newsfront::class, 'showcategory']);
+
 
 Route::get('/Page/{pages}', [Pages::class, 'showpage']);
 

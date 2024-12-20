@@ -7,6 +7,7 @@ use App\Models\Admin\Modules;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
 use App\Models\Admin\permissions;
+use App\Models\Menu;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
@@ -17,6 +18,38 @@ use App\Models\Admin\Register_model;
 
 class Datatable extends Controller
 {
+    
+    public function menudatatable(Request $request)
+{
+    try {
+        $query = Menu::select('id', 'category', 'permission');
+
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        return DataTables::of($query)
+            ->addColumn('edit', function ($row) {
+                return '<a href="/Editmenutable/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';
+            })
+            ->addColumn('delete', function ($row) {
+                return '<a href="/Deletemenutable/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+            })
+            ->addColumn('addmenu', function ($row) {
+                return '<a href="Menu/Addmenu/' . $row->id . '" id="permissionsbtn" class="btn btn-sm primary-btn"><i class="fas fa-key"></a>';
+            })
+            ->rawColumns(['edit', 'delete','addmenu'])
+            ->make(true);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+}
+
     public function getUsersAjax(Request $request)
     {
         try {

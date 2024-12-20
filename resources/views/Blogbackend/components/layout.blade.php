@@ -6,7 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Default Title')</title>
-
+    
+    <script src="<?php echo asset('js/jquery.js');?>"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+<script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.js');?>"></script>
+<script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.min.js');?>"></script>
     <!-- Fonts and Styles -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
@@ -15,7 +23,32 @@
     <link rel="stylesheet" href="{{ asset('css/blog.css') }}">
     <link rel="stylesheet" href="{{ asset('bootstrap-5.3.3-dist/css/bootstrap.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
+    <script src="<?php echo asset('js/jquery.js');?>"></script>
+    <script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.js');?>"></script>
+    <script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.min.js');?>"></script>
+    <script src="<?php echo asset('js/bootstrap.js');?>"></script>
+    <script src="<?php echo asset('js/menu.js');?>"></script>
+    <script src="<?php echo asset('js/popper.js');?>"></script>
+    <script src="<?php echo asset('js/perfect-scrollbar.js');?>"></script>
+    <script src="<?php echo asset('js/apexcharts.js');?>"></script>
+    <script src="<?php echo asset('js/perfect-scrollbar.js');?>"></script>
+    <script src="<?php echo asset('js/config.js');?>"></script>
+    <script src="<?php echo asset('js/menu.js');?>"></script>
+    <script src="<?php echo asset('js/dashboards-analytics.js');?>"></script>
+    <script src="<?php echo asset('js/helpers.js');?>"></script>
+    <script src="<?php echo asset('js/main.js');?>"></script>
+    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <script src="<?php echo asset('bootstrap-iconpicker/js/iconset/fontawesome5-3-1.min.js'); ?>"></script>
+    <script src="<?php echo asset('bootstrap-iconpicker/js/bootstrap-iconpicker.min.js');?>"></script>
+    <script src="<?php echo asset('bootstrap-iconpicker/js/jquery-menu-editor.min.js');?>"></script>
+    <script src="/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/iconset/fontawesome5-3-1.min.js"></script>
+    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
+    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
     <style>
         .headerimg {
             align-items: center;
@@ -230,7 +263,108 @@
             flex-direction: row !important;
             padding-bottom: 10px;
         }
+    
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2d3e50;
+            color: white;
+            height: 100%;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            transition: transform 0.3s ease-in-out;
+        }
+    
+        .sidebar-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px;
+        }
+    
+        .menu {
+            list-style-type: none;
+            padding: 0;
+        }
+    
+        .menu-item {
+            padding: 10px;
+        }
+    
+        .menu-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #4b5c70;
+        }
+    
+        .menu-link:hover {
+            background-color: #4b5c70;
+            transform: translateX(5px);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+        }
+    
+        .dropdown-icon {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid white;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+    
+        .menu-item.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+    
+        .menu-sub {
+            display: none;
+            background-color: #3a4b60;
+            padding-left: 16px;
+        }
+        nav-link{
+            text-decoration: none;
+            list-style: none;
+        }
+        .menu-item.active > .menu-sub {
+            display: block;
+        }
+    
+        .menu-sub .menu-item {
+            padding-left: 30px;
+            transition: background-color 0.3s ease;
+        }
+    
+        .menu-sub .menu-item:hover {
+            background-color: #4b5c70;
+        }
+    
+        /* Sidebar responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+    
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
     </style>
+    
+    <!-- JavaScript for Sidebar Dropdown Toggle -->
+   
 </head>
 
 <body>
@@ -238,68 +372,43 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-content">
-                <a class="headerimg" href="{{ route('home') }}">
-                    <img src="https://www.absglobaltravel.com/public/images/footer-abs-logo.webp" alt="Profile Picture">
-                </a>
-
-                <button class="dropdown-btn">
-                    My Account
-                    <span class="dropdown-icon" aria-hidden="true"></span>
-                </button>
-                <div class="dropdown-container">
-                    <a class="nav-link" href="{{ route('Myprofile') }}">My Profile</a>
-                    @auth
-                    @if(auth()->user()->hasRole('Admin'))
-                    {{-- <a href="{{ route('updateprofile') }}">Update Profile</a> --}}
-                    <a class="nav-link" href="{{ route('users.index') }}">Manage Users</a>
-                    
-                    @endif
-                    @endauth
-                </div>
-                @if(auth()->user()->hasRole(['Blogs-team','Admin']))
-
-
-                <button class="dropdown-btn">
-                    Blogs
-                    <span class="dropdown-icon" aria-hidden="true"></span>
-                </button>
-                <div class="dropdown-container">
-                    <a href="{{ route('Blog') }}">Blog</a>
-                    <a href="{{ route('BlogCat') }}">Blog-Categories</a>
-                </div>
-                
-                
-                @endif
-                @if(auth()->user()->hasRole(['News-team','Admin']))
-                <button class="dropdown-btn">
-                    News
-                    <span class="dropdown-icon" aria-hidden="true"></span>
-                </button>
-                <div class="dropdown-container">
-                    <a href="{{ route('Newsarticle') }}">News</a>
-                    <a href="{{ route('NewsCat') }}">News-Categories</a>
-                </div>
-                @endif
-
-                <button class="dropdown-btn">
-                    Setting
-                    <span class="dropdown-icon" aria-hidden="true"></span>
-                </button>
-                <div class="dropdown-container">
-                    <a href="{{ route('Modules') }}">Modules</a>
-                    <a href="{{ route('Company') }}">Company Profile</a>
-                    @if(auth()->user()->hasRole(['Admin']))
-                    <a class="nav-link" href="{{ route('roles.index') }}">Manage Role</a>
-                    @endif
-                </div>
-                
-                <a href="{{ route('Pages') }}">Pages</a>
-                
-                <a class="dropdown-item" href="{{ route('logout') }}"
-                                           onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
-                                            {{ __('Logout') }}
-                                        </a>
+                <ul class="menu">
+                    @foreach($menu->json_output as $item)
+                        <li class="menu-item">
+                            <a href="{{ $item['href'] ? route($item['href']) : 'javascript:void(0);' }}" class="menu-link menu-toggle">
+                                <i class="menu-icon {{ $item['icon'] ?? 'fas fa-circle' }}"></i>
+                                <div data-i18n="{{ $item['title'] ?? '' }}">{{ $item['text'] }}</div>
+                                @if(!empty($item['children']))
+                                    <span class="dropdown-icon"></span> <!-- Icon for dropdown toggle -->
+                                @endif
+                            </a>
+                            @if(!empty($item['children']))
+                                <ul class="menu-sub">
+                                    @foreach($item['children'] as $child)
+                                        <li class="menu-item">
+                                            <a href="{{ $child['href'] ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link">
+                                                <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>
+                                                <div data-i18n="{{ $child['title'] ?? '' }}">{{ $child['text'] }}</div>
+                                            </a>
+                                            @if(!empty($child['children']))
+                                                <ul class="menu-sub">
+                                                    @foreach($child['children'] as $subChild)
+                                                        <li class="menu-item">
+                                                            <a href="{{ $subChild['href'] ? route($subChild['href']) : 'javascript:void(0);' }}" class="menu-link">
+                                                                <i class="menu-icon {{ $subChild['icon'] ?? 'fas fa-circle' }}"></i>
+                                                                <div data-i18n="{{ $subChild['title'] ?? '' }}">{{ $subChild['text'] }}</div>
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>                     
             </div>
         </aside>
 
@@ -355,6 +464,7 @@
             </main>
         </div>
     </div>
+
     @yield('js')
     <script>
         function toggleNavbar() {
@@ -386,12 +496,19 @@
             var sidebar = document.querySelector('.sidebar');
             menuToggle.addEventListener('click', function () {
                 sidebar.classList.toggle('active');
-            });
+            }); 
         });
     </script>
-
-    <script src="/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-
+    
 </body>
-
+<script>
+    // Toggle the dropdown menu
+    document.querySelectorAll('.menu-toggle').forEach(function (toggle) {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            let parentMenuItem = toggle.closest('.menu-item');
+            parentMenuItem.classList.toggle('active');
+        });
+    });
+</script>
 </html>

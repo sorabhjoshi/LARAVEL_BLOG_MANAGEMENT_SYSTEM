@@ -4,26 +4,32 @@
 @section('content2')
 <main>
     <h1 class="contact-title">Contact Us</h1>
+    {{-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> --}}
 
    
 
     <div class="form-container">
-        <form method="POST" action="{{ route('contact.send') }}" class="contact-form">
+        <form action="{{ route('contact.send') }}" method="POST">
             @csrf
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required placeholder="Enter your name">
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email">
-
-            <label for="subject">Subject:</label>
-            <input type="text" id="subject" name="subject" required placeholder="Subject">
-
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="3" required placeholder="Your message"></textarea>
-
-            <button type="submit" class="submit-btn">Send</button>
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" >
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" >
+            </div>
+            <div>
+                <label for="message">Message</label>
+                <textarea id="message" name="message" ></textarea>
+            </div>
+            <button type="submit">Send</button>
         </form>
+        
+        @if(session('success'))
+            <p>{{ session('success') }}</p>
+        @endif
+        
     </div>
 </main>
 @endsection
