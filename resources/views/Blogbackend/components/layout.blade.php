@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/blog.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/blog.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('bootstrap-5.3.3-dist/css/bootstrap.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -50,320 +50,284 @@
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
     <style>
-        .headerimg {
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            text-align: center;
-            transition: none;
-            border: none;
-        }
-
-        .headerimg:hover {
-            background-color: none !important;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .headerimg img {
-            width: 150px;
-            height: 30px;
-            margin: auto;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            color: #333;
-            background-color: #f4f4f4;
-        }
-        .container{
-            width: 98% !important;
-        }
-        .dashboard-container {
-            display: flex;
-            height: 100%;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #2d3e50;
-            color: white;
-            height: 100%;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease-in-out;
-            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px;
-        }
-
-        .dropdown-container {
-            display: none;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-btn.active + .dropdown-container {
-            display: block;
-        }
-
-        .sidebar a, .sidebar .dropdown-btn {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            padding: 16px;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            background-color: transparent;
-            text-align: left;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #4b5c70;
-        }
-
-        .sidebar a:hover, .sidebar .dropdown-btn:hover {
-            background-color: #4b5c70;
-            transform: translateX(5px);
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .sidebar a.active, .sidebar .dropdown-btn.active {
-            background-color: #1c2a38;
-        }
-
-        .dropdown-container {
-            display: none;
-            background-color: #3a4b60;
-            padding-left: 8px;
-            margin: 5px;
-        }
-
-        .dropdown-container a {
-            padding: 12px 16px 12px 24px;
-            transition: background-color 0.3s ease;
-        }
-
-        .dropdown-container a:hover {
-            background-color: #4b5c70;
-        }
-
-        .dropdown-icon {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid white;
-            display: inline-block;
-            margin-left: 5px;
-            transition: transform 0.3s;
-        }
-
-        .dropdown-btn.active .dropdown-icon {
-            transform: rotate(180deg);
-        }
-
-        .main-content {
-            margin-left: 250px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 120vh;
-        }
-
-        .navbar {
-            background-color: #ffffff;
-            padding: 10px 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-nav {
-            display: flex;
-            list-style-type: none;
-            /* margin: 10px; */
-            padding: 0;
-        }
-
-        .navbar-nav li {
-            margin-left: 20px;
-        }
-
-        .navbar-nav a {
-            text-decoration: none;
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .navbar-nav a:hover {
-            background-color: #e9ecef;
-        }
-
-        .content {
-            padding: 0 20px 0 20px;
-            height: 100%;
-            flex-grow: 1;
-        }
-        .overview-section{
-            padding: 20px;
-        }
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        .logout:hover {
-            background-color: #b84b4b !important;
-            color: white;
-        }
-
-        .logout {
-            border: none !important;
-        }
-
-        .navbar-nav {
-            display: flex !important;
-            flex-direction: row !important;
-            padding-bottom: 10px;
-        }
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    color: #333;
+    background-color: #f4f4f4;
+}
+#myEditor li{
+    padding: 10px !important;
     
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background-color: #2d3e50;
-            color: white;
-            height: 100%;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
-            padding-top: 20px;
-            transition: transform 0.3s ease-in-out;
-        }
+}
+#myEditor{
+    margin: auto;
+}
+.card{
+    width: 400px !important;
+    margin: auto;
+}
+.container {
+    width: 98% !important;
     
-        .sidebar-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px;
-        }
-    
-        .menu {
-            list-style-type: none;
-            padding: 0;
-        }
-    
-        .menu-item {
-            padding: 10px;
-        }
-    
-        .menu-link {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #4b5c70;
-        }
-    
-        .menu-link:hover {
-            background-color: #4b5c70;
-            transform: translateX(5px);
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-        }
-    
-        .dropdown-icon {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid white;
-            display: inline-block;
-            transition: transform 0.3s ease;
-        }
-    
-        .menu-item.active .dropdown-icon {
-            transform: rotate(180deg);
-        }
-    
-        .menu-sub {
-            display: none;
-            background-color: #3a4b60;
-            padding-left: 16px;
-        }
-        nav-link{
-            text-decoration: none;
-            list-style: none;
-        }
-        .menu-item.active > .menu-sub {
-            display: block;
-        }
-    
-        .menu-sub .menu-item {
-            padding-left: 30px;
-            transition: background-color 0.3s ease;
-        }
-    
-        .menu-sub .menu-item:hover {
-            background-color: #4b5c70;
-        }
-    
-        /* Sidebar responsiveness */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-    
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
+}
+.output-section{
+    width: 700px !important;
+    margin: auto;
+}
+/* .img {
+width: 250px;
+box-sizing: border-box;
+overflow: hidden;
+padding: 10px;
+border-bottom: 1px solid #4b5c70;
+}
+.img img{
+    width: 222px;
+    cursor: pointer;
+
+} */
+/* Header Image */
+.headerimg {
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+    transition: none;
+    border: none;
+}
+
+.headerimg:hover {
+    background-color: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.headerimg img {
+    width: 150px;
+    height: 28px;
+    margin: auto;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    height: 100%;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #2d3e50;
+    color: white;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto; 
+}
+
+.sidebar-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+}
+
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-item {
+    list-style: none;
+}
+
+.menu-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #4b5c70;
+}
+
+.menu-link:hover {
+    background-color: #4b5c70;
+    transform: translateX(5px);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.menu-item.active .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.menu-sub {
+    display: none;
+    background-color: #3a4b60;
+    padding-left: 16px;
+}
+
+.menu-item.active > .menu-sub {
+    display: block;
+}
+
+.menu-sub .menu-item {
+    transition: background-color 0.3s ease;
+}
+
+.menu-sub .menu-item:hover {
+    background-color: #4b5c70;
+}
+
+.dropdown-icon {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 120vh;
+}
+
+.content {
+    padding: 0 20px 0 20px;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.overview-section {
+    padding: 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #ffffff;
+    /* padding: 10px 20px; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style-type: none;
+    /* padding: 0; */
+}
+
+.navbar-nav li {
+    margin-left: 20px;
+}
+
+.navbar-nav a {
+    text-decoration: none;
+    color: #333;
+    /* padding: 10px 15px; */
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.navbar-nav a:hover {
+    background-color: #e9ecef;
+}
+
+.logout {
+    border: none !important;
+}
+
+.logout:hover {
+    background-color: #b84b4b !important;
+    color: white;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+}
+
+/* Additional Sidebar Styles */
+.dropdown-btn.active + .dropdown-container {
+    display: block;
+}
+
+.dropdown-container {
+    display: none;
+    background-color: #3a4b60;
+    padding-left: 8px;
+    margin: 5px;
+}
+
+.dropdown-container a {
+    padding: 12px 16px 12px 24px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-container a:hover {
+    background-color: #4b5c70;
+}
+
+.dropdown-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    text-align: left;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #4b5c70;
+}
+
+.dropdown-btn.active {
+    background-color: #1c2a38;
+}
+.popover{
+    display: flex; /* Ensures Flexbox behavior */
+    justify-content: flex-end; /* Aligns items to the right horizontally */
+    align-items: flex-end; /* Centers items vertically */
+}
     </style>
     
-    <!-- JavaScript for Sidebar Dropdown Toggle -->
    
 </head>
 
@@ -371,6 +335,11 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
+            <div class="img">
+                <a href="{{route('home')}}" class="headerimg">
+                    <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="">
+                </a>
+            </div>
             <div class="sidebar-content">
                 <ul class="menu">
                     @foreach($menu->json_output as $item)
@@ -415,10 +384,10 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm p-0">
                 <div class="container">
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto"> 
+                        <ul class="navbar-nav ms-auto m-0 p-2"> 
                             @guest
                                 @if (Route::has('login'))
                                     <li class="nav-item">

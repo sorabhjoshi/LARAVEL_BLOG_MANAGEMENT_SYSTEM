@@ -48,7 +48,7 @@
 
     <form method="POST" action="/updateprofile">
         @csrf
-        <div class="row gap-3">
+        <div class="row gap-2">
             <div class="col-md-12">
                 <div class="form-group"> 
                     <strong>Name:</strong>

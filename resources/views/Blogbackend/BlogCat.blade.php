@@ -1,27 +1,91 @@
 @extends('Blogbackend.components.layout')
 @section('title', 'Blog Category')
 @section('content')
-<link rel="stylesheet" href='{{asset('css/blog.css')}}'>
+<style>
+    svg {
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+    }
+
+    .pagination-container {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .pagination-container .pagination {
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+    }
+    #search{
+        padding: 6px;
+        border: none;
+        border-radius: 5px;
+    }
+    .pagination-container .pagination li {
+        display: inline;
+        margin: 0 8px;
+    }
+
+    .pagination-container .pagination a,
+    .pagination-container .pagination span {
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination-container .pagination a:hover,
+    .pagination-container .pagination .active {
+        background-color: #0056b3;
+    }
+
+    .pagination-container .pagination .disabled a {
+        background-color: #f4f4f4;
+        color: #ccc;
+    }
+</style>
+<link rel="stylesheet" href='{{ asset('css/blog.css') }}'>
 <div class="container mt-4">
     <div class="addnews">
         <h2>Blogs Category List</h2>
         <div>
-            <a href="{{route('Dashboardfront')}}" class="btn btn-primary me-2">View Site</a>
+            <a href="{{ route('Dashboardfront') }}" class="btn btn-primary me-2">View Site</a>
             <a href="{{ route('AddBlogCat') }}" class="btn btn-success">Add Blog Category</a>
         </div>
     </div>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <table id="user-table" class="user-table">
+
+    <!-- Filter Form -->
+    <form method="GET" action="{{ route('BlogCategoryList') }}">
         <div class="filter-container">
             <h4>Filter</h4>
             <div class="filter">
                 <label for="startDate">Start Date:</label>
-                <input type="date" id="startDate">
+                <input type="date" name="startDate" id="startDate" value="{{ request()->startDate }}">
                 <label for="endDate">End Date:</label>
-                <input type="date" id="endDate">
-                <button id="filterButton">Filter</button>
+                <input type="date" name="endDate" id="endDate" value="{{ request()->endDate }}">
+               
             </div>
+            <div class="search">
+                <label for="search">Search:</label>
+                <select name="search" id="search">
+                    <option value="" disabled {{ request()->search == '' ? 'selected' : '' }}>Search By</option>
+                    <option value="Category" {{ request()->search == 'Category' ? 'selected' : '' }}>Category</option>
+                    <option value="Name" {{ request()->search == 'Name' ? 'selected' : '' }}>Name</option>
+                </select>
+                <input type="text" name="searchValue" id="searchValue" value="{{ request()->searchValue }}">
             </div>
+            <button type="submit" id="filterButton">Filter</button>
+        </div>
+    </form>
+
+    <!-- Table of Blog Categories -->
+    <table id="user-table" class="user-table">
         <thead class="thead-dark">
             <tr>
                 <th>ID</th>
@@ -34,61 +98,30 @@
                 <th>Delete</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            @foreach ($userdata as $item)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->categorytitle .' - '. $item->blogs_count }}</td>
+                <td>{{ $item->seotitle }}</td>
+                <td>{{ $item->metakeywords }}</td>
+                <td>{{ $item->metadescription }}</td>
+                <td>{{ $item->created_at }}</td>
+                <td>
+                    <a href="{{ route('EditBlogCat', $item->id) }}" class="btn btn-warning">Edit</a>
+                </td>
+                <td>
+                    <a href="{{ route('DeleteBlogCat', $item->id) }}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div class="pagination-container">
+        {{ $userdata->appends(request()->query())->links() }}
+    </div>
 </div>
 
-
-
-@endsection
-@section('js')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-       
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        
-        const table = $('#user-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '/getblogcatAjax',
-                type: 'POST',
-                data: function (d) {
-                    d.startDate = $('#startDate').val(); 
-                   d.endDate = $('#endDate').val(); 
-                } 
-            },
-            pageLength: 5, 
-            columns: [
-                {
-                    data: null, 
-                    orderable: false,
-                    searchable: false,
-                    render: function (data, type, row, meta) {
-                        return meta.row + 1 + meta.settings._iDisplayStart; 
-                    }
-                },
-                { data: 'categorytitle', name: 'categorytitle' },
-                { data: 'seotitle', name: 'seotitle' },
-                { data: 'metakeywords', name: 'metakeywords' },
-                { data: 'metadescription', name: 'metadescription' },
-                { data: 'created_at', name: 'created_at' },
-                { data: 'edit', orderable: false, searchable: false },
-                { data: 'delete', orderable: false, searchable: false },
-            ],
-        });
-        $('#filterButton').on('click', function () {
-            table.ajax.reload();
-        });
-    });
-</script>
 @endsection

@@ -4,7 +4,7 @@
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
 <style>
-    .container {
+    .containersss {
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
@@ -104,6 +104,7 @@
         padding: 10px;
         resize: none;
     }
+    
 
     .delete-btn {
         margin-left: 10px;
@@ -111,7 +112,7 @@
     }
 </style>
 
-<div class="container">
+<div class="containersss">
     <ul id="myEditor" class="sortableLists list-group">
     </ul>
 
@@ -169,7 +170,7 @@
             <button type="button" id="outputbtn" class="btn btn-success">Output</button><br><br>
             <textarea id="myTextarea" class="form-control" rows="8" name="json_output" required></textarea>
             <input type="hidden" name="id" value="<?php echo $id; ?>">
-            <input type="submit" value="Save" class="btn btn-primary">
+            <input type="submit" value="Save" id="Save" class="btn btn-primary m-2 width-100">
         </form>
     </div>
 </div>

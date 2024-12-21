@@ -2,6 +2,55 @@
 @section('title', 'Blogs')
 @section('content')
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
+<style>
+    svg {
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+    }
+
+    .pagination-container {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .pagination-container .pagination {
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+    }
+    #search{
+        padding: 6px;
+        border: none;
+        border-radius: 5px;
+    }
+    .pagination-container .pagination li {
+        display: inline;
+        margin: 0 8px;
+    }
+
+    .pagination-container .pagination a,
+    .pagination-container .pagination span {
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+    p{
+        margin-top: 10px;
+    }
+    .pagination-container .pagination a:hover,
+    .pagination-container .pagination .active {
+        background-color: #0056b3;
+    }
+
+    .pagination-container .pagination .disabled a {
+        background-color: #f4f4f4;
+        color: #ccc;
+    }
+</style>
 <div class="container mt-4">
     <div class="addnews">
         <h2>Blogs List</h2>
@@ -14,31 +63,63 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="table-responsive">
         <table id="user-table" class="user-table">
-            <div class="filter-container">
-                <h4>Filter</h4>
-                <div class="filter">
-                    <label for="startDate">Start Date:</label>
-                    <input type="date" id="startDate">
-                    <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate">
-                    <button id="filterButton">Filter</button>
+            <form method="GET" action="{{ route('BlogList') }}">
+                <div class="filter-container">
+                    <h4>Filter</h4>
+                    <div class="filter">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" name="startDate" id="startDate" value="{{ request()->startDate }}">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" name="endDate" id="endDate" value="{{ request()->endDate }}">
+                        
+                    </div>
+                    <div class="search">
+                        <label for="search">Search:</label>
+                        <select name="search" id="search">
+                            <option value="" disabled {{ request()->search == '' ? 'selected' : '' }}>Search By</option>
+                            <option value="Category" {{ request()->search == 'Category' ? 'selected' : '' }}>Category</option>
+                            <option value="Title" {{ request()->search == 'Title' ? 'selected' : '' }}>Title</option>
+                        </select>
+                        <input type="text" name="searchValue" id="searchValue" value="{{ request()->searchValue }}">
+                    </div>
+                    <button type="submit" id="filterButton">Filter</button>
                 </div>
-                </div>
+            </form>
+        
             <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
                     <th>User ID</th>
-                    <th>Email</th>
-                    <th>City</th>
+                    <th>Title</th>
+                    <th>Author Name</th>
                     <th>Category</th>
                     <th>Created At</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+                @foreach ($userdata as $item)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->user_id }}</td>
+                    <td>{{ $item->title }}</td>
+                    <td>{{ $item->authorname }}</td>
+                    <td>{{ $item->categories->categorytitle}}</td>
+                    <td>{{ $item->created_at }}</td>
+                    <td>
+                        <a href="{{ route('EditBlog', $item->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
+                    </td>
+                    <td>
+                        <a href="{{ route('DeleteBlog', $item->id) }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
         </table>
+        <div class="pagination-container">
+            {{ $userdata->appends(request()->query())->links() }}
+        </div>
     </div>
     
 </div>
@@ -51,7 +132,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<script>
+{{-- <script>
     $(document).ready(function () {
        
         $.ajaxSetup({
@@ -96,5 +177,5 @@
             table.ajax.reload();
         });
     });
-</script>
+</script> --}}
 @endsection

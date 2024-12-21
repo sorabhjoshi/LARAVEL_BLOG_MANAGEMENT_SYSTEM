@@ -9,9 +9,9 @@ class Menulist extends Controller
 {
    public function edit($id)
     {
-        $menu = Menu::find($id);
-        if ($menu) {
-            return view('Blogbackend.Utils.Editmenutable', compact('menu'));
+        $edit = Menu::find($id)->toArray();
+        if ($edit) {
+            return view('Blogbackend.Utils.Editmenutable', compact('edit'));
         } else {
             return redirect()->route('menulist')->with('error', 'Menu not found');
         }

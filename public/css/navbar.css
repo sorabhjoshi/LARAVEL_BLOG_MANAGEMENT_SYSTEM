@@ -85,13 +85,12 @@ box-shadow: none !important;
     }
 
     .sidebar a:hover, .sidebar .dropdown-btn:hover {
-        background-color: #4b5c70; 
-        transform: translateX(5px);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+        /* background-color: #4b5c70;  */
+        /* box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); */
     }
 
     .sidebar a.active, .sidebar .dropdown-btn.active {
-        background-color: #1c2a38; 
+        /* background-color: #1c2a38;  */
     }
 
     .dropdown-container {

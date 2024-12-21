@@ -14,26 +14,31 @@ input{
     padding: 3px;
     border-radius: 3px;
 }
-
-.profilecontainer{
-    padding: 20px;
-    height: 60vh;
-    width: 60vw;
-    background-color: antiquewhite;
-    border-radius: 7px;
-    box-shadow:  4px 0 6px rgba(0, 0, 0, 0.1);
+form{
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: left;
-    flex-direction: row;gap: 20px;
-}
-.content{
-    display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    gap: 10px;
+    height: 70vh;
 }
+.profile-container {
+    width: 100%;
+    max-width: 1200px; /* Set a maximum width */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding for better spacing */
+    box-sizing: border-box; /* Include padding in width/height calculation */
+    overflow: hidden; /* Prevent content overflow */
+    background-color: #ffffff; /* Optional: Set background color */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+}
+
+.profile-container .content {
+    overflow-wrap: break-word; /* Ensure long words break to fit */
+    word-wrap: break-word; /* Compatibility for older browsers */
+    max-height: 600px; /* Limit the height of the content */
+    overflow-y: auto; /* Add a vertical scrollbar if needed */
+}
+
 .navbar-nav{
     display: flex;
     flex-direction: row;

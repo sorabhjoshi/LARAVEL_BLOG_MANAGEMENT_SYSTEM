@@ -48,9 +48,9 @@ Route::group(['middleware' => ['auth']], function() {
 
 Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.menu');
     Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser'])->middleware('role:Admin');
-    Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog'])->middleware('role:Admin|Blog-team');
+    Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog'])->name('DeleteBlog')->middleware('role:Admin|Blog-team');
     Route::get('/DeleteNews/{id}', [Newsarticle::class, 'deletenews'])->middleware('role:Admin|News-team');
-    Route::get('/Deleteblogcat/{id}', [Blogs::class, 'deleteblogcat'])->middleware('role:Admin|Blog-team');
+    Route::get('/Deleteblogcat/{id}', [Blogs::class, 'deleteblogcat'])->name('DeleteBlogCat')->middleware('role:Admin|Blog-team');
     Route::get('/Deletenewscat/{id}', [Newsarticle::class, 'deletenewscat'])->middleware('role:Admin|News-team');
     Route::get('/Deletepages/{id}', [Newsarticle::class, 'deletepages'])->middleware('role:Admin');
     Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany'])->middleware('role:Admin');
@@ -80,9 +80,9 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
     Route::get('/Editcompany/{id}', [companydatas::class, 'editcompany'])->middleware('role:Admin');
     Route::get('/Editpages/{id}', [Newsarticle::class, 'editpages'])->middleware('role:Admin');
     Route::get('/Editnewscat/{id}', [Newsarticle::class, 'editnewscat'])->middleware('role:Admin|News-team');
-    Route::get('/Editblogcat/{id}', [Blogs::class, 'editblogcat'])->middleware('role:Admin|Blog-team');
+    Route::get('/Editblogcat/{id}', [Blogs::class, 'editblogcat'])->name('EditBlogCat')->middleware('role:Admin|Blog-team');
     Route::get('/Edituser/{id}', [UserController::class, 'editUser'])->middleware('role:Admin');
-    Route::get('/Editblog/{id}', [Blogs::class, 'editblog'])->middleware('role:Admin|Blog-team');
+    Route::get('/Editblog/{id}', [Blogs::class, 'editblog'])->name('EditBlog')->middleware('role:Admin|Blog-team');
     Route::view('/Editblog', 'Blogbackend.Utils.Editblog')->name('Editblog')->middleware('role:Admin|Blog-team');
     Route::get('/EditNews/{id}', [Newsarticle::class, 'editnews'])->middleware('role:Admin|News-team');
     Route::post('/AddNews', [Newsarticle::class, 'addnewsdata'])->middleware('role:Admin|News-team');
@@ -98,7 +98,10 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
     Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit')->middleware('role:Admin');
     // Ajax routes
     
+    Route::get('blog-categories', [Blogs::class, 'blogcat'])->name('BlogCategoryList');
+    Route::get('blogsssssss', [Blogs::class, 'BlogList'])->name('BlogList');
     
+
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
@@ -133,13 +136,9 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
         return view('Blogbackend.Users');
     })->name('Users');
 
-    Route::get('/Admin/Blog', function () {
-        return view('Blogbackend.Blog');
-    })->name('Blog')->middleware('role:Admin|Blog-team');
+    Route::get('/Admin/Blog', [Blogs::class, 'showblogs'])->name('Blog')->middleware('role:Admin|Blog-team');
 
-    Route::get('/Admin/BlogCat', function () {
-        return view('Blogbackend.BlogCat');
-    })->name('Blogscat')->middleware('role:Admin|Blog-team');
+    Route::get('/Admin/BlogCat', [Blogs::class, 'showcat'])->name('Blogscat')->middleware('role:Admin|Blog-team');
 
     Route::get('/Admin/News', function () {
         return view('Blogbackend.News');

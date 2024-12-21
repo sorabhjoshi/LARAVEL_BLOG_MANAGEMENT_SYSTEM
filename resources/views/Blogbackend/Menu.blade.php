@@ -82,12 +82,21 @@ $(document).ready(function () {
 @endsection
 
 <style>
+   
     /* Styling for the container */
 .news-container {
     text-align: center;
     margin-bottom: 20px;
 }
-
+.navbar{
+   padding: 0;
+   margin: 0;
+   overflow: hidden;
+   
+}
+.table-container{
+   width: 99%;
+}
 .news-heading {
     font-size: 2rem;
     font-weight: bold;

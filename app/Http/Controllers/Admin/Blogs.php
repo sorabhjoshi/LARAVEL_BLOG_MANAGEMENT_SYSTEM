@@ -211,5 +211,73 @@ public function addblog(Request $request)
     return view('Blogbackend/Utils/AddBlog', compact('Catdata'));
 }
 
+public function showcat(){
+    
+    $userdata = Blogcat::withCount('blogs' )->paginate(2);
+    // dd($userdata);
+    return view('Blogbackend/BlogCat', ['userdata' => $userdata]);
+}
+public function blogcat(Request $request)
+{
+   
+    $query = Blogcat::query();
+
+    if ($request->has('startDate') && $request->startDate != '') {
+        $query->whereDate('created_at', '>=', $request->startDate);
+    }
+    if ($request->has('endDate') && $request->endDate != '') {
+        $query->whereDate('created_at', '<=', $request->endDate);
+    }
+
+    
+    if ($request->has('search') && $request->search != '') {
+        if ($request->search == 'Category') {
+            $query->where('categorytitle', 'like', '%' . $request->searchValue . '%');
+        } elseif ($request->search == 'Name') {
+            $query->where('seotitle', 'like', '%' . $request->searchValue . '%');
+        }
+    }
+
+    
+    $userdata = $query->paginate(10);
+
+    return view('Blogbackend.BlogCat', compact('userdata'));
+}
+
+public function showblogs(){
+
+    $userdata = Blog::with('categories' )->paginate(2);
+    // dd($userdata);
+    return view('Blogbackend/Blog', ['userdata' => $userdata]);
+}
+
+public function BlogList(Request $request)
+{
+   
+    $query = Blog::query();
+
+    if ($request->has('startDate') && $request->startDate != '') {
+        $query->whereDate('created_at', '>=', $request->startDate);
+    }
+    if ($request->has('endDate') && $request->endDate != '') {
+        $query->whereDate('created_at', '<=', $request->endDate);
+    }
+
+    
+    if ($request->has('search') && $request->search != '') {
+        if ($request->search == 'Category') {
+            $query->whereHas('categories', function ($q) use ($request) {
+                $q->where('categorytitle', 'like', '%' . $request->searchValue . '%');
+            });
+        } elseif ($request->search == 'Name') {
+            $query->where('title', 'like', '%' . $request->searchValue . '%');
+        }
+    }
+
+    
+    $userdata = $query->with('categories')->paginate(2);
+
+    return view('Blogbackend.Blog', compact('userdata'));
+}
 
 }
