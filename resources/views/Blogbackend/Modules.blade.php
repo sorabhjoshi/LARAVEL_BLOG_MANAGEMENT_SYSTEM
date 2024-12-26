@@ -3,6 +3,7 @@
 @section('title', 'Blogs')
 
 @section('content')
+<link rel="stylesheet" href='{{asset('css/blog.css')}}'>
 <style>
 #modal {
     display: none; /* Ensure modal is hidden by default */

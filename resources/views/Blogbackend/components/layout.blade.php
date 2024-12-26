@@ -49,6 +49,9 @@
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/iconset/fontawesome5-3-1.min.js"></script>
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+6pDI6b9j7/DA5Ctae/DiDF6z8crwJh7t2KUnUU" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
 body, html {
     margin: 0;
@@ -57,6 +60,7 @@ body, html {
     height: 100vh;
     color: #333;
     background-color: #f4f4f4;
+    overflow-y: scroll;
 }
 #myEditor li{
     padding: 10px !important;
@@ -99,7 +103,11 @@ border-bottom: 1px solid #4b5c70;
     transition: none;
     border: none;
 }
-
+.dropdown-item:hover {
+    background-color: #ba3b31 !important;
+    color: rgb(0, 0, 0) !important;
+    
+}
 .headerimg:hover {
     background-color: none !important;
     transform: none !important;
@@ -322,9 +330,27 @@ border-bottom: 1px solid #4b5c70;
     background-color: #1c2a38;
 }
 .popover{
-    display: flex; /* Ensures Flexbox behavior */
-    justify-content: flex-end; /* Aligns items to the right horizontally */
-    align-items: flex-end; /* Centers items vertically */
+    display: flex; 
+    justify-content: flex-end; 
+    align-items: flex-end; 
+}
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }
     </style>
     
@@ -334,56 +360,10 @@ border-bottom: 1px solid #4b5c70;
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="img">
-                <a href="{{route('home')}}" class="headerimg">
-                    <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="">
-                </a>
-            </div>
-            <div class="sidebar-content">
-                <ul class="menu">
-                    @foreach($menu->json_output as $item)
-                        <li class="menu-item">
-                            <a href="{{ $item['href'] ? route($item['href']) : 'javascript:void(0);' }}" class="menu-link menu-toggle">
-                                <i class="menu-icon {{ $item['icon'] ?? 'fas fa-circle' }}"></i>
-                                <div data-i18n="{{ $item['title'] ?? '' }}">{{ $item['text'] }}</div>
-                                @if(!empty($item['children']))
-                                    <span class="dropdown-icon"></span> <!-- Icon for dropdown toggle -->
-                                @endif
-                            </a>
-                            @if(!empty($item['children']))
-                                <ul class="menu-sub">
-                                    @foreach($item['children'] as $child)
-                                        <li class="menu-item">
-                                            <a href="{{ $child['href'] ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link">
-                                                <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>
-                                                <div data-i18n="{{ $child['title'] ?? '' }}">{{ $child['text'] }}</div>
-                                            </a>
-                                            @if(!empty($child['children']))
-                                                <ul class="menu-sub">
-                                                    @foreach($child['children'] as $subChild)
-                                                        <li class="menu-item">
-                                                            <a href="{{ $subChild['href'] ? route($subChild['href']) : 'javascript:void(0);' }}" class="menu-link">
-                                                                <i class="menu-icon {{ $subChild['icon'] ?? 'fas fa-circle' }}"></i>
-                                                                <div data-i18n="{{ $subChild['title'] ?? '' }}">{{ $subChild['text'] }}</div>
-                                                            </a>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>                     
-            </div>
-        </aside>
+        @include('Blogbackend.components.sidebar')
+        
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Navbar -->
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm p-0">
                 <div class="container">
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">

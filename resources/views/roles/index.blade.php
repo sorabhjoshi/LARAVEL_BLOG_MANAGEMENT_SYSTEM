@@ -30,7 +30,7 @@
   <tr>
      <th width="100px">No</th>
      <th>Name</th>
-     <th width="280px">Action</th>
+     <th width="350px">Action</th>
   </tr>
     @foreach ($roles as $key => $role)
     <tr>
@@ -40,6 +40,9 @@
             <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}"><i class="fa-solid fa-list"></i> Show</a>
             @can('role-edit')
                 <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            @endcan
+            @can('role-edit')
+            <a class="btn btn-dark btn-sm" href="{{ route('access',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Access</a>
             @endcan
 
             @can('role-delete')

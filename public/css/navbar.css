@@ -70,7 +70,8 @@ box-shadow: none !important;
 
     .sidebar a, .sidebar .dropdown-btn {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        padding-left: 7px;
         align-items: center;
         color: white;
         padding: 16px;
@@ -83,14 +84,16 @@ box-shadow: none !important;
         transition: all 0.3s ease;
         border-bottom: 1px solid #4b5c70;
     }
-
-    .sidebar a:hover, .sidebar .dropdown-btn:hover {
-        /* background-color: #4b5c70;  */
-        /* box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); */
+    .dropdown-icon{
+        display: flex;
+        justify-content: flex-end;
+        align-items: right;
+        float: right;
+        text-align: right;
     }
 
-    .sidebar a.active, .sidebar .dropdown-btn.active {
-        /* background-color: #1c2a38;  */
+    .sidebar a div {
+        margin-left: 10px;
     }
 
     .dropdown-container {
@@ -202,4 +205,12 @@ box-shadow: none !important;
     display: flex !important;
     flex-direction: row !important;
     padding-bottom: 10px;
+}
+
+
+
+
+.dropdown-icon {
+    margin-left: auto; /* Pushes the icon to the far right */
+    font-size: 1.2em; /* Adjust the size of the icon if needed */
 }
