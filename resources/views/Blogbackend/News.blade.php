@@ -25,9 +25,9 @@
         <thead class="thead-dark">
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Slug</th>
                 <th>User ID</th>
-                <th>Email</th>
+                <th>Title</th>
                 <th>City</th>
                 <th>Category</th>
                 <th>Created At</th>

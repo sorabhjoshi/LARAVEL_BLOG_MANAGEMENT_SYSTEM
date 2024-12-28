@@ -9,4 +9,8 @@ class permissions extends Model
     protected $table = 'permissions';
     use HasFactory;
     protected $fillable = ['name', 'module_id', 'guard_name'];
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
+    }
 }

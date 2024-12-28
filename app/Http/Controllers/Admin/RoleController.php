@@ -2,7 +2,8 @@
     
     namespace App\Http\Controllers\Admin;
 
-    use Illuminate\Support\Facades\DB;
+    use App\Models\Admin\Module;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
@@ -117,22 +118,17 @@ class RoleController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'permission' => 'required',
         ]);
     
         $role = Role::find($id);
         $role->name = $request->input('name');
         $role->save();
 
-        $permissionsID = array_map(
-            function($value) { return (int)$value; },
-            $request->input('permission')
-        );
+       
     
-        $role->syncPermissions($permissionsID);
     
         return redirect()->route('roles.index')
-                        ->with('success','Role updated successfully');
+                    ->with('success','Role updated successfully');
     }
     /**
      * Remove the specified resource from storage.
@@ -146,4 +142,60 @@ class RoleController extends Controller
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
     }
+
+    public function updateAccess(Request $request, $roleId)
+{
+    // Get the submitted permission IDs from the request
+    $permissionIds = $request->input('permissions', []);
+
+    // Begin a transaction for data consistency
+    DB::beginTransaction();
+
+    try {
+        // Remove all existing permissions for the specified role
+        DB::table('role_has_permissions')->where('role_id', $roleId)->delete();
+
+        // Insert the new permissions for the role
+        foreach ($permissionIds as $permissionId) {
+            DB::table('role_has_permissions')->insert([
+                'role_id' => $roleId,
+                'permission_id' => $permissionId
+            ]);
+        }
+
+        // Commit the transaction
+        DB::commit();
+
+        // Add a success flash message
+        return redirect()->route('roles.index')->with('success', 'Access updated successfully for the role!');
+    } catch (\Exception $e) {
+        // Rollback the transaction on error
+        DB::rollBack();
+
+        // Add an error flash message
+        return redirect()->route('roles.index')->with('error', 'Failed to update access. Please try again.');
+    }
+}
+
+
+
+public function access($roleId)
+{
+   
+    $rolePermissions = DB::table('role_has_permissions')
+        ->where('role_id', $roleId)
+        ->pluck('permission_id')
+        ->toArray();
+
+    
+    $modules = Module::with([
+        'permission',
+        'childmodule' => function ($query) {
+            $query->whereHas('permission');
+        }
+    ])->where('parent_id', 0)->get();
+
+    return view('roles.roleaccess', compact('modules', 'rolePermissions', 'roleId'));
+}
+
 }

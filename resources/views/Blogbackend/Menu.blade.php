@@ -166,4 +166,8 @@ $(document).ready(function () {
     background-color: #007bff;
     color: white;
 }
+#blogTable th{
+    background-color: #2d3e50;
+    color: white;
+}
 </style>

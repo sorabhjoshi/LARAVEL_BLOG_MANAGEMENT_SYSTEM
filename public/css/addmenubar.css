@@ -295,3 +295,10 @@ justify-content: center;
     margin-top: 300px;
     margin-left: 800px;
 }
+.btnMove{
+    background-color: rgb(169 130 130);
+}
+
+.btn-icon{
+    background-color: rgb(70 176 189);
+}

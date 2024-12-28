@@ -106,7 +106,7 @@
                     <td>{{ $item->title }}</td>
                     <td>{{ $item->authorname }}</td>
                     <td>{{ $item->categories->categorytitle}}</td>
-                    <td>{{ $item->created_at }}</td>
+                    <td>{{ $item->created_at->diffForHumans(); }}</td>
                     <td>
                         <a href="{{ route('EditBlog', $item->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
                     </td>

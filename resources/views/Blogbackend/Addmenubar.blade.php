@@ -55,8 +55,8 @@
                 <div class="card-footer">
                     <button type="button" id="Saveoutput" onclick="event.preventDefault();
                                                          document.querySelector('.json-form').submit();" class="btn btn-success">Save</button>
+    <button type="button" id="btnUpdate" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Update</button>
 
-                    <button type="button" id="btnUpdate" class="btn btn-primary" ><i class="fas fa-sync-alt"></i> Update</button>
                     <button type="button" id="btnAdd" class="btn btn-success"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </form>
@@ -67,6 +67,7 @@
         <form action="/updatejsondata" method="POST" class="json-form">
             @csrf
             {{-- <button type="hidden" id="outputbtn" class="btn btn-success">Output</button><br><br> --}}
+            
             <textarea id="myTextarea"  class="form-control" rows="8" name="json_output" required></textarea>
             <input type="hidden" name="id" value="<?php echo $id; ?>">
             <input type="submit" value="Save" id="Save" class="btn btn-primary m-2 width-100">
@@ -98,19 +99,30 @@
     editor.setUpdateButton($('#btnUpdate'));
     editor.setData(arrayjson);
 
+
     $('#btnAdd').click(function () {
         editor.add();
     });
 
-    $("#btnUpdate").click(function () {
+  
+    $('#btnUpdate').click(function () {
         editor.update();
-        var str = editor.getString();
-        $("#myTextarea").text(str);
+        updateTextarea();
     });
-    Saveoutput
-    // $("#btnUpdate").click(function () {
-    //     
-    // });
+
+    
+    $('#Saveoutput').click(function (event) {
+        event.preventDefault(); 
+        updateTextarea(); 
+        document.querySelector('.json-form').submit(); 
+    });
+
+
+    function updateTextarea() {
+        var jsonString = editor.getString();
+        console.log("Updated JSON:", jsonString); 
+        $('#myTextarea').val(jsonString); 
+    }
 
     $('#myEditor_icon').iconpicker({
         placement: 'bottomLeft',
@@ -119,5 +131,6 @@
         $('input[name="icon"]').val(event.iconpickerValue);
     });
 </script>
+
 
 @endsection

@@ -7,6 +7,7 @@
     flex-grow: 1;
 }
 </style>
+
 <div class="row">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
@@ -42,7 +43,7 @@
                 <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
             @endcan
             @can('role-edit')
-            <a class="btn btn-dark btn-sm" href="{{ route('access',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Access</a>
+            <a class="btn btn-dark btn-sm" href="{{ route('roles.access',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Access</a>
             @endcan
 
             @can('role-delete')

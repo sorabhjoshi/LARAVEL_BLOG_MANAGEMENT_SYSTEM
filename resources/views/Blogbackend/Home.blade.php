@@ -4,6 +4,8 @@
 
 @section('content')
 <section class="overview-section">
+    
+   
     <div class="chart-container">
         <h3>Blog Categories Overview</h3>
         <canvas id="blogCategoryChart"></canvas>
@@ -32,11 +34,15 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
+ 
+
     const categories = @json($category);
-    console.log(categories);
+    // console.log(categories);
+   
     const labels = categories.map(item => item.categorytitle);
     const data = categories.map(item => item.count);
-    console.log(data);
+    // console.log(data);
     const ctx = document.getElementById('blogCategoryChart').getContext('2d');
     new Chart(ctx, {
         type: 'pie',

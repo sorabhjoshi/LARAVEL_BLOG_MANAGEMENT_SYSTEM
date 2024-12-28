@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
+use App\Models\Admin\Menu;
 use App\Models\Admin\News;
 use App\Models\Admin\Register_model;
 use App\Models\Admin\User;
@@ -195,11 +196,12 @@ public function deleteblogcat($id){
 
 public function dashboard()
 {
+    
     $category = Blog::getBlogCategories();
     $users = Register_model::count();
     $news = News::count();
     $blogs = Blog::count();
-
+    
     return view('Blogbackend.Home', compact('category', 'users', 'news', 'blogs'));
 }
 

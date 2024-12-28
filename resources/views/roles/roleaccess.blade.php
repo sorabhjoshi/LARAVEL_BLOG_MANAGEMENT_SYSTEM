@@ -2,138 +2,144 @@
 
 @section('content')
 <style>
-    .dropdown-menu {
-    display: none; /* Hide by default */
-    position: static !important; /* Keeps dropdown aligned properly */
-    width: 100%;
-    transform: none !important;
-    background-color: transparent;
-    box-shadow: none;
-    border: none;
-}
+    .content{
+        display: flex;
+        justify-content: center;
+        align-content: center   ;
 
-.dropdown-menu.show {
-    display: block; /* Show as block when Bootstrap adds 'show' */
-}
-
-.dropdown-toggle{
-    background-color: transparent;
-    border: none;
-    color:#565454;
-}
-    .content {
-        padding: 30px 30px 0 30px;
-        flex-grow: 1;
-        width: 50vw;
-        margin: 20px auto;
-        border-radius: 7px;
-        background-color: #e0e0e0;
     }
-    .row {
-        gap: 20px;
+    .design{
+        background-color: #c2c2c2;
+        width: 40vw;
+        padding: 30px;
+        border-radius: 10px;
+        height: fit-content;
+        margin: 20px;
     }
-    .dropdown {
-        margin-bottom: 10px;
+    form{
+        margin-left: 20px;
+    }
+    .rows{
+        text-align: center;
     }
 </style>
-
-<div class="row">
-    <div class="col-lg-12 margin-tb">
-        <div class="pull-left">
-            <h2>Role Permission Access</h2>
-        </div>
-        <div class="pull-right">
-            <a class="btn btn-primary btn-sm mb-2" href="{{ route('roles.index') }}">
-                <i class="fa fa-arrow-left"></i> Back
-            </a>
-        </div>
-    </div>
-</div>
-
-@if (count($errors) > 0)
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-        </ul>
-    </div>
-@endif
-
-<form method="POST" action="{{ route('roles.update', $role->id) }}">
-    @csrf
-    @method('PUT')
-
-    <div class="row">
-        
-
-       
-        <div class=" col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Permissions:</strong>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="blogsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Blogs
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="blogsDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'blog'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- News Dropdown --}}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="newsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        News
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="newsDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'news'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Roles Dropdown --}}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="rolesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Roles
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="rolesDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'role'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
+<div class="design">
+    <div class="rows">
+        <div class="col-lg-12 margin-tb">
+            <div class="pull-left">
+                <h2>Manage Access</h2>
+            </div>
+            <div class="pull-right">
+                <a class="btn btn-primary btn-sm mb-2" href=""><i class="fa fa-arrow-left"></i> Back</a>
             </div>
         </div>
-
-        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-            <button type="submit" class="btn btn-primary btn-sm mb-3">
-                <i class="fa-solid fa-floppy-disk"></i> Submit
-            </button>
-        </div>
     </div>
-</form>
+    
+    <form method="POST" action="{{ route('roles.updateAccess', ['roleId' => $roleId]) }}">
+        @csrf
+        <ul>
+            <div class="row">
+                @foreach($modules as $module)
+                    <div class="col-lg-12">
+                        <div class="form-group mb-3">
+                            <div style="padding-left:5px;">
+                                <label>
+                                    <input type="checkbox" class="category-checkbox" data-category="{{ $module->modulesname }}">
+                                    <strong>{{ $module->modulesname }}</strong>
+                                </label>
+    
+                                <div class="ml-4" style="padding-left:10px;border-left:1px solid gray;margin-left:8px;">
+                                    <div>
+                                        <input type="checkbox" class="menu-checkbox" data-category="{{ $module->modulesname }}" value="show menu"> Show Menu
+                                    </div>
+                                    <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                        @foreach($module->permission as $permission)
+                                            <div>
+                                                <label>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        name="permissions[]" 
+                                                        class="permission-checkbox" 
+                                                        data-category="{{ $module->modulesname }}" 
+                                                        value="{{ $permission->id }}"
+                                                        {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}>
+                                                    {{ $permission->name }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                        @foreach($module->childmodule as $childmod)
+                                            <div>
+                                                <label>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        class="category-checkbox" 
+                                                        data-category="{{ $childmod->modulesname }}">
+                                                    <strong>{{ $childmod->modulesname }}</strong>
+                                                </label>
+                                                <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                                    @foreach($childmod->permission as $permission)
+                                                        <div>
+                                                            <label>
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    name="permissions[]" 
+                                                                    class="permission-checkbox" 
+                                                                    data-category="{{ $childmod->modulesname }}" 
+                                                                    value="{{ $permission->id }}"
+                                                                    {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}>
+                                                                {{ $permission->name }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </ul>
+    
+        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+            <button type="submit" class="btn btn-primary btn-sm mt-2 mb-3"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
+        </div>
+    </form>
+
+</div>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.category-checkbox').forEach(categoryCheckbox => {
+            categoryCheckbox.addEventListener('change', function () {
+                const category = this.getAttribute('data-category');
+                const isChecked = this.checked;
+
+                document.querySelectorAll(`.menu-checkbox[data-category="${category}"], .permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+            });
+        });
+
+        document.querySelectorAll('.menu-checkbox').forEach(menuCheckbox => {
+            menuCheckbox.addEventListener('change', function () {
+                const category = this.getAttribute('data-category');
+                const isChecked = this.checked;
+
+                document.querySelectorAll(`.permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+            });
+        });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

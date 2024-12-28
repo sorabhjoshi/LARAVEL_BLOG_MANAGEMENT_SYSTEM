@@ -72,8 +72,9 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
-    
-    Route::get('/access/{id}', [Menulist::class, 'access'])->middleware('role:Admin')->name('access');
+   
+Route::get('/roles/{roleId}/access', [RoleController::class, 'access'])->middleware('role:Admin')->name('roles.access');
+Route::post('/roles/{roleId}/update-access', [RoleController::class, 'updateAccess'])->middleware('role:Admin')->name('roles.updateAccess');
     Route::put('/updatemenu/{id}', [Menulist::class, 'update'])->name('updatemenu');
     Route::post('/updatejsondata', [Menulist::class, 'updatejsondata']);
     Route::get('/Editmenutable/{id}', [Menulist::class, 'edit'])->middleware('role:Admin');

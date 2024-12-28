@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Models\Admin\Module;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Menu;
@@ -83,28 +84,59 @@ class Menulist extends Controller
         
     }
     
-    function updatejsondata(Request $request){
-        $blog = Menu::find($request->id);
-        if ($blog) {
-            $blog->json_output = $request->input('json_output');
-            if ($blog->save()) {
-                return redirect()->route('menulist')->with('success', 'Blog updated successfully!');
-            } else {
-                return redirect()->back()->with('error', 'Failed to update the blog.');
+    function updatejsondata(Request $request)
+{
+    $blog = Menu::find($request->id);
+
+    if ($blog) {
+        Module::truncate();
+
+        $jsonDataArray = json_decode($request->input('json_output'), true);
+
+        if (is_array($jsonDataArray)) {
+            function saveModule($data, $parentId = 0)
+            {
+                foreach ($data as $item) {
+                    $module = new Module();
+                    $module->modulesname = $item['text'] ?? 'Unnamed Module';
+                    $module->parent_id = $parentId;
+                    
+                    $module->created_at = now();
+                    $module->updated_at = now();
+                    $module->save();
+
+                    if (!empty($item['children'])) {
+                        saveModule($item['children'], $module->id);
+                    }
+                }
             }
-        } else {
-            return redirect()->route('addmenubar')->with('error', 'Blog not found.');
+
+            saveModule($jsonDataArray);
         }
+
+        $blog->json_output = json_encode($jsonDataArray);
+
+        if ($blog->save()) {
+            return redirect()->route('menulist')->with('success', 'Blog and modules updated successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to update the blog.');
+        }
+    } else {
+        return redirect()->route('addmenubar')->with('error', 'Blog not found.');
     }
+}
+
+
     
-    public function access($id)
-    {
-        $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
-            ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
-            ->all();
+    // public function access($id)
+    // {
+    //     $role = Role::find($id);
+    //     $permission = Permission::get();
+    //     $modules = Module::where('parent_id', 0)->with('children')->get();
+    //     $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+    //         ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
+    //         ->all();
     
-        return view('roles.roleaccess',compact('role','permission','rolePermissions'));
-    }
+    //     return view('roles.roleaccess',compact('role','permission','rolePermissions','modules'));
+    // }
 }

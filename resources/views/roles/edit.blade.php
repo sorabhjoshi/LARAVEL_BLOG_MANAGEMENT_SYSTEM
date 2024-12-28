@@ -3,17 +3,21 @@
 @section('content')
 <style>
     .dropdown-menu {
-    display: none; /* Hide by default */
-    position: static !important; /* Keeps dropdown aligned properly */
+    display: none;
+    position: static !important; 
     width: 100%;
     transform: none !important;
     background-color: transparent;
     box-shadow: none;
     border: none;
 }
-
+.box{
+    height: 300px !important;
+    box-sizing: border-box;
+    overflow: hidden;
+}
 .dropdown-menu.show {
-    display: block; /* Show as block when Bootstrap adds 'show' */
+    display: block;
 }
 
 .dropdown-toggle{
@@ -21,11 +25,11 @@
     border: none;
     color:#565454;
 }
-    .content {
+    .box {
         padding: 30px 30px 0 30px;
         flex-grow: 1;
-        width: 50vw;
-        margin: 20px auto;
+        width: 30vw;
+        margin: 23vh auto;
         border-radius: 7px;
         background-color: #e0e0e0;
     }
@@ -36,7 +40,7 @@
         margin-bottom: 10px;
     }
 </style>
-
+<div class="box">
 <div class="row">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
@@ -74,65 +78,7 @@
         </div>
 
        
-        <div class=" col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Permissions:</strong>
-
-                
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="blogsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Blogs
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="blogsDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'blog'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- News Dropdown --}}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="newsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        News
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="newsDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'news'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Roles Dropdown --}}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="rolesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Roles
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="rolesDropdown">
-                        @foreach($permission as $value)
-                            @if (Str::startsWith(strtolower($value->name), 'role'))
-                                <div class="dropdown-item">
-                                    <input type="checkbox" name="permission[{{ $value->id }}]" value="{{ $value->id }}" 
-                                    class="name" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }}>
-                                    {{ $value->name }}
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
             <button type="submit" class="btn btn-primary btn-sm mb-3">
@@ -141,7 +87,7 @@
         </div>
     </div>
 </form>
-
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

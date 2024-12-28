@@ -8,4 +8,14 @@ class Module extends Model
 {
     protected $table = 'modules';
     use HasFactory;
+    public function permission()
+    {
+        return $this->hasMany(permissions::class);
+    }
+    public function childmodule()
+    {
+        return $this->hasMany(Module::class, 'parent_id');
+    }
 }
+
+    

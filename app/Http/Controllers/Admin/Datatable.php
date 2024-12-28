@@ -7,7 +7,7 @@ use App\Models\Admin\Modules;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
 use App\Models\Admin\permissions;
-use App\Models\Menu;
+use App\Models\Admin\Menu;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
@@ -67,6 +67,7 @@ class Datatable extends Controller
             }
     
             return DataTables::of($query)
+            
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Edituser/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';
                 })
@@ -79,7 +80,7 @@ class Datatable extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
     }
-    
+     
     public function getblogAjax(Request $request)
     {
         try {
@@ -119,6 +120,9 @@ class Datatable extends Controller
                 }
             }
             return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i> </a>';
                 })
@@ -146,8 +150,11 @@ class Datatable extends Controller
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 }
             }
-    
+            
             return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
                 ->addColumn('addpermissions', function ($row) {
                     return '<button class="btn btn-sm btn-success" id="permissionsbtn" data-module-id="' . $row->id . '">
                                 <i class="fas fa-key"></i> 
@@ -186,6 +193,9 @@ class Datatable extends Controller
                 }
             }
             return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Editblogcat/' . $row->id . '" class="btn btn-sm btn-warning">  <i class="fas fa-edit"></i></a>';
                 })
@@ -213,6 +223,9 @@ class Datatable extends Controller
                 }
             }
             return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Editnewscat/' . $row->id . '" class="btn btn-sm btn-warning">  <i class="fas fa-edit"></i> </a>';
                 })
@@ -239,6 +252,9 @@ class Datatable extends Controller
                 }
             }
             return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Editpages/' . $row->id . '" class="btn btn-sm btn-warning">   <i class="fas fa-edit"></i> </a>';
                 })
@@ -262,6 +278,9 @@ class Datatable extends Controller
         }
 
         return DataTables::of($query)
+        ->editColumn('created_at', function ($request) {
+            return $request->created_at->diffForHumans();
+        })
             ->addColumn('edit', function ($row) {
                 return '<a href="/Editcompany/' . $row->id . '" class="btn btn-sm btn-warning">   <i class="fas fa-edit"></i> </a>';
             })

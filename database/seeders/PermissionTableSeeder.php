@@ -54,6 +54,21 @@ class PermissionTableSeeder extends Seeder
            
            'news-delete',
 
+           'newscat-list',
+           
+           'newscat-create',
+           
+           'newscat-edit',
+           
+           'newscat-delete',
+
+           'blogcat-list',
+           
+           'blogcat-create',
+           
+           'blogcat-edit',
+           
+           'blogcat-delete',
 
         ];
 
