@@ -15,6 +15,8 @@ use App\Models\Admin\News;
 use App\Models\Admin\Companydata;
 use Illuminate\Http\Request;
 use App\Models\Admin\Register_model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB as DBFacade;
 
 class Datatable extends Controller
 {
@@ -384,7 +386,7 @@ public function savePermissions(Request $request)
     foreach ($permissions as $permission) {
         if (isset($permission['id'])) {
             // Update existing permission
-            \DB::table('permissions')
+            DBFacade::table('permissions')
                 ->where('id', $permission['id'])
                 ->update([
                     'name' => $permission['name'],
@@ -394,7 +396,7 @@ public function savePermissions(Request $request)
                 ]);
         } else {
             // Create new permission
-            \DB::table('permissions')->insert([
+            DBFacade::table('permissions')->insert([
                 'name' => $permission['name'],
                 'module_id' => $moduleId,
                 'guard_name' => $guardName,

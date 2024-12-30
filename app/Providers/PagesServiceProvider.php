@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Admin\Pages;
-
+use Illuminate\Support\Facades\Log;
 class PagesServiceProvider extends ServiceProvider
 {
     /**
@@ -25,12 +24,12 @@ class PagesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Share $pages data with specific views
-        View::composer('Frontend.Components.layout2', function ($view) {
-            $pages = Pages::all();
-            // dd($pages);
-            $view->with('pages', $pages);
-        });
+        
+View::composer('*', function ($view) {
+    $pages = Pages::all();
+
+    $view->share('pages', $pages);
+});
+
     }
 }
-

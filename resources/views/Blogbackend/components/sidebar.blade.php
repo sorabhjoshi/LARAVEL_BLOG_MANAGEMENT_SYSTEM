@@ -1,4 +1,7 @@
+
+
 <aside class="sidebar">
+
     <div class="img">
         <a href="{{route('home')}}" class="headerimg">
             <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="">

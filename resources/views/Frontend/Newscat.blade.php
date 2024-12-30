@@ -1,52 +1,43 @@
-
 @extends('Frontend.Components.layout2')
 
-{{-- <div class="bread">
-    <h3>Blog Design</h3>
-    <p>
-        <a href="{{ url('home') }}">Home</a> >> 
-        <a href="{{ url('blogs') }}">Blog Design</a> >> 
-        <a href="#">{{ $blog['Title'] }}</a> >> 
-        <a href="#">{{ $users[0]['category'] }}</a>
-    </p>
-</div> --}}
 @section('bread')
 <div class="bread">
     <h3 style="text-align: right;">News Design</h3>
-    <p><a href='{{ route('frontend') }}'>Home</a> >> <a href="{{ route('News') }}">News Design</a>>> <a href="#">Category</a> >><a href="#"><?= htmlspecialchars($News[0]['category']); ?></a></p>
+    <p><a href='{{ route('frontend') }}'>Home</a> >> <a href="{{ route('News') }}">News Design</a>>> <a href="#">Category</a> >><a href="#">{{$categoryname}}</a></p>
 </div> 
 @endsection
+
 @section('content2')
 <main>
     <div class="container my-5">
         <div class="row">
             <!-- Blog Section -->
             <div class="col-md-9">
-                <div class="row row-cols-1 row-cols-md-3 g-4" id="blogs-container">
+                <div class="row row-cols-1 row-cols-md-2 g-4" id="news-container">
                     @if ($News->isEmpty())
                         <h2>No Blog Posts Found for this Category</h2>
                     @else
-                    @foreach ($News as $index => $New)
-                    <div class="col featured" @if ($index >= 3) style="display: none;" @endif>
-                        <div class="card h-100 card-custom">
-                            <img src="{{ asset( $New->image) }}" 
-                                 class="card-img-top" alt="{{ $New->title }}">
-                            <div class="card-body">
-                                <a href="{{ url('News/' .$New->slug) }}" 
-                                   class="text-decoration-none text-dark">
-                                    <h5 class="card-title">{{ $New->title }}</h5>
-                                    <p class="card-text">
-                                        {{ Str::limit(strip_tags($New->description), 100, '...') }}
-                                    </p>
-                                </a>
+                        @foreach ($News as $New)
+                            <div class="col featured">
+                                <div class="card h-100 card-custom">
+                                    <img src="{{ asset($New->image) }}" 
+                                         class="card-img-top" alt="{{ $New->title }}">
+                                    <div class="card-body">
+                                        <a href="{{ url('News/' .$New->slug) }}" 
+                                           class="text-decoration-none text-dark">
+                                            <h5 class="card-title">{{ $New->title }}</h5>
+                                            <p class="card-text">
+                                                {{ Str::limit(strip_tags($New->description), 100, '...') }}
+                                            </p>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                @endforeach
+                        @endforeach
                     @endif
                 </div>
                 <div class="text-center mt-4">
-                    <button id="load-more" class="btn btn-primary" @if (count($News) <= 3) style="display: none;" @endif>Load More</button>
+                    <button id="load-more" class="btn btn-primary" data-page="2" @if ($News->count() < $perPage) style="display: none;" @endif>Load More</button>
                 </div>
             </div>
 
@@ -56,7 +47,7 @@
                     <h4>Categories</h4>
                     @foreach ($categories as $categories)
                         <li>
-                            <a href="{{ url('News/Category/' . $categories['categorytitle']) }}">{{ $categories['categorytitle'] }}-({{$categories->news_count}})</a>
+                            <a href="{{ url('News/Category/' . $categories['categorytitle']) }}">{{ $categories['categorytitle'] }}-({{ $categories->news_count }})</a>
                         </li>
                     @endforeach
                 </ul>
@@ -73,7 +64,7 @@
                     <ul class="list">
                         @foreach ($sidenews->take(4) as $news)
                             <li class="li-container">
-                                <img src="{{ asset( $news['image']) }}" class="card-img-top" alt="{{ $news['title'] }}">
+                                <img src="{{ asset($news['image']) }}" class="card-img-top" alt="{{ $news['title'] }}">
                                 <a href="{{ url('News/'. $news['slug'] ) }}">
                                     <h5 class="card-title">{{ $news['title'] }}</h5>
                                 </a>
@@ -86,28 +77,70 @@
     </div>
 </main>
 @endsection
+
 @section('js')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-    
-    $(document).ready(function() {
-        let itemsToShow = 3;
-        let totalItems = $(".featured").length;
+   $(document).ready(function() {
+    let itemsToShow = 2;  // Number of news items to load each time
+    let offset = 2;  // Offset starts from 2 since the first 2 items are already loaded
+    let category = "{{ $category->categorytitle }}"; // Current category slug
 
-        $("#load-more").on("click", function(e) {
-            e.preventDefault();
+    $("#load-more").on("click", function(e) {
+        e.preventDefault();
 
-            $(".featured:hidden").slice(0, itemsToShow).slideDown();
+        $.ajax({
+            url: '/load-more-news',  // Adjust the route as per your route configuration
+            type: 'GET',
+            data: {
+                offset: offset,  // Current offset for pagination
+                limit: itemsToShow,  // Number of items to fetch
+                category: category  // The category slug
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    const news = response.data;  // News data returned from the server
+                    if (news.length > 0) {
+                        // Iterate through the news and append to the container
+                        news.forEach(function(newsItem) {
+                            const newsHtml = `
+                                <div class="col featured">
+                                    <div class="card h-100 card-custom">
+                                        <img src="${newsItem.image}" class="card-img-top" alt="${newsItem.title}">
+                                        <div class="card-body">
+                                            <a href="/News/${newsItem.slug}" class="text-decoration-none text-dark">
+                                                <h5 class="card-title">${newsItem.title}</h5>
+                                                <p class="card-text">${newsItem.description}</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $('#news-container').append(newsHtml);  // Append the new news item
+                        });
+                        offset += itemsToShow;  // Update offset for the next request
 
-            if ($(".featured:hidden").length === 0) {
-                $("#load-more").hide();
+                        // Hide the "Load More" button if no more items to load
+                        if (offset >= response.count) {
+                            $('#load-more').hide();
+                        }
+                    }
+                } else {
+                    alert('Failed to load more news.');
+                }
+            },
+            error: function() {
+                alert('An error occurred while loading more news.');
             }
         });
     });
+});
+
+
 </script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 @endsection
-
 <style>
     .bread a {
   color: black; /* Nice blue for links */

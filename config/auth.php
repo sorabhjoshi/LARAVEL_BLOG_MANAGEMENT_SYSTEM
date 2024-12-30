@@ -64,7 +64,10 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-
+'pages' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL',  app\Providers\PagesServiceProvider::class),
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

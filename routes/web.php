@@ -204,3 +204,5 @@ Route::get('/Page/{pages}', [Pages::class, 'showpage']);
 
 Route::get('/ajaxblogs', [blogfront::class, 'loadMoreBlogs'])->name('ajaxblogs');
 Route::get('/ajaxnews', [Newsfront::class, 'loadMoreNews'])->name('ajaxnews');
+Route::get('/load-more-news', [Newsfront::class, 'loadMoreNewscat'])->name('loadMoreNewsCat');
+Route::get('/load-more-blogs', [blogfront::class, 'loadMoreblogscat'])->name('loadMoreBlogscat');

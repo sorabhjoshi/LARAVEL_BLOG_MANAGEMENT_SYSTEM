@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class News extends Model
 {
-    protected $table = 'news';
+    protected $table = 'news';  // Ensure your table name is correct
     use HasFactory;
 
     protected $fillable = [
@@ -18,8 +17,10 @@ class News extends Model
         'description',
         'category',
     ];
+
+    // Relationship to the Newscat model
     public function category()
-{
-    return $this->belongsTo(Newscat::class, 'category', 'id');
-}
+    {
+        return $this->belongsTo(Newscat::class, 'category', 'id');
+    }
 }

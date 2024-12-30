@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Companydata;
 class companydatas extends Controller
 {

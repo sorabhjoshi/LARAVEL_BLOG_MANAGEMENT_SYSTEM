@@ -39,6 +39,7 @@
         @csrf
         <ul>
             <div class="row">
+              
                 @foreach($modules as $module)
                     <div class="col-lg-12">
                         <div class="form-group mb-3">
@@ -117,22 +118,37 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Handle category checkbox change
         document.querySelectorAll('.category-checkbox').forEach(categoryCheckbox => {
             categoryCheckbox.addEventListener('change', function () {
                 const category = this.getAttribute('data-category');
                 const isChecked = this.checked;
 
+                // Update all related menu checkboxes and permission checkboxes for the current category
                 document.querySelectorAll(`.menu-checkbox[data-category="${category}"], .permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
                     checkbox.checked = isChecked;
+                });
+
+                // Update all child category checkboxes under this category (including nested ones)
+                document.querySelectorAll(`.category-checkbox[data-category^="${category}"]`).forEach(childCategoryCheckbox => {
+                    childCategoryCheckbox.checked = isChecked;
+
+                    // Also update all permissions and menu checkboxes for this child module
+                    const childCategory = childCategoryCheckbox.getAttribute('data-category');
+                    document.querySelectorAll(`.menu-checkbox[data-category="${childCategory}"], .permission-checkbox[data-category="${childCategory}"]`).forEach(checkbox => {
+                        checkbox.checked = isChecked;
+                    });
                 });
             });
         });
 
+        // Handle menu checkbox change
         document.querySelectorAll('.menu-checkbox').forEach(menuCheckbox => {
             menuCheckbox.addEventListener('change', function () {
                 const category = this.getAttribute('data-category');
                 const isChecked = this.checked;
 
+                // Update all permission checkboxes for the specific menu
                 document.querySelectorAll(`.permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
                     checkbox.checked = isChecked;
                 });
@@ -140,6 +156,8 @@
         });
     });
 </script>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

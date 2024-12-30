@@ -106,7 +106,7 @@
                 <td>{{ $item->seotitle }}</td>
                 <td>{{ $item->metakeywords }}</td>
                 <td>{{ $item->metadescription }}</td>
-                <td>{{ $item->created_at->diffForHumans(); }}</td>
+                <td>{{ $item->created_at->diffForHumans() }}</td>
                 <td>
                     <a href="{{ route('EditBlogCat', $item->id) }}" class="btn btn-warning">Edit</a>
                 </td>

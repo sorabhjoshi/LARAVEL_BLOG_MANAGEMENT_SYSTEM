@@ -7,6 +7,7 @@
     flex-grow: 1;
     width: 50vw;
     margin: 20px auto;
+    height: fit-content;
     border-radius: 7px;
     background-color: #e0e0e0;
 }

@@ -5,6 +5,7 @@
     padding: 30px 30px 0px 30px;
     margin-bottom: 30px !important;
     flex-grow: 1;
+    height: fit-content;
     width: 50vw;
     margin: 20px auto;
     border-radius: 7px;

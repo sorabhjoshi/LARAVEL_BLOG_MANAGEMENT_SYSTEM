@@ -1,4 +1,3 @@
-
 @extends('Frontend.Components.layout2')
 
 @section('bread')
@@ -14,37 +13,28 @@
 @endsection
 
 @section('content2')
-
 <main>
     <div class="container my-5">
         <div class="row">
             <!-- Blog Section -->
             <div class="col-md-9">
-                <div class="row row-cols-1 row-cols-md-3 g-4" id="blogs-container">
-                    @if ($blogs->isEmpty())
-                        <h2>No Blog Posts Found for this Category</h2>
-                    @else
+                <div class="row row-cols-1 row-cols-md-2 g-4" id="blogs-container">
                     @foreach ($blogs as $index => $blog)
-                    <div class="col featured" @if ($index >= 3) style="display: none;" @endif>
-                        <div class="card h-100 card-custom">
-                            <img src="{{ asset( $blog->image) }}" 
-                                 class="card-img-top" alt="{{ $blog->title }}">
-                            <div class="card-body">
-                                <a href="{{ url('blog/' .$blog->slug) }}" 
-                                   class="text-decoration-none text-dark">
-                                    <h5 class="card-title">{{ $blog->title }}</h5>
-                                    <p class="card-text">
-                                        {{ Str::limit(strip_tags($blog->description), 100, '...') }}
-                                    </p>
-                                </a>
+                        <div class="col featured" data-id="{{ $blog->id }}">
+                            <div class="card h-100 card-custom">
+                                <img src="{{ asset( $blog->image) }}" class="card-img-top" alt="{{ $blog->title }}">
+                                <div class="card-body">
+                                    <a href="{{ url('Blog/' .$blog->slug) }}" class="text-decoration-none text-dark">
+                                        <h5 class="card-title">{{ $blog->title }}</h5>
+                                        <p class="card-text">{{ Str::limit(strip_tags($blog->description), 100, '...') }}</p>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-                    @endif
+                    @endforeach
                 </div>
                 <div class="text-center mt-4">
-                    <button id="load-more" class="btn btn-primary" @if (count($blogs) <= 3) style="display: none;" @endif>Load More</button>
+                    <button id="load-more" class="btn btn-primary" @if ($blogs->count() < $perPage) style="display: none;" @endif>Load More</button>
                 </div>
             </div>
 
@@ -84,27 +74,71 @@
     </div>
 </main>
 @endsection
+
 @section('js')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-    
-    $(document).ready(function() {
-        let itemsToShow = 3;
-        let totalItems = $(".featured").length;
+<script>$(document).ready(function() {
+    let itemsToShow = 2;  // Number of blogs to load each time
+    let offset = 2;  // Initially load the first 2 blogs
+    let category = "{{ $categoryname }}"; // Pass the current category name
 
-        $("#load-more").on("click", function(e) {
-            e.preventDefault();
+    // Load more blogs when the button is clicked
+    $("#load-more").on("click", function(e) {
+        e.preventDefault();
 
-            $(".featured:hidden").slice(0, itemsToShow).slideDown();
+        $.ajax({
+            url: '{{ route('loadMoreBlogscat') }}',  // Adjust the route to your backend endpoint
+            type: 'GET',
+            data: {
+                offset: offset,  // Current offset for pagination
+                limit: itemsToShow,  // Number of items to fetch
+                category: category  // The category being displayed
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    const blogs = response.data;  // Blog data returned from the server
+                    if (blogs.length > 0) {
+                        // Append new blogs to the container
+                        blogs.forEach(function(blog) {
+                            const blogHtml = `
+                                <div class="col featured">
+                                    <div class="card h-100 card-custom">
+                                        <img src="${blog.image}" class="card-img-top" alt="${blog.title}">
+                                        <div class="card-body">
+                                            <a href="/Blog/${blog.slug}" class="text-decoration-none text-dark">
+                                                <h5 class="card-title">${blog.title}</h5>
+                                                <p class="card-text">${blog.description}</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $('#blogs-container').append(blogHtml);  // Append to the main container
+                        });
 
-            if ($(".featured:hidden").length === 0) {
-                $("#load-more").hide();
+                        offset += itemsToShow;  // Update the offset for next load
+
+                        // Hide the "Load More" button if no more blogs to load
+                        if (offset >= response.totalBlogs) {
+                            $('#load-more').hide();
+                        }
+                    }
+                } else {
+                    alert('Failed to load more blogs.');
+                }
+            },
+            error: function() {
+                alert('An error occurred while loading more blogs.');
             }
         });
     });
+});
+
 </script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 @endsection
+
+
 
 <style>
     .bread a {

@@ -51,19 +51,19 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('Blogs') }}">Blogs</a>
                 </li>
-                <?php if (!empty($pages)): ?>
-                    <?php foreach ($pages as $page): ?>
-                        <li class="nav-item">
-                          <a class="nav-link" href="{{ url('Page/' . urlencode($page['slug'])) }}">
-                                <?php echo htmlspecialchars($page['title']); ?>
+                
+                @if(!empty($pages))
+                    @foreach($pages as $page)
+                          <li class="nav-item">
+                             <a class="nav-link" href="{{ url('Page/' . urlencode($page['slug'])) }}">
+                                {{ htmlspecialchars($page['title']) }}
                             </a>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    {{-- <li class="nav-item">
-                        <span class="nav-link">No pages available</span>
-                    </li> --}}
-                <?php endif; ?>
+                         </li>
+                   @endforeach
+                @endif
+
+            
+
             </ul>
         </div>
     </div>
@@ -106,7 +106,7 @@
         </div>
 
         <div class="mt-4">
-            <p>&copy; <?= date("Y"); ?> Joshi Blogs. All Rights Reserved.</p>
+            <p>&copy; {{ date("Y") }} Joshi Blogs. All Rights Reserved.</p>
         </div>
     </div>
 </footer>

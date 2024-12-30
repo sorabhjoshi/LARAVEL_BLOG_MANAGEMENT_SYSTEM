@@ -1,6 +1,6 @@
 @extends('Blogbackend.components.layout')
 
-@section('title', 'Blogs')
+@section('title', 'Modules')
 
 @section('content')
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
@@ -86,7 +86,6 @@
         <h2>Modules List</h2>
         <div>
             <a href="{{ route('Dashboardfront') }}" class="btn btn-primary me-2">View Site</a>
-            <a href="{{ route('addmodule') }}" class="btn btn-success">Add Module</a>
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">

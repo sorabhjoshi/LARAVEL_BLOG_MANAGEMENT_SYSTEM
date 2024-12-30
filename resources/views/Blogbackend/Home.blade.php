@@ -92,11 +92,13 @@
 
     .chart-container {
         flex: 1;
-        max-width: 450px;
+        /* max-width: 450px; */
         background-color: #fff;
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 600px !important; 
+        height: 600px !important;
     }
 
     .chart-container h3 {
@@ -106,9 +108,9 @@
         color: #333;
     }
 
-    canvas {
-        width: 100%;
-        height: auto;
+    #blogCategoryChart {
+        width: 500px !important; 
+        height: 500px !important;
     }
 
     .data-overview {

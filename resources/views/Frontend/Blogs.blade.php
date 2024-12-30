@@ -19,9 +19,9 @@
         <div class="row">
             <!-- Blog Posts Section -->
             <div class="col-md-9">
-                <div class="row row-cols-1 row-cols-md-3 g-4" id="blogs-container">
+                <div class="row row-cols-1 row-cols-md-2 g-4" id="blogs-container">
                     @foreach ($Blogs as $index => $Blog)
-                        <div class="col featured" @if($index >= 3) style="display: none;" @endif>
+                        <div class="col featured" @if($index >= 2) style="display: none;" @endif>
                             <div class="card h-100 card-custom">
                                 <img src="{{ asset( $Blog->image) }}" class="card-img-top" alt="{{ $Blog->title }}">
                                 <div class="card-body">
@@ -87,8 +87,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
-        let itemsToShow = 3; 
-        let offset = 3;
+        let itemsToShow = 2; 
+        let offset = 2;
 
         $("#load-more").on("click", function(e) {
             e.preventDefault();
