@@ -125,7 +125,6 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Dropdown functionality
             var dropdownBtns = document.querySelectorAll(".dropdown-btn");
             dropdownBtns.forEach(function (dropdownBtn) {
                 dropdownBtn.addEventListener("click", function () {
@@ -141,7 +140,6 @@
                 });
             });
 
-            // Sidebar toggle functionality
             var menuToggle = document.querySelector('.menu-toggle');
             var sidebar = document.querySelector('.sidebar');
             menuToggle.addEventListener('click', function () {
@@ -152,7 +150,6 @@
     
 </body>
 <script>
-    // Toggle the dropdown menu
     document.querySelectorAll('.menu-toggle').forEach(function (toggle) {
         toggle.addEventListener('click', function (e) {
             e.preventDefault();

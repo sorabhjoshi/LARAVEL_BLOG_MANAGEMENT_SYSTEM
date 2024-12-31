@@ -15,7 +15,8 @@ use App\Http\Controllers\Admin\Register;
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
-use App\Models\Admin\Pages;
+use App\Http\Controllers\Frontend\Pages;
+// use App\Models\Admin\Pages;
   
 // use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\RoleController;
@@ -73,8 +74,8 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
 
     // Edit and update routes
    
-Route::get('/roles/{roleId}/access', [RoleController::class, 'access'])->middleware('role:Admin')->name('roles.access');
-Route::post('/roles/{roleId}/update-access', [RoleController::class, 'updateAccess'])->middleware('role:Admin')->name('roles.updateAccess');
+Route::get('/roles/access/{roleId}', [RoleController::class, 'access'])->middleware('role:Admin')->name('roles.access');
+Route::post('/roles/update-access/{roleId}', [RoleController::class, 'updateAccess'])->middleware('role:Admin')->name('roles.updateAccess');
     Route::put('/updatemenu/{id}', [Menulist::class, 'update'])->name('updatemenu');
     Route::post('/updatejsondata', [Menulist::class, 'updatejsondata']);
     Route::get('/Editmenutable/{id}', [Menulist::class, 'edit'])->middleware('role:Admin');
@@ -200,8 +201,9 @@ Route::get('Blog/Category/{article}', [blogfront::class, 'showcategory']);
 Route::get('News/Category/{article}', [Newsfront::class, 'showcategory']);
 
 
-Route::get('/Page/{pages}', [Pages::class, 'showpage']);
+Route::get('/Page/{pages}', [Pages::class, 'showpage']); 
 
+Route::get('/loadmodules', [RoleController::class, 'loadmodules'])->name('loadmodules');
 Route::get('/ajaxblogs', [blogfront::class, 'loadMoreBlogs'])->name('ajaxblogs');
 Route::get('/ajaxnews', [Newsfront::class, 'loadMoreNews'])->name('ajaxnews');
 Route::get('/load-more-news', [Newsfront::class, 'loadMoreNewscat'])->name('loadMoreNewsCat');

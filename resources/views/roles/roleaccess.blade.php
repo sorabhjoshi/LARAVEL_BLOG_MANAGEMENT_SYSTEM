@@ -22,6 +22,15 @@
     .rows{
         text-align: center;
     }
+    .search{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #select{
+        width: 30%;
+        margin-right: 10px;
+    }
 </style>
 <div class="design">
     <div class="rows">
@@ -31,6 +40,14 @@
             </div>
             <div class="pull-right">
                 <a class="btn btn-primary btn-sm mb-2" href=""><i class="fa fa-arrow-left"></i> Back</a>
+            </div>
+            <div class="search">
+               <select name="select" id="select" class="form-select">
+                @foreach($modules as $module)
+                    <option value="{{ $module->modulesname }}">{{ $module->modulesname }}</option>
+                @endforeach
+               </select>
+               <button class="btn btn-primary" id="search">Search</button>
             </div>
         </div>
     </div>
@@ -117,46 +134,133 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Handle category checkbox change
-        document.querySelectorAll('.category-checkbox').forEach(categoryCheckbox => {
-            categoryCheckbox.addEventListener('change', function () {
-                const category = this.getAttribute('data-category');
-                const isChecked = this.checked;
+    $(document).ready(function () {
+    $("#search").on("click", function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        var value = $("#select").val();
 
-                // Update all related menu checkboxes and permission checkboxes for the current category
-                document.querySelectorAll(`.menu-checkbox[data-category="${category}"], .permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
-                    checkbox.checked = isChecked;
+        $.ajax({
+            url: '/loadmodules',
+            type: 'GET',
+            data: {
+                value: value,
+                roleId: {{ $roleId }}
+            },
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+
+                // Clear the existing content
+                $(".row").empty();
+
+                // Append the new modules dynamically
+                response.modules.forEach(module => {
+                    let moduleHtml = `
+                        <div class="col-lg-12">
+                            <div class="form-group mb-3">
+                                <div style="padding-left:5px;">
+                                    <label>
+                                        <input type="checkbox" class="category-checkbox" data-category="${module.modulesname}">
+                                        <strong>${module.modulesname}</strong>
+                                    </label>
+                                    <div class="ml-4" style="padding-left:10px;border-left:1px solid gray;margin-left:8px;">
+                                        <div>
+                                            <input type="checkbox" class="menu-checkbox" data-category="${module.modulesname}" value="show menu"> Show Menu
+                                        </div>
+                                        <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                            ${module.permission.map(permission => `
+                                                <div>
+                                                    <label>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            name="permissions[]" 
+                                                            class="permission-checkbox" 
+                                                            data-category="${module.modulesname}" 
+                                                            value="${permission.id}"
+                                                            ${response.rolePermissions.includes(permission.id) ? 'checked' : ''}>
+                                                        ${permission.name}
+                                                    </label>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        ${module.childmodule.map(childmod => `
+                                            <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                                <label>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        class="category-checkbox" 
+                                                        data-category="${childmod.modulesname}">
+                                                    <strong>${childmod.modulesname}</strong>
+                                                </label>
+                                                <div class="form-group p-2" style="margin-left:8px;border-left:1px solid gray;">
+                                                    ${childmod.permission.map(permission => `
+                                                        <div>
+                                                            <label>
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    name="permissions[]" 
+                                                                    class="permission-checkbox" 
+                                                                    data-category="${childmod.modulesname}" 
+                                                                    value="${permission.id}"
+                                                                    ${response.rolePermissions.includes(permission.id) ? 'checked' : ''}>
+                                                                ${permission.name}
+                                                            </label>
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    $(".row").append(moduleHtml);
                 });
 
-                // Update all child category checkboxes under this category (including nested ones)
-                document.querySelectorAll(`.category-checkbox[data-category^="${category}"]`).forEach(childCategoryCheckbox => {
-                    childCategoryCheckbox.checked = isChecked;
-
-                    // Also update all permissions and menu checkboxes for this child module
-                    const childCategory = childCategoryCheckbox.getAttribute('data-category');
-                    document.querySelectorAll(`.menu-checkbox[data-category="${childCategory}"], .permission-checkbox[data-category="${childCategory}"]`).forEach(checkbox => {
-                        checkbox.checked = isChecked;
-                    });
-                });
-            });
-        });
-
-        // Handle menu checkbox change
-        document.querySelectorAll('.menu-checkbox').forEach(menuCheckbox => {
-            menuCheckbox.addEventListener('change', function () {
-                const category = this.getAttribute('data-category');
-                const isChecked = this.checked;
-
-                // Update all permission checkboxes for the specific menu
-                document.querySelectorAll(`.permission-checkbox[data-category="${category}"]`).forEach(checkbox => {
-                    checkbox.checked = isChecked;
-                });
-            });
+                // Reinitialize event listeners for dynamically added elements
+                initializeCheckboxListeners();
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText); // Log the error response
+                alert("An error occurred while loading more modules.");
+            }
         });
     });
-</script>
 
+    // Function to initialize checkbox listeners
+    function initializeCheckboxListeners() {
+        $(".category-checkbox").off("change").on("change", function () {
+            const category = $(this).data("category");
+            const isChecked = $(this).is(":checked");
+
+            // Toggle all related checkboxes
+            $(`.menu-checkbox[data-category="${category}"], .permission-checkbox[data-category="${category}"]`).prop("checked", isChecked);
+
+            // Toggle all child categories
+            $(`.category-checkbox[data-category^="${category}"]`).each(function () {
+                const childCategory = $(this).data("category");
+                $(this).prop("checked", isChecked);
+                $(`.menu-checkbox[data-category="${childCategory}"], .permission-checkbox[data-category="${childCategory}"]`).prop("checked", isChecked);
+            });
+        });
+
+        $(".menu-checkbox").off("change").on("change", function () {
+            const category = $(this).data("category");
+            const isChecked = $(this).is(":checked");
+
+            // Toggle permissions within this category
+            $(`.permission-checkbox[data-category="${category}"]`).prop("checked", isChecked);
+        });
+    }
+
+    // Initialize listeners on page load
+    initializeCheckboxListeners();
+});
+
+    </script>
+    
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

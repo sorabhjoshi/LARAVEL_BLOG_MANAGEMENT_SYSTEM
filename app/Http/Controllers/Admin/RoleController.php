@@ -145,34 +145,25 @@ class RoleController extends Controller
 
     public function updateAccess(Request $request, $roleId)
 {
-    // Get the submitted permission IDs from the request
     $permissionIds = $request->input('permissions', []);
 
-    // Begin a transaction for data consistency
     DB::beginTransaction();
 
     try {
-        // Remove all existing permissions for the specified role
-        DB::table('role_has_permissions')->where('role_id', $roleId)->delete();
+        // DB::table('role_has_permissions')->where('role_id', $roleId)->delete();
 
-        // Insert the new permissions for the role
         foreach ($permissionIds as $permissionId) {
-            DB::table('role_has_permissions')->insert([
+            DB::table('role_has_permissions')->updateOrInsert([
                 'role_id' => $roleId,
                 'permission_id' => $permissionId
             ]);
         }
 
-        // Commit the transaction
         DB::commit();
 
-        // Add a success flash message
         return redirect()->route('roles.index')->with('success', 'Access updated successfully for the role!');
     } catch (\Exception $e) {
-        // Rollback the transaction on error
         DB::rollBack();
-
-        // Add an error flash message
         return redirect()->route('roles.index')->with('error', 'Failed to update access. Please try again.');
     }
 }
@@ -197,5 +188,29 @@ public function access($roleId)
 
     return view('roles.roleaccess', compact('modules', 'rolePermissions', 'roleId'));
 }
+
+public function loadmodules(Request $request)
+{
+    $value = $request->input('value');
+    $roleId = $request->input('roleId');
+
+    $rolePermissions = DB::table('role_has_permissions')
+        ->where('role_id', $roleId)
+        ->pluck('permission_id')
+        ->toArray();
+
+    $modules = Module::with([
+        'permission',
+        'childmodule.permission' 
+    ])->where('parent_id', 0)
+      ->where('modulesname', $value)
+      ->get();
+
+    return response()->json([
+        'modules' => $modules,
+        'rolePermissions' => $rolePermissions
+    ]);
+}
+
 
 }

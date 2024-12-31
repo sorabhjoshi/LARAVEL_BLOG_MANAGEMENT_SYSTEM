@@ -18,11 +18,6 @@ class Blog extends Model
         'description',
         'category',
     ];
-   public function category()
-{
-    return $this->belongsTo(Blogcat::class, 'category', 'id');
-}
-
     public static function getBlogCategories()
     {
         return self::selectRaw('TRIM(LOWER(category)) AS category, COUNT(*) AS count')
@@ -30,4 +25,14 @@ class Blog extends Model
             ->orderBy('category')
             ->get();
     }
+   public function category()
+{
+    return $this->belongsTo(Blogcat::class, 'category', 'id');
+}
+public function categories()
+{
+    return $this->belongsTo(Blogcat::class, 'category', 'id');
+}
+
+   
 }

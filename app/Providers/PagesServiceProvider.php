@@ -28,7 +28,7 @@ class PagesServiceProvider extends ServiceProvider
 View::composer('*', function ($view) {
     $pages = Pages::all();
 
-    $view->share('pages', $pages);
+    $view->with('pages', $pages);
 });
 
     }

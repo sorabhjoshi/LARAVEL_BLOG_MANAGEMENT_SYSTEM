@@ -197,7 +197,7 @@ public function deleteblogcat($id){
 public function dashboard()
 {
     
-    $category = Blog::getBlogCategories();
+    $category = Blogcat::withCount('blogs')->get();
     $users = Register_model::count();
     $news = News::count();
     $blogs = Blog::count();
