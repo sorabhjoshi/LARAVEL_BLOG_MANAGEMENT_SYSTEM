@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('image');
             $table->string('authorname');
+            $table->string('domain');
             $table->longText('description');
             $table->integer('category');
             $table->timestamps();

@@ -51,6 +51,18 @@
                 <div class="text-danger">{{ $message }}</div>
         @enderror
 
+        <label for="Domain">Domain:</label>
+        <select id="Domain" name="Domain" >
+            <option value="" disabled selected>Select Domain</option>
+            @foreach ($domain as $item)
+            <option value="{{ $item->id }}">{{ $item->domainname }}</option>
+            @endforeach
+        </select>
+        @error('category')
+                    <div class="text-danger">{{ $message }}</div>
+        @enderror
+
+
         <div class="form-group full-width">
             <button type="submit">update Blog</button>
         </div>

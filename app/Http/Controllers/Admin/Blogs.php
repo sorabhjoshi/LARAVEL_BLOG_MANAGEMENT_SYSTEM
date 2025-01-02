@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
+use App\Models\Admin\Domains;
 use App\Models\Admin\Menu;
 use App\Models\Admin\News;
 use App\Models\Admin\Register_model;
@@ -28,8 +29,9 @@ class Blogs extends Controller
         'image' => 'required|image|max:2048', // Added image validation (e.g., size limit, type)
         'content' => 'required|string',
         'category' => 'required|string',
+        'Domain' => 'required|string',
     ]);
-
+    
     $imagePath = null;
     if ($request->hasFile('image')) {
         // Handle the image upload
@@ -43,21 +45,10 @@ class Blogs extends Controller
     $slug = Str::slug($request->input('title'));
     $existingSlugCount = Blog::where('slug', $slug)->count();
     if ($existingSlugCount > 0) {
-        $slug = $slug . '-' . time(); // If slug exists, append timestamp to make it unique
+        $slug = $slug . '-' . time(); 
     }
-    print_r($userdata->id);
-    // Insert the blog data
-    // $data = [
-    //     'authorname' => $request->input('author_name'),
-    //     'title' => $request->input('title'),
-    //     'image' => $imagePath,
-    //     'description' => $request->input('content'),
-    //     'category' => $request->input('category'),
-    //     'slug' => $slug,
-    //     'user_id' => $userdata->id,
-    // ];
     
-    // dd($data);
+//    dd($request->input('Domain'));
     Blog::create([
         'authorname' => $request->input('author_name'),
         'title' => $request->input('title'),
@@ -65,6 +56,7 @@ class Blogs extends Controller
         'description' => $request->input('content'),
         'category' => $request->input('category'),
         'slug' => $slug,
+        'domain' => $request->input('Domain'),
         'user_id' => $userdata->id,  
     ]);
 
@@ -86,9 +78,10 @@ public function deleteblog($id){
     
 }
 public function editblog($id){
+         $domain = Domains::all();
          $userdata = Blog::find($id);
          $Catdata = Blogcat::select('categorytitle', 'id')->get();
-         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata]);
+         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata,'domain'=>$domain]);
 }
 
 public function updateblog(Request $request)
@@ -209,8 +202,9 @@ public function dashboard()
 public function addblog(Request $request)
 {
     // dd(auth()->user());
+    $domain = Domains::all();
     $Catdata = Blogcat::select('categorytitle', 'id')->get();
-    return view('Blogbackend/Utils/AddBlog', compact('Catdata'));
+    return view('Blogbackend/Utils/AddBlog', compact('Catdata','domain'));
 }
 
 public function showcat(){

@@ -17,6 +17,7 @@ class Blog extends Model
         'image',
         'description',
         'category',
+        'domain',
     ];
     public static function getBlogCategories()
     {

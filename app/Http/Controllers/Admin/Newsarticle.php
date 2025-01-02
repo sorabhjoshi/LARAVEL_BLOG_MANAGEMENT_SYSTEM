@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Models\Admin\Domains;
 use App\Models\Admin\News;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
@@ -51,9 +52,10 @@ public function addnewsdata(Request $request)
 }
 
 public function editnews($id){
+    $domain = Domains::all();
         $userdata = News::find($id);
         $Catdata = Newscat::select('categorytitle','id')->get();
-        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata]);
+        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata,'domain'=>$domain]);
 }
 
 public function updatenews(Request $request)
@@ -227,8 +229,9 @@ public function updatepagedata(Request $request)
         }
 }
 public function addnews(){
+    $domain = Domains::all();
     $Catdata = Newscat::select('categorytitle','id')->get();
-  return view('Blogbackend/Utils/AddNews', compact('Catdata'));
+  return view('Blogbackend/Utils/AddNews', compact('Catdata','domain'));
 }
 
 }

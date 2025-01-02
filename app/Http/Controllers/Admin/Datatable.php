@@ -8,6 +8,7 @@ use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
 use App\Models\Admin\permissions;
 use App\Models\Admin\Menu;
+use App\Models\Domains;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
@@ -21,6 +22,36 @@ use Illuminate\Support\Facades\DB as DBFacade;
 class Datatable extends Controller
 {
     
+    public function GetDomainAjax(Request $request)
+{
+    try {
+        $query = \App\Models\Admin\Domains::all();
+
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        return DataTables::of($query)
+        ->editColumn('created_at', function ($request) {
+            return $request->created_at->diffForHumans();
+        })
+            ->addColumn('edit', function ($row) {
+                return '<a href="/Editdomain/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';
+            })
+            ->addColumn('delete', function ($row) {
+                return '<a href="/Deletedomain/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+            })
+            ->rawColumns(['edit', 'delete'])
+            ->make(true);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+}
     public function menudatatable(Request $request)
 {
     try {

@@ -1,6 +1,7 @@
 <?php
 
-  use App\Http\Controllers\mailcontroller;
+  use App\Http\Controllers\Admin\Domain;
+use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Blogs;
@@ -37,7 +38,7 @@ Auth::routes();
   
 
 Route::group(['middleware' => ['auth']], function() {
-    Route::resource('roles', RoleController::class)->middleware('role:Admin');
+    Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class)->middleware('role:Admin');
     Route::resource('products', ProductController::class)->middleware('role:Admin|Manager');
     
@@ -46,8 +47,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/Admin/Myprofile', [Register::class, 'myprofile'])->name('Myprofile');
 
     // Delete routes
-
-Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.menu');
+    
+    Route::get('/Deletedomain/{id}', [Domain::class, 'delete']);
+    Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.menu');
     Route::get('/Deleteuser/{id}', [UserController::class, 'deleteuser'])->middleware('role:Admin');
     Route::get('/Deleteblog/{id}', [Blogs::class, 'deleteblog'])->name('DeleteBlog')->middleware('role:Admin|Blog-team');
     Route::get('/DeleteNews/{id}', [Newsarticle::class, 'deletenews'])->middleware('role:Admin|News-team');
@@ -59,6 +61,8 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
 
     // Add routes
     
+    
+    Route::view('Admin/Domain/Add_Domain', 'Blogbackend.Utils.Adddomain')->name('add_domain')->middleware('role:Admin');
     Route::get('Admin/Menu/Addmenu/{id}', [Menulist::class, 'Addmenubar'])->name('Addmenu')->middleware('role:Admin');
     Route::post('Admin/addmenutabledata', [Menulist::class, 'store'])->name('addmenutabledata')->middleware('role:Admin');
     Route::view('/Addmenutable', 'Blogbackend.Utils.Addmenutable')->name('addmenutable')->middleware('role:Admin');
@@ -73,9 +77,12 @@ Route::get('/Deletemenutable/{id}', [Menulist::class, 'delete'])->name('delete.m
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
-   
-Route::get('/roles/access/{roleId}', [RoleController::class, 'access'])->middleware('role:Admin')->name('roles.access');
-Route::post('/roles/update-access/{roleId}', [RoleController::class, 'updateAccess'])->middleware('role:Admin')->name('roles.updateAccess');
+    
+    Route::get('/Editdomain/{id}', [Domain::class, 'edit'])->middleware('role:Admin');
+    Route::post('/Editdomaindata', [Domain::class, 'update'])->middleware('role:Admin');
+    Route::post('/AddDomain', [Domain::class, 'store'])->middleware('role:Admin');
+    Route::get('/roles/access/{roleId}', [RoleController::class, 'access'])->middleware('role:Admin')->name('roles.access');
+    Route::post('/roles/update-access/{roleId}', [RoleController::class, 'updateAccess'])->middleware('role:Admin')->name('roles.updateAccess');
     Route::put('/updatemenu/{id}', [Menulist::class, 'update'])->name('updatemenu');
     Route::post('/updatejsondata', [Menulist::class, 'updatejsondata']);
     Route::get('/Editmenutable/{id}', [Menulist::class, 'edit'])->middleware('role:Admin');
@@ -111,6 +118,7 @@ Route::post('/roles/update-access/{roleId}', [RoleController::class, 'updateAcce
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
     Route::post('/deleteAddress', [Datatable::class, 'deleteAddress']);
     Route::post('/getAddressData', [Datatable::class, 'getaddressdata']);
+    Route::post('/GetDomainAjax', [Datatable::class, 'GetDomainAjax']);
     Route::post('/getcomAjax', [Datatable::class, 'getcomAjax']);
     Route::post('/getpagesAjax', [Datatable::class, 'getpagesAjax']);
     Route::post('/getnewscatAjax', [Datatable::class, 'getnewscatAjax']);
@@ -128,6 +136,10 @@ Route::post('/roles/update-access/{roleId}', [RoleController::class, 'updateAcce
     Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
 
     // Basic routes of pages
+    Route::get('/Admin/Domain', function () {
+        return view('Blogbackend.Domain');
+    })->name('domain');
+
     Route::get('/Admin/Modules', function () {
         return view('Blogbackend.Modules');
     })->name('Modules');
