@@ -1,6 +1,7 @@
 <?php
 
   use App\Http\Controllers\Admin\Domain;
+use App\Http\Controllers\Admin\Languages;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,8 @@ Route::group(['middleware' => ['auth']], function() {
     // Add routes
     
     
+    Route::post('/addlanguageAjax', [Languages::class, 'store'])->name('addlanguageAjax');
+
     Route::view('Admin/Domain/Add_Domain', 'Blogbackend.Utils.Adddomain')->name('add_domain')->middleware('role:Admin');
     Route::get('Admin/Menu/Addmenu/{id}', [Menulist::class, 'Addmenubar'])->name('Addmenu')->middleware('role:Admin');
     Route::post('Admin/addmenutabledata', [Menulist::class, 'store'])->name('addmenutabledata')->middleware('role:Admin');
@@ -78,6 +81,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Edit and update routes
     
+    Route::get('/Editlanguage/{id}', [Languages::class, 'edit'])->middleware('role:Admin');
     Route::get('/Editdomain/{id}', [Domain::class, 'edit'])->middleware('role:Admin');
     Route::post('/Editdomaindata', [Domain::class, 'update'])->middleware('role:Admin');
     Route::post('/AddDomain', [Domain::class, 'store'])->middleware('role:Admin');
@@ -112,7 +116,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('blog-categories', [Blogs::class, 'blogcat'])->name('BlogCategoryList');
     Route::get('blogsssssss', [Blogs::class, 'BlogList'])->name('BlogList');
     
+    Route::post('/addlanguageAjax', [Languages::class, 'store'])->name('addlanguageAjax');
+Route::put('/editlanguageAjax/{id}', [Languages::class, 'update'])->name('editlanguageAjax');
+Route::delete('/deletelanguageAjax/{id}', [Languages::class, 'destroy'])->name('deletelanguageAjax');
 
+    Route::post('/getlanguagesAjax', [Datatable::class, 'getlanguagesAjax']);
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
@@ -135,7 +143,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/show-permissions', [Datatable::class, 'ShowPermissions'])->name('ShowPermissions')->middleware('role:Admin');
     Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
 
-    // Basic routes of pages
+    // Basic routes of pages 
+
+    Route::get('/Admin/languages', function () {
+        return view('Blogbackend.languages');
+    })->name('languages');
+
     Route::get('/Admin/Domain', function () {
         return view('Blogbackend.Domain');
     })->name('domain');
