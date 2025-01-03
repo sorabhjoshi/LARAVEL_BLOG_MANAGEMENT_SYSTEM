@@ -93,6 +93,8 @@
                     <th>Title</th>
                     <th>Author Name</th>
                     <th>Category</th>
+                    <th>domain</th>
+                    <th>Language</th>
                     <th>Created At</th>
                     <th>Edit</th>
                     <th>Delete</th>
@@ -106,6 +108,8 @@
                     <td>{{ $item->title }}</td>
                     <td>{{ $item->authorname }}</td>
                     <td>{{ $item->categories->categorytitle}}</td>
+                    <td>{{ $item->domainrel ? $item->domainrel->domainname : 'N/A' }}</td>
+                    <td>{{ $item->langrel ? $item->langrel->languages : 'N/A' }}</td>
                     <td>{{ $item->created_at->diffForHumans() }}</td>
                     <td>
                         <a href="{{ route('EditBlog', $item->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>

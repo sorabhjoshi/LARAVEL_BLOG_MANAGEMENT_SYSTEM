@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
 use App\Models\Admin\Domains;
+use App\Models\Admin\Language;
 use App\Models\Admin\Menu;
 use App\Models\Admin\News;
 use App\Models\Admin\Register_model;
@@ -30,6 +31,7 @@ class Blogs extends Controller
         'content' => 'required|string',
         'category' => 'required|string',
         'Domain' => 'required|string',
+        'Languages' => 'required|string'
     ]);
     
     $imagePath = null;
@@ -58,6 +60,7 @@ class Blogs extends Controller
         'slug' => $slug,
         'domain' => $request->input('Domain'),
         'user_id' => $userdata->id,  
+        'language' => $request->input('Languages'),
     ]);
 
     // dd(\DB::getQueryLog());
@@ -78,10 +81,11 @@ public function deleteblog($id){
     
 }
 public function editblog($id){
+         $lang = Language::all();
          $domain = Domains::all();
          $userdata = Blog::find($id);
          $Catdata = Blogcat::select('categorytitle', 'id')->get();
-         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata,'domain'=>$domain]);
+         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata,'domain'=>$domain,'lang'=>$lang]);
 }
 
 public function updateblog(Request $request)
@@ -94,6 +98,8 @@ public function updateblog(Request $request)
         'image' => 'nullable|image',
         'content' => 'required|string',
         'category' => 'required|string',
+        'Domain' => 'required|string',
+        'Languages' => 'required|string'
     ]);
 
     $userdata = Blog::find($request->input('id'));
@@ -122,6 +128,8 @@ public function updateblog(Request $request)
     $userdata->category = $request->input('category');
     $userdata->slug = $slug;
     // $userdata->userid = $user->id;
+    $userdata->domain= $request->input('Domain');
+    $userdata->language= $request->input('Languages');
 
     $userdata->save(); 
 
@@ -189,7 +197,7 @@ public function deleteblogcat($id){
 
 public function dashboard()
 {
-    
+     
     $category = Blogcat::withCount('blogs')->get();
     $users = Register_model::count();
     $news = News::count();
@@ -202,9 +210,10 @@ public function dashboard()
 public function addblog(Request $request)
 {
     // dd(auth()->user());
+    $lang = Language::all();
     $domain = Domains::all();
     $Catdata = Blogcat::select('categorytitle', 'id')->get();
-    return view('Blogbackend/Utils/AddBlog', compact('Catdata','domain'));
+    return view('Blogbackend/Utils/AddBlog', compact('Catdata','domain','lang'));
 }
 
 public function showcat(){

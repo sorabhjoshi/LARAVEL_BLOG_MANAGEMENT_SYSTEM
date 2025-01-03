@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\Languages;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
+use App\Models\admin\department;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
@@ -62,7 +63,14 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Add routes
     
-    
+    // Route for getting the department by ID
+Route::get('/getDepartmentById/{id}', [\App\Http\Controllers\admin\department::class, 'getDepartmentById']);
+
+// Route for updating the department
+Route::post('/updateDepartment', [\App\Http\Controllers\admin\department::class, 'updateDepartment']);
+
+    Route::post('/AddDepartmentAjax', [\App\Http\Controllers\admin\department::class, 'store'])->name('AddDepartmentAjax');
+
     Route::post('/addlanguageAjax', [Languages::class, 'store'])->name('addlanguageAjax');
 
     Route::view('Admin/Domain/Add_Domain', 'Blogbackend.Utils.Adddomain')->name('add_domain')->middleware('role:Admin');
@@ -117,9 +125,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('blogsssssss', [Blogs::class, 'BlogList'])->name('BlogList');
     
     Route::post('/addlanguageAjax', [Languages::class, 'store'])->name('addlanguageAjax');
-Route::put('/editlanguageAjax/{id}', [Languages::class, 'update'])->name('editlanguageAjax');
-Route::delete('/deletelanguageAjax/{id}', [Languages::class, 'destroy'])->name('deletelanguageAjax');
-
+    Route::put('/editlanguageAjax/{id}', [Languages::class, 'update'])->name('editlanguageAjax');
+    Route::delete('/deletelanguageAjax/{id}', [Languages::class, 'destroy'])->name('deletelanguageAjax');
+    
+    Route::post('/GetDepartmentAjax', [Datatable::class, 'GetDepartmentAjax']);
     Route::post('/getlanguagesAjax', [Datatable::class, 'getlanguagesAjax']);
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
@@ -164,6 +173,10 @@ Route::delete('/deletelanguageAjax/{id}', [Languages::class, 'destroy'])->name('
     Route::get('/Admin/Users', function () {
         return view('Blogbackend.Users');
     })->name('Users');
+
+    Route::get('/Admin/Department', function () {
+        return view('Blogbackend.Department');
+    })->name('Department')->middleware(middleware: 'role:Admin');
 
     Route::get('/Admin/Blog', [Blogs::class, 'showblogs'])->name('Blog')->middleware('role:Admin|Blog-team');
 

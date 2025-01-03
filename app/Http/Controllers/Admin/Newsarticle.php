@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Domains;
+use App\Models\Admin\Language;
 use App\Models\Admin\News;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
@@ -21,6 +22,8 @@ public function addnewsdata(Request $request)
             'image' => 'required',
             'content' => 'required|string',
             'category' => 'required|string',
+            'Domains' => 'required|string',
+            'Languages' => 'required|string'
         ]);
     
         $imagePath = null;
@@ -46,16 +49,19 @@ public function addnewsdata(Request $request)
             'category' => $request->input('category'),
             'slug' => $slug,
             'user_id' => $user->id, 
+            'domain' => $request->input('Domains'),
+            'language' => $request->input('Languages'),
         ]);
     
         return redirect()->route('Newsarticle')->with('success', 'Blog updated successfully!');
 }
 
 public function editnews($id){
-    $domain = Domains::all();
+        $lang = Language::all();
+        $domain = Domains::all();
         $userdata = News::find($id);
         $Catdata = Newscat::select('categorytitle','id')->get();
-        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata,'domain'=>$domain]);
+        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata,'domain'=>$domain,'lang'=>$lang]);
 }
 
 public function updatenews(Request $request)
@@ -68,6 +74,8 @@ public function updatenews(Request $request)
         'image' => 'nullable|image',
         'content' => 'required|string',
         'category' => 'required|string',
+        'domain' => $request->input('Domains'),
+        'language' => $request->input('Languages'),
     ]);
 
     $userdata = News::find($request->input('id'));
@@ -95,6 +103,8 @@ public function updatenews(Request $request)
     $userdata->description = $request->input('content');
     $userdata->category = $request->input('category');
     $userdata->slug = $slug;
+    $userdata->domain = $request->input('Domains');
+    $userdata->language = $request->input('Languages');
     // $userdata->userid = $user->id;
 
     $userdata->save(); 
@@ -229,9 +239,10 @@ public function updatepagedata(Request $request)
         }
 }
 public function addnews(){
+    $lang = Language::all();
     $domain = Domains::all();
     $Catdata = Newscat::select('categorytitle','id')->get();
-  return view('Blogbackend/Utils/AddNews', compact('Catdata','domain'));
+  return view('Blogbackend/Utils/AddNews', compact('Catdata','domain','lang'));
 }
 
 }

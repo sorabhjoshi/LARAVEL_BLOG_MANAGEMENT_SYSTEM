@@ -62,6 +62,17 @@
                     <div class="text-danger">{{ $message }}</div>
         @enderror
 
+        <label for="Languages">Languages:</label>
+        <select id="Languages" name="Languages" >
+            <option value="" disabled selected>Select Languages</option>
+            @foreach ($lang as $item)
+            <option value="{{ $item->id }}">{{ $item->languages }}</option>
+            @endforeach
+        </select>
+        @error('Languages')
+                    <div class="text-danger">{{ $message }}</div>
+        @enderror
+
         <div class="form-group full-width">
             <button type="submit">update Blog</button>
         </div>

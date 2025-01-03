@@ -18,6 +18,7 @@ class Blog extends Model
         'description',
         'category',
         'domain',
+        'language'
     ];
     public static function getBlogCategories()
     {
@@ -35,5 +36,16 @@ public function categories()
     return $this->belongsTo(Blogcat::class, 'category', 'id');
 }
 
+
+public function domainrel()
+{
+    return $this->belongsTo(Domains::class, 'domain', 'id');
+}
+
+
+public function langrel()
+{
+    return $this->belongsTo(Language::class, 'language', 'id');
+}
    
 }

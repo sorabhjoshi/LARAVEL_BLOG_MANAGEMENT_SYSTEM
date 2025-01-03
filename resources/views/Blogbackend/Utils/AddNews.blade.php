@@ -48,10 +48,21 @@
         <select id="Domains" name="Domains" >
             <option value="" disabled selected>Select Domains</option>
             @foreach ($domain as $item)
-            <option value="{{ $item->domainname }}">{{ $item->domainname }}</option>
+            <option value="{{ $item->id }}">{{ $item->domainname }}</option>
             @endforeach
         </select>
         @error('Domains')
+                    <div class="text-danger">{{ $message }}</div>
+        @enderror
+
+        <label for="Languages">Languages:</label>
+        <select id="Languages" name="Languages" >
+            <option value="" disabled selected>Select Languages</option>
+            @foreach ($lang as $item)
+            <option value="{{ $item->id }}">{{ $item->languages }}</option>
+            @endforeach
+        </select>
+        @error('Languages')
                     <div class="text-danger">{{ $message }}</div>
         @enderror
 

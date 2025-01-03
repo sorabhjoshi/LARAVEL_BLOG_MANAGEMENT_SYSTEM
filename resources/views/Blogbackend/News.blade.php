@@ -30,6 +30,8 @@
                 <th>Title</th>
                 <th>City</th>
                 <th>Category</th>
+                <th>Domain</th>
+                <th>Language</th>
                 <th>Created At</th>
                 <th>Edit</th>
                 <th>Delete</th>
@@ -83,6 +85,8 @@
                 { data: 'title', name: 'title' },
                 { data: 'authorname', name: 'authorname' },
                 { data: 'category', name: 'category' },
+                { data: 'domain', name: 'domain' },
+                { data: 'language', name: 'language' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'edit', orderable: false, searchable: false },
                 { data: 'delete', orderable: false, searchable: false },

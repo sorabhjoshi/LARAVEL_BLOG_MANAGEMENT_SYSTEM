@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('domain')->nullable();
             $table->longText('description');
             $table->string('category');
+            $table->integer('language')->nullable();
             $table->timestamps();
         });
     }

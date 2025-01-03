@@ -21,4 +21,9 @@ class Domains extends Model
         'password',
         'tomail_id',
     ];
+
+    public function domainname()
+    {
+        return $this->hasMany(Blog::class, 'domain', 'id');
+    }
 }

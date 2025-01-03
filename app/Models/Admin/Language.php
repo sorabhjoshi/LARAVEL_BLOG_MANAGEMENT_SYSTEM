@@ -10,4 +10,8 @@ class Language extends Model
     protected $fillable = [
        'languages'
     ];
+    public function languagename()
+    {
+        return $this->hasMany(Blog::class, 'language', 'id');
+    }
 }

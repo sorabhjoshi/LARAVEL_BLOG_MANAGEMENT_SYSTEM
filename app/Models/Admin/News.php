@@ -16,6 +16,8 @@ class News extends Model
         'image',
         'description',
         'category',
+        'domain',
+        'language'
     ];
 
     // Relationship to the Newscat model
@@ -23,4 +25,15 @@ class News extends Model
     {
         return $this->belongsTo(Newscat::class, 'category', 'id');
     }
+
+    public function domainrel()
+{
+    return $this->belongsTo(Domains::class, 'domain', 'id');
+}
+
+
+public function langrel()
+{
+    return $this->belongsTo(Language::class, 'language', 'id');
+}
 }

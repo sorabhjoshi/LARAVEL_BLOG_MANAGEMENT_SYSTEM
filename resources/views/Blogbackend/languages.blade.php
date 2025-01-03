@@ -125,7 +125,14 @@
             },
             pageLength: 5,
             columns: [
-                { data: 'id', name: 'id' },
+                {
+                    data: null, 
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart; 
+                    }
+                },
                 { data: 'languages', name: 'languages' },
                 { data: 'created_at', name: 'created_at' },
                 {

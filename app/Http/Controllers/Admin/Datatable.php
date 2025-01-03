@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Companyaddress;
+use App\Models\admin\department;
 use App\Models\Admin\Module;
 use App\Models\Admin\Modules;
 use App\Models\Admin\Newscat;
@@ -141,11 +142,49 @@ class Datatable extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
     }
-     
+    
+    public function GetDepartmentAjax(Request $request)
+    {
+        try {
+            $query = department::all();
+            
+            if ($request->has('startDate') && $request->has('endDate')) {
+                $startDate = $request->input('startDate');
+                $endDate = $request->input('endDate');
+    
+                if (!empty($startDate) && !empty($endDate)) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+            }
+            
+            return DataTables::of($query)
+            ->editColumn('created_at', function ($request) {
+                return $request->created_at->diffForHumans();
+            })
+                
+                ->addColumn('edit', function ($row) {
+                    return '<a href="#" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> 
+                            </a>';
+                })
+                ->addColumn('delete', function ($row) {
+                    return '<a href="#" class="btn btn-sm btn-danger delete-btn">
+                                <i class="fas fa-trash-alt"></i> 
+                            </a>';
+                })
+                ->rawColumns(['addpermissions', 'edit', 'delete']) // Allow raw HTML
+                ->make(true);
+    
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     public function getblogAjax(Request $request)
     {
         try {
-            $query = Blog::select('id','slug','user_id', 'title', 'authorname', 'category','created_at');
+            $query = Blog::with('domainrel', 'langrel') // Load relationships
+                ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'created_at');
+            
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');
                 $endDate = $request->input('endDate');
@@ -154,7 +193,14 @@ class Datatable extends Controller
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 }
             }
+    
             return DataTables::of($query)
+                ->editColumn('language', function ($blog) {
+                    return $blog->langrel ? $blog->langrel->languages : 'N/A';
+                })
+                ->editColumn('domain', function ($blog) {
+                    return $blog->domainrel ? $blog->domainrel->name : 'N/A';
+                })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i></a>';
                 })
@@ -168,34 +214,48 @@ class Datatable extends Controller
         }
     }
     
-    public function getnewsAjax(Request $request)
-    {
-        try {
-            $query = News::select('id','slug','user_id', 'title', 'authorname', 'description','created_at','category');
-            if ($request->has('startDate') && $request->has('endDate')) {
-                $startDate = $request->input('startDate');
-                $endDate = $request->input('endDate');
     
-                if ($startDate && $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
-                }
+    public function getnewsAjax(Request $request)
+{
+    try {
+        $query = News::with(['domainrel:id,domainname', 'langrel:id,languages']) // Eager load only the necessary fields
+            ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'language', 'created_at');
+        
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
             }
-            return DataTables::of($query)
-            ->editColumn('created_at', function ($request) {
-                return $request->created_at->diffForHumans();
-            })
-                ->addColumn('edit', function ($row) {
-                    return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i> </a>';
-                })
-                ->addColumn('delete', function ($row) {
-                    return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
-                })
-                ->rawColumns(['edit', 'delete'])
-                ->make(true);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
         }
+
+        return DataTables::of($query)
+            ->editColumn('language', function ($news) {
+                return $news->langrel ? " {$news->langrel->languages}" : 'N/A';
+            })
+            ->editColumn('domain', function ($news) {
+                return $news->domainrel ? " {$news->domainrel->domainname}" : 'N/A';
+            })
+            ->editColumn('created_at', function ($news) {
+                return $news->created_at->diffForHumans();
+            })
+            ->addColumn('edit', function ($row) {
+                return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-key"></i></a>';
+            })
+            ->addColumn('delete', function ($row) {
+                return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+            })
+            ->rawColumns(['edit', 'delete'])
+            ->make(true);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
     }
+}
+
+
+
+    
 
     
     public function getmoduleAjax(Request $request)
