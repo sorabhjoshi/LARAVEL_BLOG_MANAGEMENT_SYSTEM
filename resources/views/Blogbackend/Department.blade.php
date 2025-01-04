@@ -30,6 +30,18 @@
         border: none;
         color: white;
     }
+    #addDepartmentBtn{
+        height: 38px;
+        text-align: center;
+        align-content: center;
+        align-items: center;
+        justify-content: center;    
+        padding: 0px 10px;
+        background-color: #0d6efd;
+    }
+    #addDepartmentBtn:hover{
+        background-color: #0a58ca;
+    }
     </style>
 @section('content')
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
@@ -38,7 +50,7 @@
         <h2>Department List</h2>
         <div>
             <a href="{{route('Dashboardfront')}}" class="btn btn-primary me-2">View Site</a>
-            <button id="addDepartmentBtn" class="btn btn-success">Add Department</button>
+            <button id="addDepartmentBtn" class="btn btn-primary me-2">Add Department</button>
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -81,6 +93,22 @@
     </div>
 </div>
 
+<!-- editOverlay Modal -->
+<div id="EditDepartmentModal" class="overlay-modal" style="display: none;">
+    <div class="overlay-content">
+        <h3>Edit Department</h3>
+        <form id="editDepartmentForm" action="{{route('UpdateDepartment')}}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="departmentName">Department Name:</label>
+                <input type="text" id="departmentName" name="departmentName" class="form-control" required>
+                <input type="text" id="departmentId" name="departmentId" class="form-control" hidden>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2 editsubmit">Submit</button>
+            <button type="button" id="closeModalBtnedit" class="btn btn-secondary mt-2">Cancel</button>
+        </form>
+    </div>
+</div>
 
 
 
@@ -138,11 +166,59 @@
         $('#addDepartmentBtn').on('click', function () {
             $('#addDepartmentModal').fadeIn();
         });
+        
+        $(document).on('click', '#depdelbtn', function () {
+    const departmentId = $(this).data('id');
+    console.log(departmentId);
+    // Optionally, fetch the department details to populate the edit form
+    $.ajax({
+        url: `/DeleteDepartmentById/${departmentId}`, // Example endpoint
+        method: 'POST',
+        success: function (response) {
+            if (response.success) {
+                table.ajax.reload();
+            } else {
+                alert('Failed to delete department.');
+            }
+        },
+        error: function () {
+            alert('An error occurred while fetching the department details.');
+        }
+    });
+});
+        $(document).on('click', '#depeditbtn', function () {
+    const departmentId = $(this).data('id');
+    console.log(departmentId);
+    // Optionally, fetch the department details to populate the edit form
+    $.ajax({
+        url: `/GetDepartmentById/${departmentId}`, // Example endpoint
+        method: 'GET',
+        success: function (response) {
+            if (response.success) {
+                $('#editDepartmentForm #departmentName').val(response.department_name);
+                $('#editDepartmentForm #departmentId').val(response.id);
+                $('#EditDepartmentModal').fadeIn();
+            } else {
+                alert('Failed to fetch department details.');
+            }
+        },
+        error: function () {
+            alert('An error occurred while fetching the department details.');
+        }
+    });
+});
 
+// Close Edit Modal
+$('#closeModalBtnedit').on('click', function () {
+    $('#EditDepartmentModal').fadeOut();
+});
+
+        
         // Hide Add Department Modal
         $('#closeModalBtn').on('click', function () {
             $('#addDepartmentModal').fadeOut();
         });
+        
 
         // Handle Add Department Form Submission
         $('#addDepartmentForm').on('submit', function (e) {
@@ -158,7 +234,6 @@
                         $('#addDepartmentModal').fadeOut();
                         $('#addDepartmentForm')[0].reset();
                         table.ajax.reload();
-                        alert('Department added successfully!');
                     } else {
                         alert('Failed to add department. Please try again.');
                     }

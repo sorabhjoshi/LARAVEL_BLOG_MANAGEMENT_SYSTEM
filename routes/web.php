@@ -1,10 +1,11 @@
 <?php
 
-  use App\Http\Controllers\Admin\Domain;
+
+use App\Http\Controllers\Admin\Designation;
+use App\Http\Controllers\Admin\Domain;
 use App\Http\Controllers\Admin\Languages;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
-use App\Models\admin\department;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Blogs;
 use App\Http\Controllers\Admin\companydatas;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Frontend\Pages;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\Departments;
 Route::post('/contact', [mailcontroller::class, 'sendContactForm'])->name('contact.send');
 Route::get('/contact', [mailcontroller::class, 'sendContactForm'])->name('contact.send');
 
@@ -63,16 +65,13 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Add routes
     
-    // Route for getting the department by ID
-Route::get('/getDepartmentById/{id}', [\App\Http\Controllers\admin\department::class, 'getDepartmentById']);
 
-// Route for updating the department
-Route::post('/updateDepartment', [\App\Http\Controllers\admin\department::class, 'updateDepartment']);
-
-    Route::post('/AddDepartmentAjax', [\App\Http\Controllers\admin\department::class, 'store'])->name('AddDepartmentAjax');
-
+    Route::post('/AddDepartmentAjax', [Departments::class, 'store'])->name('AddDepartmentAjax');
+    
+    Route::post('/AddDesignationData', [Designation::class, 'store'])->name('AddDesignationData');
     Route::post('/addlanguageAjax', [Languages::class, 'store'])->name('addlanguageAjax');
-
+    
+    Route::get('Admin/Designation/AddDesignation', [Designation::class, 'AddDesignation'])->name('add_designation')->middleware('role:Admin');
     Route::view('Admin/Domain/Add_Domain', 'Blogbackend.Utils.Adddomain')->name('add_domain')->middleware('role:Admin');
     Route::get('Admin/Menu/Addmenu/{id}', [Menulist::class, 'Addmenubar'])->name('Addmenu')->middleware('role:Admin');
     Route::post('Admin/addmenutabledata', [Menulist::class, 'store'])->name('addmenutabledata')->middleware('role:Admin');
@@ -88,7 +87,10 @@ Route::post('/updateDepartment', [\App\Http\Controllers\admin\department::class,
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
-    
+    Route::get('/edit-designation/{id}', [Designation::class, 'edit'])->name('edit.designation');
+    Route::put('/updateDesignationData/{id}', [Designation::class, 'update'])->name('updateDesignationData');
+
+    Route::post('/delete-designation/{id}', [Designation::class, 'destroy'])->name('delete.designation');   
     Route::get('/Editlanguage/{id}', [Languages::class, 'edit'])->middleware('role:Admin');
     Route::get('/Editdomain/{id}', [Domain::class, 'edit'])->middleware('role:Admin');
     Route::post('/Editdomaindata', [Domain::class, 'update'])->middleware('role:Admin');
@@ -128,6 +130,16 @@ Route::post('/updateDepartment', [\App\Http\Controllers\admin\department::class,
     Route::put('/editlanguageAjax/{id}', [Languages::class, 'update'])->name('editlanguageAjax');
     Route::delete('/deletelanguageAjax/{id}', [Languages::class, 'destroy'])->name('deletelanguageAjax');
     
+
+    // Route to fetch department by ID
+    
+    Route::post('/DeleteDepartmentById/{id}', [Departments::class, 'deleteDepartmentById']);
+Route::get('/GetDepartmentById/{id}', [Departments::class, 'getDepartmentById']);
+
+// Route to update department
+Route::post('/UpdateDepartment', [Departments::class, 'updateDepartment'])->name('UpdateDepartment');
+
+Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
     Route::post('/GetDepartmentAjax', [Datatable::class, 'GetDepartmentAjax']);
     Route::post('/getlanguagesAjax', [Datatable::class, 'getlanguagesAjax']);
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
@@ -161,6 +173,10 @@ Route::post('/updateDepartment', [\App\Http\Controllers\admin\department::class,
     Route::get('/Admin/Domain', function () {
         return view('Blogbackend.Domain');
     })->name('domain');
+
+    Route::get('/Admin/Designation', function () {
+        return view('Blogbackend.Designation');
+    })->name('Designation');
 
     Route::get('/Admin/Modules', function () {
         return view('Blogbackend.Modules');

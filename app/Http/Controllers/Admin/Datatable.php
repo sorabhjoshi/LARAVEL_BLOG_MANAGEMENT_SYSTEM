@@ -22,6 +22,39 @@ use Illuminate\Support\Facades\DB as DBFacade;
 
 class Datatable extends Controller
 {
+    public function GetdesignationAjax(Request $request)
+{
+    try {
+        $query = \App\Models\Admin\Designation::with('departments')->select('id', 'department_id', 'designation_name', 'created_at');
+
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        return DataTables::of($query)
+        ->editColumn('department_id', function ($blog) {
+            return $blog->departments ? $blog->departments->department_name : 'N/A';
+        })
+            ->addColumn('edit', function ($row) {
+                return '<a href="/Editdesgination/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';
+            })
+            ->addColumn('delete', function ($row) {
+                return '<a href="/Deletedesgination/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+            })
+            ->editColumn('created_at', function ($news) {
+                return $news->created_at->diffForHumans();
+            })
+            ->rawColumns(['edit', 'delete'])
+            ->make(true);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+}
     public function getlanguagesAjax(Request $request){
         try {
             $query = \App\Models\Admin\Language::all();
@@ -163,14 +196,14 @@ class Datatable extends Controller
             })
                 
                 ->addColumn('edit', function ($row) {
-                    return '<a href="#" class="btn btn-sm btn-warning">
+                    return '<button  id="depeditbtn" data-id="'. $row->id .'" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i> 
-                            </a>';
+                            </button>';
                 })
                 ->addColumn('delete', function ($row) {
-                    return '<a href="#" class="btn btn-sm btn-danger delete-btn">
+                    return '<button  id="depdelbtn" data-id="'. $row->id .'" class="btn btn-sm btn-danger delete-btn">
                                 <i class="fas fa-trash-alt"></i> 
-                            </a>';
+                            </button>';
                 })
                 ->rawColumns(['addpermissions', 'edit', 'delete']) // Allow raw HTML
                 ->make(true);
