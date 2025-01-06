@@ -15,20 +15,21 @@ class Designation extends Controller
         $data = request()->validate([
             'Department' => 'required',
             'Designation' => 'required',
+            'Level' => 'required',
         ]);
     
         $depname = new \App\Models\Admin\Designation();
     
         $depname->department_id = $data['Department'];  
         $depname->designation_name = $data['Designation'];  
-    
+        $depname->level = $data['Level'];
         $depname->save();
     
         return redirect()->route('Designation');
     }
     public function edit($id){   
         $designation = \App\Models\Admin\Designation::with('departments')->findOrFail($id);
-        $departments = department::all(); // If you want to list all departments in the edit form
+        $departments = department::all(); 
         return view('Blogbackend.Utils.EditDesignation', compact('designation', 'departments'));
     }
 
@@ -37,13 +38,14 @@ class Designation extends Controller
     {$data = request()->validate([
         'Department' => 'required',
         'Designation' => 'required',
+        'Level' => 'required',
     ]);
 
     $depname = \App\Models\Admin\Designation::findOrFail($id);
 
     $depname->department_id = $data['Department'];  
     $depname->designation_name = $data['Designation'];  
-
+    $depname->level = $data['Level'];
     $depname->save();
 
     return redirect()->route('Designation');

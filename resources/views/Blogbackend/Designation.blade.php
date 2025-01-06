@@ -27,6 +27,7 @@
                 <th>ID</th>
                 <th>Designation</th>
                 <th>Department</th>
+                <th>Level</th>
                 <th>Created At</th>
                 <th>Edit</th>
                 <th>Delete</th>
@@ -76,6 +77,7 @@
                 },
                 { data: 'designation_name', name: 'designation_name' },
                 { data: 'department_id', name: 'department_id' },
+                { data: 'level', name: 'level' },
                 { data: 'created_at', name: 'created_at' },
                 {
                     data: 'edit', 

@@ -25,7 +25,7 @@ class Datatable extends Controller
     public function GetdesignationAjax(Request $request)
 {
     try {
-        $query = \App\Models\Admin\Designation::with('departments')->select('id', 'department_id', 'designation_name', 'created_at');
+        $query = \App\Models\Admin\Designation::with('departments')->select('id', 'department_id','level', 'designation_name', 'created_at');
 
         if ($request->has('startDate') && $request->has('endDate')) {
             $startDate = $request->input('startDate');
@@ -37,8 +37,8 @@ class Datatable extends Controller
         }
 
         return DataTables::of($query)
-        ->editColumn('department_id', function ($blog) {
-            return $blog->departments ? $blog->departments->department_name : 'N/A';
+        ->editColumn('department_id', function ($row) {
+            return $row->departments ? $row->departments->department_name : 'N/A';
         })
             ->addColumn('edit', function ($row) {
                 return '<a href="/Editdesgination/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> </a>';

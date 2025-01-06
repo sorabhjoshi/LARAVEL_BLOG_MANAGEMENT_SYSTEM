@@ -29,6 +29,8 @@
        <th>No</th>
        <th>Name</th>
        <th>Email</th>
+       <th>Department</th>
+       <th>Designation</th>
        <th>Roles</th>
        <th width="280px">Action</th>
    </tr>
@@ -44,6 +46,8 @@
             @endforeach
           @endif
         </td>
+        <td>{{ $user->departments->department_name ?? 'N/A' }}</td>
+        <td>{{ $user->Designations->designation_name ?? 'N/A' }}</td>
         <td>
              <a class="btn btn-info btn-sm" href="{{ route('users.show',$user->id) }}"><i class="fa-solid fa-list"></i> Show</a>
              <a class="btn btn-primary btn-sm" href="{{ route('users.edit',$user->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>

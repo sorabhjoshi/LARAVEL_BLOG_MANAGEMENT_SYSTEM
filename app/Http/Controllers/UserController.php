@@ -2,11 +2,13 @@
     
 namespace App\Http\Controllers;
     
+use App\Models\admin\department;
+use App\Models\Admin\Designation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use DB;
+use Illuminate\Support\Facades\DB;
 // use Hash;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
@@ -21,7 +23,7 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
-        $data = User::latest()->paginate(5);
+        $data = User::with('departments')->latest()->paginate(5);
   
         return view('users.index',compact('data'))
             ->with('i', ($request->input('page', 1) - 1) * 5);
@@ -35,8 +37,9 @@ class UserController extends Controller
     public function create(): View
     {
         $roles = Role::pluck('name','name')->all();
-
-        return view('users.create',compact('roles'));
+        $departments = Department::pluck('department_name', 'id')->all(); // Fetch 'id' as the key and 'department_name' as the value
+        $designations = Designation::pluck('designation_name', 'id')->all();
+        return view('users.create',compact('roles','departments','designations'));
     }
     
     /**
@@ -46,23 +49,29 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request): RedirectResponse
-    {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|same:confirm-password',
-            'roles' => 'required'
-        ]);
+{
+    $this->validate($request, [
+        'name' => 'required',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|same:confirm-password',
+        'roles' => 'required|exists:roles,name',
+        'department' => 'required',
+        'designation' => 'required',
+    ]);
+
+    $input = $request->all();
+    $input['password'] = Hash::make($input['password']);
+    $input['department'] = $request->department; // Use department_id
+    $input['designation'] = $request->designation; // Use designation_id
+
+    $user = User::create($input);
+    $user->assignRole($request->input('roles'));
+
+    return redirect()->route('users.index')
+        ->with('success', 'User created successfully');
+}
+
     
-        $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
-    
-        $user = User::create($input);
-        $user->assignRole($request->input('roles'));
-    
-        return redirect()->route('users.index')
-                        ->with('success','User created successfully');
-    }
     
     /**
      * Display the specified resource.
@@ -87,9 +96,12 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $roles = Role::pluck('name','name')->all();
+        $departments = Department::pluck('department_name', 'id')->all();
+        $designations = Designation::pluck('designation_name', 'id')->all();
+        
         $userRole = $user->roles->pluck('name','name')->all();
     
-        return view('users.edit',compact('user','roles','userRole'));
+        return view('users.edit',compact('user','roles','userRole','departments','designations'));
     }
     
     /**
@@ -105,7 +117,9 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$id,
             'password' => 'same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'department' => 'required',
+            'designation' => 'required'
         ]);
     
         $input = $request->all();

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('designation_name')->nullable();
             $table->integer('department_id')->nullable();
+            $table->string('level')->nullable();
             $table->timestamps();
         });
     }

@@ -76,6 +76,27 @@
                 </select>
             </div>
         </div>
+
+        <div class="form-group">
+            <label for="department">Department</label>
+            <select name="department" id="department" class="form-control">
+                @foreach ($departments as $id => $name)
+                    <option value="{{ $id }}">{{ $name }}</option>
+                @endforeach
+            </select>
+            
+          
+            
+        </div>
+        
+        <div class="form-group">
+            <label for="designation">Designation</label>
+            <select name="designation" id="designation" class="form-control">
+                @foreach ($designations as $id => $name)
+                    <option value="{{ $id }}">{{ $name }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
             <button type="submit" class="btn btn-primary btn-sm mt-2 mb-3 p-3"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
         </div>

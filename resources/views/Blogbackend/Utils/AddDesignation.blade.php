@@ -115,6 +115,20 @@
             @enderror
         </div>
 
+        <div class="form-group">
+            <label for="Level"> Select Level:</label>
+            <select name="Level" id="Level">
+                <option value="Level1">Level 1</option>
+                <option value="Level2">Level 2</option>
+                <option value="Level3">Level 3</option>
+                <option value="Level4">Level 4</option>
+                <option value="Level5">Level 5</option>
+            </select>
+            @error('Level')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="form-group full-width">
             <button type="submit">Add Designation</button>
         </div>

@@ -65,7 +65,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Role:</strong>
-                <select name="roles[]" class="form-control" multiple="multiple">
+                <select name="roles[]" class="form-control">
                     @foreach ($roles as $value => $label)
                         <option value="{{ $value }}" {{ isset($userRole[$value]) ? 'selected' : ''}}>
                             {{ $label }}
@@ -74,6 +74,30 @@
                 </select>
             </div>
         </div>
+        <div class="form-group">
+            <label for="department">Department</label>
+            <select name="department" id="department" class="form-control">
+                @foreach ($departments as $id => $name)
+                    <option value="{{ $id }}" {{ $id == $user->department ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="designation">Designation</label>
+            <select name="designation" id="designation" class="form-control">
+                @foreach ($designations as $id => $name)
+                    <option value="{{ $id }}" {{ $id == $user->designation ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        
+        
+        
         <div class="col-xs-12 col-sm-12 col-md-12  text-center">
             <button type="submit" class="btn btn-primary btn-sm mt-2 p-3 mb-3"><i class="fa-solid fa-floppy-disk"></i> Submit</button>
         </div>
