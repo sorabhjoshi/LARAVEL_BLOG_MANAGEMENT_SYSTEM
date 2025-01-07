@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('language');
             $table->longText('description');
             $table->integer('category');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

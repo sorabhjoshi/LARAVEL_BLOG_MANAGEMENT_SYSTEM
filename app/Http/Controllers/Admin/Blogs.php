@@ -7,6 +7,7 @@ use App\Models\Admin\Language;
 use App\Models\Admin\Menu;
 use App\Models\Admin\News;
 use App\Models\Admin\Register_model;
+use App\Models\Admin\Status;
 use App\Models\Admin\User;
 use Auth;
 use Illuminate\Support\Facades\DB;
@@ -249,12 +250,23 @@ public function blogcat(Request $request)
     return view('Blogbackend.BlogCat', compact('userdata'));
 }
 
-public function showblogs(){
+public function showblogs()
+{
+    // Fetch all status names
+    $statusnames = Status::all();
 
-    $userdata = Blog::with('categories' )->paginate(2);
-    // dd($userdata);
-    return view('Blogbackend/Blog', ['userdata' => $userdata]);
+    // Fetch blogs with relationships and apply pagination
+    $userdata = Blog::with(['categories', 'domainrel', 'langrel', 'statuss'])->paginate(2);
+    $designation = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
+
+    // Pass data to the view
+    return view('Blogbackend.Blog', [
+        'userdata' => $userdata,
+        'statusnames' => $statusnames,
+        'designation'=> $designation
+    ]);
 }
+
 
 public function BlogList(Request $request)
 {
@@ -279,10 +291,10 @@ public function BlogList(Request $request)
         }
     }
 
-    
+    $statusnames = Status::all();
     $userdata = $query->with('categories')->paginate(2);
 
-    return view('Blogbackend.Blog', compact('userdata'));
+    return view('Blogbackend.Blog', compact('userdata','statusnames'));
 }
 
 }

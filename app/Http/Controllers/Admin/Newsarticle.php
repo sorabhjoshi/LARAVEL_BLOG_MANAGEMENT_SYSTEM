@@ -6,6 +6,7 @@ use App\Models\Admin\Language;
 use App\Models\Admin\News;
 use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
+use App\Models\Admin\Status;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -245,4 +246,9 @@ public function addnews(){
   return view('Blogbackend/Utils/AddNews', compact('Catdata','domain','lang'));
 }
 
+public function shownews(){
+    $designation = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
+    $statuses = Status::all(); 
+return view('Blogbackend.News', compact('statuses','designation'));
+}
 }

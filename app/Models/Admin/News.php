@@ -17,7 +17,8 @@ class News extends Model
         'description',
         'category',
         'domain',
-        'language'
+        'language',
+        'status'
     ];
 
     // Relationship to the Newscat model
@@ -35,5 +36,10 @@ class News extends Model
 public function langrel()
 {
     return $this->belongsTo(Language::class, 'language', 'id');
+}
+
+public function statuss()
+{
+    return $this->belongsTo(Status::class, 'status', 'id');
 }
 }

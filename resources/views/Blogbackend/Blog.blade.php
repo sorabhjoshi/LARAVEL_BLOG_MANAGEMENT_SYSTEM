@@ -143,12 +143,15 @@
                     <th>Category</th>
                     <th>Domain</th>
                     <th>Language</th>
+                    <th>Status</th>
                     <th>Created At</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
+                
+ ?>
                 @foreach ($userdata as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -158,6 +161,21 @@
                     <td>{{ $item->categories->categorytitle }}</td>
                     <td>{{ $item->domainrel ? $item->domainrel->domainname : 'N/A' }}</td>
                     <td>{{ $item->langrel ? $item->langrel->languages : 'N/A' }}</td>
+                    @if ($designation == 6)
+                    <td>
+                        <select name="status" class="status-dropdown " id="search" data-id="{{ $item->id }}">
+                            @foreach ($statusnames as $status)
+                            <option id="option" value="{{ $status->id }}" {{ $item->status == $status->id ? 'selected' : '' }}>
+                                {{ $status->status }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </td>
+                    @else
+                    <td>{{ $item->statuss ? $item->statuss->status : 'N/A' }}</td>
+                    @endif
+                    
+                    
                     <td>{{ $item->created_at->diffForHumans() }}</td>
                     <td>
                         <a href="{{ route('EditBlog', $item->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
@@ -183,9 +201,34 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#user-table').DataTable({
-            pageLength: 5,
+    $('#user-table').DataTable({
+        pageLength: 5,
+    });
+
+    $('.status-dropdown').change(function () {
+        var id = $(this).data('id'); 
+        var statusId = $(this).val(); 
+        $.ajax({
+            url: '/statusAjax',
+            type: 'POST',
+            data: {
+                id: id,
+                status_id: statusId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.message === 'success') {
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Error updating status. Please try again.');
+                    }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                alert('Error changing status');
+            }
         });
     });
+});
 </script>
 @endsection

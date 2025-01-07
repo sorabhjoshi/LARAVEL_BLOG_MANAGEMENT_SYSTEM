@@ -47,5 +47,10 @@ public function langrel()
 {
     return $this->belongsTo(Language::class, 'language', 'id');
 }
+
+public function statuss()
+{
+    return $this->belongsTo(Status::class, 'status', 'id');
+}
    
 }

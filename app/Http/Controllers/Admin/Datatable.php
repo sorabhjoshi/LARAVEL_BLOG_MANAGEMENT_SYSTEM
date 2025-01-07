@@ -9,6 +9,7 @@ use App\Models\Admin\Newscat;
 use App\Models\Admin\Pages;
 use App\Models\Admin\permissions;
 use App\Models\Admin\Menu;
+use App\Models\Admin\Status;
 use App\Models\Domains;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Admin\Blog;
@@ -22,6 +23,92 @@ use Illuminate\Support\Facades\DB as DBFacade;
 
 class Datatable extends Controller
 {
+    public function getnewsAjax(Request $request)
+{
+    try {
+        // Fetching data with relationships and limiting fields for optimization
+        $query = News::with(['domainrel:id,domainname', 'langrel:id,languages', 'statuss:id,status'])
+            ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'language', 'created_at', 'status');
+
+        // Apply date filters if provided
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            if (!empty($startDate) && !empty($endDate)) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        // Return DataTables response
+        return DataTables::of($query)
+            ->editColumn('status', function ($row) {
+                // Check user designation and render accordingly
+                $designation = session('user_designation'); // Assuming user designation is stored in session
+
+                if ($designation == 6) {
+                    // Render status dropdown for designation 6
+                    return $this->renderStatusDropdown($row);
+                } else {
+                    return $row->statuss ? $row->statuss->status : 'N/A';
+                }
+            })
+            ->editColumn('language', function ($news) {
+                // Render language field
+                return $news->langrel ? $news->langrel->languages : 'N/A';
+            })
+            ->editColumn('domain', function ($news) {
+                // Render domain field
+                return $news->domainrel ? $news->domainrel->domainname : 'N/A';
+            })
+            ->editColumn('created_at', function ($news) {
+                // Render created_at field in human-readable format
+                return $news->created_at->diffForHumans();
+            })
+            ->addColumn('edit', function ($row) {
+                // Render edit button
+                return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-key"></i></a>';
+            })
+            ->addColumn('delete', function ($row) {
+                // Render delete button
+                return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+            })
+            ->rawColumns(['edit', 'delete']) // Mark these columns as raw HTML
+            ->make(true);
+    } catch (\Exception $e) {
+        // Return JSON error response in case of exceptions
+        return response()->json(['error' => $e->getMessage()]);
+    }
+}
+private function renderStatusDropdown($row)
+{
+    $statuses = Status::pluck('status', 'id'); // Fetch all statuses
+    $options = '';
+
+    foreach ($statuses as $id => $status) {
+        $selected = ($row->status == $id) ? 'selected' : '';
+        $options .= "<option value='{$id}' {$selected}>{$status}</option>";
+    }
+
+    return "<select class='status-dropdown'>{$options}</select>";
+}
+
+
+    public function updateNewsStatus(Request $request)
+    {
+        try {
+            $news = News::find($request->id);
+            if ($news) {
+                $news->status = $request->status; // Assuming 'status' is the column in your table
+                $news->save();
+                return response()->json(['success' => true]);
+            }
+            return response()->json(['success' => false, 'message' => 'News not found']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+    
     public function GetdesignationAjax(Request $request)
 {
     try {
@@ -215,8 +302,8 @@ class Datatable extends Controller
     public function getblogAjax(Request $request)
     {
         try {
-            $query = Blog::with('domainrel', 'langrel') // Load relationships
-                ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'created_at');
+            $query = Blog::with('domainrel', 'langrel','statuss') // Load relationships
+                ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'created_at','status','designation');
             
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');
@@ -228,11 +315,14 @@ class Datatable extends Controller
             }
     
             return DataTables::of($query)
-                ->editColumn('language', function ($blog) {
-                    return $blog->langrel ? $blog->langrel->languages : 'N/A';
+            // ->editColumn('status', function ($row) {
+            //     return $row->statuss ? $row->statuss->status : 'N/A';
+            // })
+                ->editColumn('language', function ($row) {
+                    return $row->langrel ? $row->langrel->languages : 'N/A';
                 })
-                ->editColumn('domain', function ($blog) {
-                    return $blog->domainrel ? $blog->domainrel->name : 'N/A';
+                ->editColumn('domain', function ($row) {
+                    return $row->domainrel ? $row->domainrel->name : 'N/A';
                 })
                 ->addColumn('edit', function ($row) {
                     return '<a href="/Editblog/' . $row->id . '" class="btn btn-sm btn-warning"> <i class="fas fa-key"></i></a>';
@@ -247,47 +337,6 @@ class Datatable extends Controller
         }
     }
     
-    
-    public function getnewsAjax(Request $request)
-{
-    try {
-        $query = News::with(['domainrel:id,domainname', 'langrel:id,languages']) // Eager load only the necessary fields
-            ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'language', 'created_at');
-        
-        if ($request->has('startDate') && $request->has('endDate')) {
-            $startDate = $request->input('startDate');
-            $endDate = $request->input('endDate');
-
-            if ($startDate && $endDate) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            }
-        }
-
-        return DataTables::of($query)
-            ->editColumn('language', function ($news) {
-                return $news->langrel ? " {$news->langrel->languages}" : 'N/A';
-            })
-            ->editColumn('domain', function ($news) {
-                return $news->domainrel ? " {$news->domainrel->domainname}" : 'N/A';
-            })
-            ->editColumn('created_at', function ($news) {
-                return $news->created_at->diffForHumans();
-            })
-            ->addColumn('edit', function ($row) {
-                return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-key"></i></a>';
-            })
-            ->addColumn('delete', function ($row) {
-                return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
-            })
-            ->rawColumns(['edit', 'delete'])
-            ->make(true);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()]);
-    }
-}
-
-
-
     
 
     

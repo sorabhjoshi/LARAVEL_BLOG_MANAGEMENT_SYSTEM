@@ -137,9 +137,11 @@ Route::group(['middleware' => ['auth']], function() {
 Route::get('/GetDepartmentById/{id}', [Departments::class, 'getDepartmentById']);
 
 // Route to update department
-Route::post('/UpdateDepartment', [Departments::class, 'updateDepartment'])->name('UpdateDepartment');
-
-Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
+// Route::post('/UpdateNewsStatus', [Datatable::class, 'updateNewsStatus']);
+Route::post('/update-news-status', [Datatable::class, 'updateNewsStatus']);
+Route::post('/statusAjax', [Datatable::class, 'updateStatus']);
+    Route::post('/UpdateDepartment', [Departments::class, 'updateDepartment'])->name('UpdateDepartment');
+    Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
     Route::post('/GetDepartmentAjax', [Datatable::class, 'GetDepartmentAjax']);
     Route::post('/getlanguagesAjax', [Datatable::class, 'getlanguagesAjax']);
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
@@ -198,9 +200,7 @@ Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
 
     Route::get('/Admin/BlogCat', [Blogs::class, 'showcat'])->name('Blogscat')->middleware('role:Admin|Blog-team');
 
-    Route::get('/Admin/News', function () {
-        return view('Blogbackend.News');
-    })->name('Newsarticle')->middleware('role:Admin|News-team');
+    Route::get('/Admin/News', [Newsarticle::class, 'shownews'])->name('Newsarticle')->middleware('role:Admin|News-team');
 
     Route::get('/Admin/NewsCat', function () {
         return view('Blogbackend.NewsCat');
