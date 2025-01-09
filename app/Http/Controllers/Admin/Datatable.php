@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Models\Admin\blogs_has_approval;
 use App\Models\Admin\Companyaddress;
 use App\Models\admin\department;
+use App\Models\Admin\Designation;
 use App\Models\Admin\Module;
 use App\Models\Admin\Modules;
 use App\Models\Admin\Newscat;
@@ -80,18 +82,59 @@ class Datatable extends Controller
         return response()->json(['error' => $e->getMessage()]);
     }
 }
-private function renderStatusDropdown($row)
+
+public function updateStatus(Request $request)
 {
-    $statuses = Status::pluck('status', 'id'); // Fetch all statuses
-    $options = '';
+    try {
+        // Validate the request
+        $request->validate([
+            'blogid' => 'required|integer',
+            'designationid' => 'required|integer',
+            'userid' => 'required|integer',
+            'approvalLevel' => 'required|integer|min:1|max:5',
+        ]);
 
-    foreach ($statuses as $id => $status) {
-        $selected = ($row->status == $id) ? 'selected' : '';
-        $options .= "<option value='{$id}' {$selected}>{$status}</option>";
+   
+
+        $existingItem = blogs_has_approval::where('blog_id', $request->input('blogid'))
+            ->first();
+
+        if ($existingItem) {
+            $existingItem->approval = $request->input('approvalLevel');
+            $existingItem->user_id = $request->input('userid');
+            $existingItem->designation_id = $request->input('designationid');
+            $existingItem->save(); 
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully for the existing record.',
+            ]);
+        } else {
+            
+            $item = new blogs_has_approval();
+            $item->blog_id = $request->input('blogid');
+            $item->designation_id = $request->input('designationid');
+            $item->user_id = $request->input('userid');
+            $item->approval = $request->input('approvalLevel');
+            $item->save(); 
+
+            return response()->json([
+                'success' => true,
+                'message' => 'New record created successfully.',
+            ]);
+        }
+    } catch (\Exception $e) {
+        // Return error message
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ]);
     }
-
-    return "<select class='status-dropdown'>{$options}</select>";
 }
+
+
+
+
 
 
     public function updateNewsStatus(Request $request)

@@ -103,7 +103,9 @@
             <a href="{{ route('addblog') }}" class="btn btn-success">Add Blog</a>
         </div>
     </div>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <div class="table-responsive">
         <form method="GET" action="{{ route('BlogList') }}">
             <div class="filter-container">
@@ -150,8 +152,6 @@
                 </tr>
             </thead>
             <tbody>
-                
- ?>
                 @foreach ($userdata as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -161,20 +161,21 @@
                     <td>{{ $item->categories->categorytitle }}</td>
                     <td>{{ $item->domainrel ? $item->domainrel->domainname : 'N/A' }}</td>
                     <td>{{ $item->langrel ? $item->langrel->languages : 'N/A' }}</td>
-                    @if ($designation == 6)
                     <td>
-                        <select name="status" class="status-dropdown " id="search" data-id="{{ $item->id }}">
-                            @foreach ($statusnames as $status)
-                            <option id="option" value="{{ $status->id }}" {{ $item->status == $status->id ? 'selected' : '' }}>
-                                {{ $status->status }}
-                            </option>
-                            @endforeach
-                        </select>
+                        <div style="display: flex; flex-direction: row;">
+                            <select name="approvalLevel" class="approval-select" data-id="{{ $item->id }}" dis>
+                                @foreach ($designations->take($item->approval->designation_id) as $designation)
+                                    <option value="{{ $designation->id }}" {{ $item->approval->approval == $designation->id ? 'selected' : '' }} disabled>
+                                        Approved by {{ $designation->designation_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button class="btn btn-success approve-btn" data-id="{{ $item->id }}" 
+                                @if ($item->approval->designation_id > $designationid) disabled @endif>
+                                Approve
+                            </button>
+                        </div>
                     </td>
-                    @else
-                    <td>{{ $item->statuss ? $item->statuss->status : 'N/A' }}</td>
-                    @endif
-                    
                     
                     <td>{{ $item->created_at->diffForHumans() }}</td>
                     <td>
@@ -187,7 +188,7 @@
                 @endforeach
             </tbody>
         </table>
-
+        
         <div class="pagination-container">
             {{ $userdata->appends(request()->query())->links() }}
         </div>
@@ -198,37 +199,38 @@
 
 @section('js')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-    $('#user-table').DataTable({
-        pageLength: 5,
-    });
+        
+        // Approve button click event
+        $(document).on('click', '.approve-btn', function () {
+            var blogid = $(this).data('id');
+            var designationId =  {{$designationid}} // Get selected designation ID
+            var userid = "{{ session('user_id') }}"; // Get current user ID from session
 
-    $('.status-dropdown').change(function () {
-        var id = $(this).data('id'); 
-        var statusId = $(this).val(); 
-        $.ajax({
-            url: '/statusAjax',
-            type: 'POST',
-            data: {
-                id: id,
-                status_id: statusId,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                if (response.message === 'success') {
+            $.ajax({
+                url: '/statusAjax', // Your endpoint for handling the status update
+                type: 'POST',
+                data: {
+                    blogid: blogid,
+                    designationid: designationId, // Pass the selected designation ID
+                    userid: userid,
+                    approvalLevel: designationId, // Pass the selected designation ID
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success) {
                         alert('Status updated successfully!');
                     } else {
-                        alert('Error updating status. Please try again.');
+                        alert(response.message);
                     }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                alert('Error changing status');
-            }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error changing status');
+                }
+            });
         });
     });
-});
 </script>
 @endsection

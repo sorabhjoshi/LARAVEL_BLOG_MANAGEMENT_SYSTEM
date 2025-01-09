@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
+use App\Models\Admin\Designation;
 use App\Models\Admin\Domains;
 use App\Models\Admin\Language;
 use App\Models\Admin\Menu;
@@ -253,17 +254,18 @@ public function blogcat(Request $request)
 public function showblogs()
 {
     // Fetch all status names
-    $statusnames = Status::all();
+    // $statusnames = Status::all();
 
     // Fetch blogs with relationships and apply pagination
-    $userdata = Blog::with(['categories', 'domainrel', 'langrel', 'statuss'])->paginate(2);
-    $designation = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
+    $designations = Designation::all(); 
+    $blogdata = Blog::with(['categories', 'domainrel', 'langrel', 'statuss','approval'])->paginate(2);
+    $designationid = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
 
     // Pass data to the view
     return view('Blogbackend.Blog', [
-        'userdata' => $userdata,
-        'statusnames' => $statusnames,
-        'designation'=> $designation
+        'userdata' => $blogdata,
+        'designationid'=> $designationid,
+        'designations' => $designations
     ]);
 }
 
