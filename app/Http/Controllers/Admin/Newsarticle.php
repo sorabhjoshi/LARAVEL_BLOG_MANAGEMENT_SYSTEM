@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Models\Admin\Designation;
 use App\Models\Admin\Domains;
 use App\Models\Admin\Language;
 use App\Models\Admin\News;
@@ -247,8 +248,10 @@ public function addnews(){
 }
 
 public function shownews(){
-    $designation = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
-    $statuses = Status::all(); 
-return view('Blogbackend.News', compact('statuses','designation'));
+    $designations = Designation::all(); 
+    // $blogdata = news::with(['categories', 'domainrel', 'langrel', 'statuss','approval'])->paginate(2);
+
+    $designationid = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
+    return view('Blogbackend.News', compact('designationid','designations'));
 }
 }

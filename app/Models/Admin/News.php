@@ -42,4 +42,10 @@ public function statuss()
 {
     return $this->belongsTo(Status::class, 'status', 'id');
 }
+
+
+public function approval()
+{
+    return $this->hasOne(news_has_approval::class, 'news_id', 'id');
+}
 }

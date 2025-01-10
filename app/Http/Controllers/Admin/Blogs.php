@@ -292,11 +292,13 @@ public function BlogList(Request $request)
             $query->where('title', 'like', '%' . $request->searchValue . '%');
         }
     }
+    $designations = Designation::all(); 
+    $designationid = \App\Models\User::where('id', session('user_id'))->pluck('designation')->first();
 
     $statusnames = Status::all();
     $userdata = $query->with('categories')->paginate(2);
 
-    return view('Blogbackend.Blog', compact('userdata','statusnames'));
+    return view('Blogbackend.Blog', compact('userdata','statusnames','designationid','designations'));
 }
 
 }

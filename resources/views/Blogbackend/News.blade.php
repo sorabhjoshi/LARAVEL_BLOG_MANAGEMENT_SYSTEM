@@ -1,14 +1,59 @@
 @extends('Blogbackend.components.layout')
 @section('title', 'News')
 @section('content')
+<link rel="stylesheet" href='{{ asset('css/blog.css') }}'>
+
 <style>
      #search {
         padding: 6px;
         border: none;
         border-radius: 5px;
-    }
+    }.status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.approval-select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.status-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.status-actions .btn {
+    display: flex;
+    flex-direction: row;
+    padding: 6px 10px;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.status-actions .btn-success:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-actions .btn-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
 </style>
-<link rel="stylesheet" href='{{ asset('css/blog.css') }}'>
 <div class="container mt-4">
     <div class="addnews">
         <h2>News List</h2>
@@ -92,27 +137,7 @@
                 { data: 'category', name: 'category' },
                 { data: 'domain', name: 'domain' },
                 { data: 'language', name: 'language' },
-                {
-    data: 'status',
-    orderable: false,
-    searchable: false,
-    render: function (data, type, row) {
-        var designation = {{ $designation }};
-        if (designation == 6) {
-            let statusOptions = {!! json_encode($statuses->pluck('status', 'id')) !!};
-            let optionsHtml = '';
-            for (let id in statusOptions) {
-                let selected = ( row.statuss?.id == id) ? 'selected' : '';
-                optionsHtml += `<option value="${id}" ${selected}>${statusOptions[id]}</option>`;
-            }
-            return `<select class="status-dropdown" id='search'>${optionsHtml}</select>`;
-        } else {
-            return row.statuss ? row.statuss.status : 'N/A';
-        }
-    }
-}
-
-,
+                { data: 'status',name: 'status'},
                 { data: 'created_at', name: 'created_at' },
                 { data: 'edit', orderable: false, searchable: false },
                 { data: 'delete', orderable: false, searchable: false },
@@ -123,24 +148,62 @@
             table.ajax.reload();
         });
 
-        $('#user-table').on('change', '.status-dropdown', function() {
-            var statusId = $(this).val();
-            var rowId = $(this).closest('tr').find('td:first').text();
+        $(document).on('click', '.approve-btn', function () {
+            var newsid = $(this).data('id');
+            var designationId =  {{$designationid}} // Get selected designation ID
+            var userid = "{{ session('user_id') }}"; // Get current user ID from session
 
             $.ajax({
-                url: '/update-news-status',
-                method: 'POST',
+                url: '/statusnewsAjax', // Your endpoint for handling the status update
+                type: 'POST',
                 data: {
-                    id: rowId,
-                    status: statusId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    newsid: newsid,
+                    designationid: designationId, // Pass the selected designation ID
+                    userid: userid,
+                    approvalLevel: designationId, // Pass the selected designation ID
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
-                        alert('Status updated successfully');
+                        alert('Status updated successfully!');
+                        table.ajax.reload();
                     } else {
-                        alert('Failed to update status');
+                        alert(response.message);
                     }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error changing status');
+                }
+            });
+        });
+
+        $(document).on('click', '.reject-btn', function () {
+            var newsid = $(this).data('id');
+            var designationId =  {{$designationid}} // Get selected designation ID
+            var userid = "{{ session('user_id') }}"; // Get current user ID from session
+
+            $.ajax({
+                url: '/newsstatusrejectAjax', // Your endpoint for handling the status update
+                type: 'POST',
+                data: {
+                    newsid: newsid,
+                    designationid: designationId, // Pass the selected designation ID
+                    userid: userid,
+                    approvalLevel: designationId, // Pass the selected designation ID
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Approval Rejected successfully!');
+                        table.ajax.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error changing status');
                 }
             });
         });

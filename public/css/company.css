@@ -537,6 +537,21 @@
          background-color: #e53935;
          border: 1px solid #e53935;
      }
+     .filter-container{
+        background-color: #587ba1;
+        color: white;
+    
+    }
+    .filter label{
+        color: white;
+    }
+    .filter input{
+        padding: 10px 10px !important;
+        border-radius: 5px;
+        border: none;
+        font-size: 1rem !important;
+        width: 200px;
+    }
  
      @media (max-width: 768px) {
  

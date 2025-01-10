@@ -2,6 +2,7 @@
 @section('title', 'News Category')
 @section('content')
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
+
 <div class="container mt-4">
     <div class="addnews">
         <h2>News Category List</h2>

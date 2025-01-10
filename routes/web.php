@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\Designation;
 use App\Http\Controllers\Admin\Domain;
 use App\Http\Controllers\Admin\Languages;
+use App\Http\Controllers\Admin\news_has_approval;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
 use Illuminate\Support\Facades\Route;
@@ -140,6 +141,10 @@ Route::get('/GetDepartmentById/{id}', [Departments::class, 'getDepartmentById'])
 // Route::post('/UpdateNewsStatus', [Datatable::class, 'updateNewsStatus']);
 Route::post('/update-news-status', [Datatable::class, 'updateNewsStatus']);
 Route::post('/statusAjax', [Datatable::class, 'updateStatus']);
+Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
+
+Route::post('/newsstatusrejectAjax', [news_has_approval::class, 'rejectStatus']);
+Route::post('/statusnewsAjax', [news_has_approval::class, 'updateStatus']);
     Route::post('/UpdateDepartment', [Departments::class, 'updateDepartment'])->name('UpdateDepartment');
     Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
     Route::post('/GetDepartmentAjax', [Datatable::class, 'GetDepartmentAjax']);

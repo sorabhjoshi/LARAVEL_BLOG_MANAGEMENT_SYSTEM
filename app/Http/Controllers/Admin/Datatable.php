@@ -29,59 +29,95 @@ class Datatable extends Controller
 {
     try {
         // Fetching data with relationships and limiting fields for optimization
-        $query = News::with(['domainrel:id,domainname', 'langrel:id,languages', 'statuss:id,status'])
-            ->select('id', 'slug', 'user_id', 'title', 'authorname', 'category', 'domain', 'language', 'created_at', 'status');
+        $query = News::with([
+            'domainrel:id,domainname',
+            'langrel:id,languages',
+            'statuss:id,status',
+            'approval'
+        ])->select(
+            'id', 
+            'slug', 
+            'user_id', 
+            'title', 
+            'authorname', 
+            'category', 
+            'domain', 
+            'language', 
+            'created_at', 
+            'status'
+        );
 
+        // Get the current user's designation ID
+        $currentDesignationId = auth()->user()->designation ?? 0;
+        
         // Apply date filters if provided
-        if ($request->has('startDate') && $request->has('endDate')) {
+        if ($request->has(['startDate', 'endDate'])) {
             $startDate = $request->input('startDate');
             $endDate = $request->input('endDate');
 
-            if (!empty($startDate) && !empty($endDate)) {
+            if ($startDate && $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }
         }
 
-        // Return DataTables response
         return DataTables::of($query)
-            ->editColumn('status', function ($row) {
-                // Check user designation and render accordingly
-                $designation = session('user_designation'); // Assuming user designation is stored in session
+        
+            ->editColumn('status', function ($news) use ($currentDesignationId) {
+                $designations = Designation::all();
+                $statusOptions = '';
+                $approvalLevel = $news->approval->designation_id ?? 0;
 
-                if ($designation == 6) {
-                    // Render status dropdown for designation 6
-                    return $this->renderStatusDropdown($row);
-                } else {
-                    return $row->statuss ? $row->statuss->status : 'N/A';
+                if (!empty($news->approval)) {
+                    foreach ($designations->take($news->approval->designation_id) as $designation) {
+                        $isSelected = $designation->id === $approvalLevel ? 'selected' : '';
+                        $statusOptions .= "<option value='{$designation->id}' {$isSelected} disabled>
+                            Approved by {$designation->designation_name}
+                        </option>";
+                    }
                 }
+
+                $approveDisabled = $approvalLevel > $currentDesignationId ? 'disabled' : '';
+                $rejectDisabled = $approvalLevel > $currentDesignationId ? 'disabled' : '';
+
+                return "
+                    <div class='status-container'>
+                        <select class='approval-select' data-id='{$news->id}' >
+                            {$statusOptions}
+                        </select>
+                        <div class='status-actions'>
+                            <button class='btn btn-success approve-btn' data-id='{$news->id}' {$approveDisabled}>
+                                <i class='fas fa-check'></i> Approve
+                            </button>
+                            <button class='btn btn-danger reject-btn' data-id='{$news->id}' {$rejectDisabled}>
+                                <i class='fas fa-times'></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                ";
             })
             ->editColumn('language', function ($news) {
-                // Render language field
                 return $news->langrel ? $news->langrel->languages : 'N/A';
             })
             ->editColumn('domain', function ($news) {
-                // Render domain field
                 return $news->domainrel ? $news->domainrel->domainname : 'N/A';
             })
             ->editColumn('created_at', function ($news) {
-                // Render created_at field in human-readable format
                 return $news->created_at->diffForHumans();
             })
             ->addColumn('edit', function ($row) {
-                // Render edit button
-                return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-key"></i></a>';
+                return '<a href="/EditNews/' . $row->id . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>';
             })
             ->addColumn('delete', function ($row) {
-                // Render delete button
-                return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm delete-btn"><i class="fas fa-trash-alt"></i></a>';
+                return '<a href="/DeleteNews/' . $row->id . '" class="btn btn-sm btn-danger delete-btn"><i class="fas fa-trash-alt"></i></a>';
             })
-            ->rawColumns(['edit', 'delete']) // Mark these columns as raw HTML
+            ->rawColumns(['status', 'edit', 'delete']) // Mark these columns as raw HTML
             ->make(true);
     } catch (\Exception $e) {
-        // Return JSON error response in case of exceptions
-        return response()->json(['error' => $e->getMessage()]);
+        \Log::error('Error in getnewsAjax: ' . $e->getMessage()); // Log the error for debugging
+        return response()->json(['error' => 'An error occurred while processing the request.'], 500);
     }
 }
+
 
 public function updateStatus(Request $request)
 {
@@ -100,7 +136,7 @@ public function updateStatus(Request $request)
             ->first();
 
         if ($existingItem) {
-            $existingItem->approval = $request->input('approvalLevel');
+            $existingItem->approval = 1;
             $existingItem->user_id = $request->input('userid');
             $existingItem->designation_id = $request->input('designationid');
             $existingItem->save(); 
@@ -115,7 +151,7 @@ public function updateStatus(Request $request)
             $item->blog_id = $request->input('blogid');
             $item->designation_id = $request->input('designationid');
             $item->user_id = $request->input('userid');
-            $item->approval = $request->input('approvalLevel');
+            $item->approval = 1;
             $item->save(); 
 
             return response()->json([
@@ -132,6 +168,55 @@ public function updateStatus(Request $request)
     }
 }
 
+
+public function rejectStatus(Request $request)
+{
+    try {
+        // Validate the request
+        $request->validate([
+            'blogid' => 'required|integer',
+            'designationid' => 'required|integer',
+            'userid' => 'required|integer',
+            'approvalLevel' => 'required|integer|min:1|max:5',
+        ]);
+
+   
+
+        $existingItem = blogs_has_approval::where('blog_id', $request->input('blogid'))
+            ->first();
+
+        if ($existingItem) {
+            $existingItem->approval = 0;
+            $existingItem->user_id = $request->input('userid');
+            $existingItem->designation_id = $request->input('designationid')-1;
+            $existingItem->save(); 
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Approval Rejected successfully for the existing record.',
+            ]);
+        } else {
+            
+            $item = new blogs_has_approval();
+            $item->blog_id = $request->input('blogid');
+            $item->designation_id = $request->input('designationid')-1;
+            $item->user_id = $request->input('userid');
+            $item->approval = 0;
+            $item->save(); 
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Approval Rejected successfully.',
+            ]);
+        }
+    } catch (\Exception $e) {
+        // Return error message
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ]);
+    }
+}
 
 
 
