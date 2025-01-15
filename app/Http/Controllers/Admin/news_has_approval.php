@@ -36,16 +36,24 @@ class news_has_approval extends Controller
             } else {
                 
                 $item = new \App\Models\Admin\news_has_approval();
-                $item->news_id = $request->input('newsid');
-                $item->designation_id = $request->input('designationid');
-                $item->user_id = $request->input('userid');
-                $item->approval = 1;
-                $item->save(); 
-    
-                return response()->json([
-                    'success' => true,
-                    'message' => 'New record created successfully.',
-                ]);
+                if ( $item->designation_id <= \App\Models\User::where('id', session('user_id'))->pluck('designation')->first()) {
+                    $item->news_id = $request->input('newsid');
+                    $item->designation_id = $request->input('designationid');
+                    $item->user_id = $request->input('userid');
+                    $item->approval = 1;
+                    $item->save(); 
+        
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'New record created successfully.',
+                    ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'error' =>"User dosen't have the required permission",
+                    ]);
+                }
+                
             }
         } catch (\Exception $e) {
             // Return error message
@@ -86,16 +94,24 @@ class news_has_approval extends Controller
             } else {
                 
                 $item = new \App\Models\Admin\news_has_approval();
-                $item->news_id = $request->input('newsid');
-                $item->designation_id = $request->input('designationid')-1;
-                $item->user_id = $request->input('userid');
-                $item->approval = 0;
-                $item->save(); 
-    
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Approval Rejected successfully.',
-                ]);
+                if ($item->designation_id <= \App\Models\User::where('id', session('user_id'))->pluck('designation')->first()) {
+                    $item->news_id = $request->input('newsid');
+                    $item->designation_id = $request->input('designationid')-1;
+                    $item->user_id = $request->input('userid');
+                    $item->approval = 0;
+                    $item->save(); 
+        
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Approval Rejected successfully.',
+                    ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => "User dosen't have the required permission",
+                    ]);
+                }
+                
             }
         } catch (\Exception $e) {
             // Return error message

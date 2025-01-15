@@ -285,7 +285,7 @@
                             <select name="approvalLevel" class="approval-select" data-id="{{ $item->id }}" dis>
                                 @foreach ($designations->take($item->approval->designation_id) as $designation)
                                     <option value="{{ $designation->id }}" {{ $item->approval->designation_id == $designation->id ? 'selected' : '' }} disabled>
-                                        Approved by {{ $designation->designation_name }}
+                                        Approved by {{ $designation->designation_name }} 
                                     </option>
                                 @endforeach
                             </select>

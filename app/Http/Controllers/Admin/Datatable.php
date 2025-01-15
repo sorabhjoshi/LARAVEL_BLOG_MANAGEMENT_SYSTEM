@@ -127,7 +127,7 @@ public function updateStatus(Request $request)
             'blogid' => 'required|integer',
             'designationid' => 'required|integer',
             'userid' => 'required|integer',
-            'approvalLevel' => 'required|integer|min:1|max:5',
+            'approvalLevel' => 'required|integer',
         ]);
 
    
@@ -163,7 +163,7 @@ public function updateStatus(Request $request)
         // Return error message
         return response()->json([
             'success' => false,
-            'error' => $e->getMessage(),
+            'message' => $e->getMessage(),
         ]);
     }
 }
@@ -213,7 +213,7 @@ public function rejectStatus(Request $request)
         // Return error message
         return response()->json([
             'success' => false,
-            'error' => $e->getMessage(),
+            'message' => $e->getMessage(),
         ]);
     }
 }

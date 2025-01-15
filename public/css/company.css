@@ -565,3 +565,18 @@
              font-size: 12px;
          }
      }
+
+     @media (max-width: 768px) {
+   
+        .sidebar-content {
+            padding: 0px;
+        }
+        .sidebar a {
+            padding: 15px 16px !important;
+            margin:  auto 10px !important;
+        }
+        .sidebar a i {
+            min-width: 40px !important;
+        }
+       
+    }

@@ -6,6 +6,19 @@
     padding: 30px 20px 0 30px;
     flex-grow: 1;
 }
+
+@media (max-width: 768px) {
+    .links{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+   
+}
+.links a{
+width: 90px;
+padding: 40px auto;
+}
+}
 </style>
 
 <div class="row">
@@ -37,7 +50,7 @@
     <tr>
         <td>{{ ++$i }}</td>
         <td>{{ $role->name }}</td>
-        <td>
+        <td class="links">
             <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}"><i class="fa-solid fa-list"></i> Show</a>
             @can('role-edit')
                 <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>

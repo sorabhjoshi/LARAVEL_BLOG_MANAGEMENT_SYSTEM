@@ -156,7 +156,7 @@ public function addblogcat(Request $request)
         'metadescription' => $request->input('metadescription')
     ]);
 
-    return redirect()->route('BlogCat')->with('success', 'User updated successfully!');
+    return redirect()->route('Blogscat')->with('success', 'User updated successfully!');
 }
 
 public function editblogcat($id){
@@ -184,13 +184,13 @@ public function updateblogcat(Request $request)
 
     $userdata->save(); 
 
-    return redirect()->route('BlogCat')->with('success', 'Blog updated successfully!');
+    return redirect()->route('Blogscat')->with('success', 'Blog updated successfully!');
 }
 
 public function deleteblogcat($id){
     $userdata = Blogcat::find($id);
     if ($userdata->delete()) {
-        return redirect()->route('BlogCat')->with('success', 'User updated successfully!');
+        return redirect()->route('Blogscat')->with('success', 'User updated successfully!');
     } else {
         return redirect()->back()->with('error', 'Blog not found.');
     }

@@ -1,11 +1,243 @@
 
+<style>
+    :root {
+--primary-color: #4a90e2;
+--bg-color: white;
+--text-color: rgb(255, 255, 255);
+--sidebar-bg: #2d3e50;
+--sidebar-hover: #3e5773;
+}
 
-<aside class="sidebar">
+.dark {
+--primary-color: #90caf9; /* Lighter blue for dark mode */
+--bg-color: #121212; /* Dark background */
+--text-color: #ffffff; /* Light text color */
+--sidebar-bg: #1e1e1e; /* Dark sidebar background */
+--sidebar-hover: #333333; /* Slightly lighter hover effect */
+}
 
-    <div class="img">
-        <a href="{{route('home')}}" class="headerimg">
-            <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="">
+body {
+font-family: 'Poppins', sans-serif;
+margin: 0;
+padding: 0;
+background-color: var(--bg-color);
+/* color: var(--text-color); */
+}
+
+.sidebar {
+height: 100vh;
+width: 300px;
+position: fixed;
+z-index: 1;
+top: 0;
+left: 0;
+background-color: var(--sidebar-bg);
+overflow-y: auto;
+transition: 0.3s;
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+white-space: nowrap;
+}
+
+/* Hide scrollbar for modern browsers */
+.sidebar::-webkit-scrollbar {
+width: 0;
+height: 0;
+}
+
+.sidebar {
+scrollbar-width: none;
+-ms-overflow-style: none;
+}
+
+.sidebar-header {
+padding: 24px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-header h3 {
+margin: 0;
+font-size: 1.2em;
+color: var(--primary-color);
+}
+
+.toggle-btn {
+background: none;
+border: none;
+color: var(--text-color);
+font-size: 20px;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.toggle-btn:hover {
+color: var(--primary-color);
+}
+
+.sidebar a {
+padding: 15px 16px !important;
+text-decoration: none;
+font-size: 16px;
+color: var(--text-color);
+display: flex;
+align-items: center;
+transition: 0.2s;
+}
+.headerimg a{
+    padding: 15px 22px !important;
+}
+
+.sidebar a:hover {
+background-color: var(--sidebar-hover);
+color: var(--primary-color);
+}
+
+.sidebar a i {
+min-width: 30px;
+font-size: 20px;
+}
+
+#main {
+transition: margin-left .3s;
+padding: 20px;
+margin-left: 300px;
+}
+
+.sidebar.closed {
+width: 65px;
+}
+
+.sidebar.closed .sidebar-header h3 {
+display: none;
+}
+
+.sidebar.closed a span {
+display: none;
+}
+
+.sidebar.closed~#main {
+margin-left: 70px;
+}
+
+.menu,
+.menu ul {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+.menu-toggle-icon {
+margin-left: auto;
+font-size: 16px;
+}
+
+#btn {
+cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+.sidebar {
+    width: 70px;
+}
+.sidebar a {
+padding: 15px 25px !important;
+}
+.sidebar .sidebar-header h3 {
+    display: none;
+}
+
+.sidebar a span {
+    display: none;
+}
+
+#main {
+    margin-left: 70px;
+}
+
+.sidebar.open {
+    width: 300px;
+}
+
+.sidebar.open .sidebar-header h3 {
+    display: block;
+}
+
+.sidebar.open a span {
+    display: inline;
+}
+
+.sidebar.open~#main {
+    margin-left: 300px;
+}
+}
+
+/* Dark Mode Styles */
+.dark body {
+background-color: var(--bg-color);
+/* color: var(--text-color); */
+}
+
+.dark .sidebar {
+background-color: var(--sidebar-bg);
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.dark .sidebar a {
+color: var(--text-color);
+}
+
+.dark .sidebar a:hover {
+background-color: var(--sidebar-hover);
+color: var(--primary-color);
+}
+
+.dark .sidebar-header h3 {
+color: var(--primary-color);
+}
+
+.dark .toggle-btn {
+color: var(--text-color);
+}
+
+.dark .toggle-btn:hover {
+color: var(--primary-color);
+}
+
+.dark .menu-toggle-icon {
+color: var(--text-color);
+}
+@media (max-width: 768px) {
+   
+    .headerimg button{
+        padding: 14px 16px !important;
+    }
+     .headerimg{
+        padding: 0;
+    } 
+    .main-content {
+    margin-left: 70px;
+}
+.data-card{
+    width: 450px;
+}
+}
+.headerimg button {
+    padding: 14px 18px !important;
+    border-bottom: 1px solid #4b5c70 !important;
+}
+
+</style>
+<aside class="sidebar" id="mySidebar">
+
+    <div class="headerimg">
+        <a href="{{route('home')}}" class="imghead">
+            <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="" class="imghead">
         </a>
+        <button class="toggle-btn" onclick="toggleNav()">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
     <div class="sidebar-content">
         <ul class="menu">
@@ -21,16 +253,16 @@
                     @if(!empty($item['children']))
                         <ul class="menu-sub">
                             @foreach($item['children'] as $child)
-                                <li class="menu-item">
-                                    <a href="{{ $child['href'] ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link">
+                                <li class="menu-item" id="child">
+                                    <a href="{{ $child['href'] ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link" >
                                         <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>
                                         <div data-i18n="{{ $child['title'] ?? '' }}">{{ $child['text'] }}</div>
                                     </a>
                                     @if(!empty($child['children']))
                                         <ul class="menu-sub">
                                             @foreach($child['children'] as $subChild)
-                                                <li class="menu-item">
-                                                    <a href="{{ $subChild['href'] ? route($subChild['href']) : 'javascript:void(0);' }}" class="menu-link">
+                                                <li class="menu-item" id="child">
+                                                    <a href="{{ $subChild['href'] ? route($subChild['href']) : 'javascript:void(0);' }}" class="menu-link" > 
                                                         <i class="menu-icon {{ $subChild['icon'] ?? 'fas fa-circle' }}"></i>
                                                         <div data-i18n="{{ $subChild['title'] ?? '' }}">{{ $subChild['text'] }}</div>
                                                     </a>
@@ -47,3 +279,68 @@
         </ul>                     
     </div>
 </aside>
+
+<script>
+    function toggleNav() {
+        const sidebar = document.getElementById("mySidebar");
+        const main = document.getElementById("main");
+        sidebar.classList.toggle("closed");
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle("open");
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        let sidebarWidth = $('#mySidebar').css('width');
+        let screenWidth = $(window).width();
+
+        if (screenWidth < 768) {
+            $('.imghead').hide();
+            $('.headerimg').css('padding', '7px 8px');
+        }
+
+        $('.toggle-btn').click(function () {
+            let width = $('#mySidebar').css('width');
+
+            if (width === '300px') {
+                $('#mySidebar').css('width', '65px');
+                $('.menu').css('padding-left', '0');
+                $('.menu-toggle').css('padding', '15px 16px');
+                $('.menu-toggle-icon').hide().prev('div').hide();
+                $('.menu-item:last').find('div').hide();
+                $('.active').find('.menu-sub').hide();
+                $('.main-content').css('margin-left', '65px');
+                $('.sidebar-content').css('padding', '0 9px');
+                $('.imghead').hide();
+                $('.toggle-btn').css('margin', '6px');
+            } else if (width === '65px') {
+                $('#mySidebar').css('width', '300px');
+                $('.menu').css('padding-left', '0rem');
+                $('.menu-toggle').css('padding', '15px 16px');
+                $('.menu-toggle-icon').show().prev('div').show();
+                $('.menu-item:last').find('div').show();
+                $('.active').find('.menu-sub').show();
+                $('.main-content').css('margin-left', '300px');
+                $('.sidebar-content').css('padding', '0 9px');
+                $('.imghead').css('display', 'flex');
+                $('.toggle-btn').css('margin', '0px');
+                $('.headerimg').css('padding', '0');
+            }
+        });
+
+        $(window).resize(function () {
+            screenWidth = $(window).width();
+
+            if (screenWidth < 768) {
+                $('#mySidebar').css('width', '65px');
+                $('.main-content').css('margin-left', '65px');
+                $('.imghead').hide();
+            } else {
+                $('#mySidebar').css('width', '300px');
+                $('.main-content').css('margin-left', '300px');
+                $('.imghead').show();
+            }
+        });
+    });
+</script>

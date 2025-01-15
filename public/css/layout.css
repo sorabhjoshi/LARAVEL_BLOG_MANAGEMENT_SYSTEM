@@ -43,11 +43,14 @@ border-bottom: 1px solid #4b5c70;
 .headerimg {
     align-items: center;
     color: white;
+    width: 100%;
     text-decoration: none;
     cursor: pointer;
     text-align: center;
     transition: none;
     border: none;
+    display: flex;
+    flex-direction: row;
 }
 .dropdown-item:hover {
     background-color: #ba3b31 !important;
@@ -59,9 +62,13 @@ border-bottom: 1px solid #4b5c70;
     transform: none !important;
     box-shadow: none !important;
 }
+.headerimg button{
+    padding: 14px 18px;
+    border-bottom: 1px solid #4b5c70;
+}
 
 .headerimg img {
-    width: 150px;
+    width: 200px;
     height: 28px;
     margin: auto;
 }
@@ -158,7 +165,7 @@ border-bottom: 1px solid #4b5c70;
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
+    margin-left: 300px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -218,21 +225,18 @@ border-bottom: 1px solid #4b5c70;
 
 /* Responsive Sidebar */
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
+   
+    .sidebar-content {
+        padding: 0px;
     }
-
-    .sidebar.active {
-        transform: translateX(0);
+    .sidebar a {
+        padding: 15px 16px !important;
+        /* margin:  auto 10px !important; */
     }
-
-    .main-content {
-        margin-left: 0;
+    .sidebar a i {
+        min-width: 40px !important;
     }
-
-    .menu-toggle {
-        display: block;
-    }
+    
 }
 
 /* Additional Sidebar Styles */

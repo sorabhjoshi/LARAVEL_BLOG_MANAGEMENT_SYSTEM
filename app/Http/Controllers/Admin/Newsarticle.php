@@ -162,16 +162,14 @@ public function updatenewscat(Request $request)
     $userdata->seotitle = $request->input('seotitle');
     $userdata->metakeywords = $request->input('metakeywords');
     $userdata->metadescription = $request->input('metadescription');
-    // $userdata->userid = $user->id;
-
     $userdata->save(); 
 
-    return redirect()->route('NewsCat')->with('success', 'Blog updated successfully!');
+    return redirect()->route('Newscat');
 }
 public function deletenewscat($id){
     $userdata = Newscat::find($id);
     if ($userdata->delete()) {
-        return redirect()->route('NewsCat')->with('success', 'User updated successfully!');
+        return redirect()->route('NewsCat');
     } else {
         return redirect()->back()->with('error', 'Blog not found.');
     }

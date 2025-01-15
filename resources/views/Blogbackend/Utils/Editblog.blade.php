@@ -58,7 +58,7 @@
             <option value="{{ $item->id }}">{{ $item->domainname }}</option>
             @endforeach
         </select>
-        @error('category')
+        @error('Domain')
                     <div class="text-danger">{{ $message }}</div>
         @enderror
 
@@ -69,7 +69,7 @@
             <option value="{{ $item->id }}">{{ $item->languages }}</option>
             @endforeach
         </select>
-        @error('category')
+        @error('Languages')
                     <div class="text-danger">{{ $message }}</div>
         @enderror
 
