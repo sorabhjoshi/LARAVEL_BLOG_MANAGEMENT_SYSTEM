@@ -282,25 +282,30 @@
                     <td>{{ $item->langrel ? $item->langrel->languages : 'N/A' }}</td>
                     <td>
                         <div class="status-container">
-                            <select name="approvalLevel" class="approval-select" data-id="{{ $item->id }}" dis>
-                                @foreach ($designations->take($item->approval->designation_id) as $designation)
-                                    <option value="{{ $designation->id }}" {{ $item->approval->designation_id == $designation->id ? 'selected' : '' }} disabled>
-                                        Approved by {{ $designation->designation_name }} 
-                                    </option>
-                                @endforeach
+                            <select name="approvalLevel" class="approval-select" data-id="{{ $item->id }}">
+                                @if (optional($item->approval)->designation_id > 0)
+                                    @foreach ($designations->take(optional($item->approval)->designation_id) as $designation)
+                                        <option value="{{ $designation->id }}" {{ optional($item->approval)->designation_id == $designation->id ? 'selected' : '' }} disabled>
+                                            Approved by {{ $designation->designation_name }} 
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="none" selected disabled>None</option>
+                                @endif
                             </select>
                             <div class="status-actions">
                                 <button class="btn btn-success approve-btn" data-id="{{ $item->id }}" 
-                                    @if ($item->approval->designation_id > $designationid) disabled @endif>
+                                    @if (optional($item->approval)->designation_id > $designationid) disabled @endif>
                                     <i class="fas fa-check"></i> Approve
                                 </button>
                                 <button class="btn btn-danger reject-btn" data-id="{{ $item->id }}" 
-                                    @if ($item->approval->designation_id > $designationid) disabled @endif>
+                                    @if (optional($item->approval)->designation_id > $designationid) disabled @endif>
                                     <i class="fas fa-times"></i> Reject
                                 </button>
                             </div>
                         </div>
                     </td>
+                    
                     
                     
                     <td>{{ $item->created_at->diffForHumans() }}</td>

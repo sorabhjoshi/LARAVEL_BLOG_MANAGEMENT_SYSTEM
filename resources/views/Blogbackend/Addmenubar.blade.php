@@ -8,7 +8,7 @@
     <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
     <link rel="stylesheet" href='{{asset('css/addmenubar.css')}}'>
     <h1 style="text-align: center; background-color:rgb(54, 148, 192); padding:10px; border-radius:10px;">Menu Editor</h1>
-    <div class="containersss">
+    <div class="containersss ">
         
     <ul id="myEditor" class="sortableLists list-group">
        
@@ -18,7 +18,7 @@
     // dd($id);
     $finalmenu_output = json_decode($finalmenu_output['json_output'], true);
     ?>
-    <div class="card">
+    <div class="card ">
         <div class="card-header">Edit Item</div>
         <div class="card-body">
             <form id="frmEdit" class="form-horizontal">
@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <div class="output-section">
+    <div class="output-section ">
         <form action="/updatejsondata" method="POST" class="json-form">
             @csrf
             {{-- <button type="hidden" id="outputbtn" class="btn btn-success">Output</button><br><br> --}}
@@ -131,6 +131,30 @@
         $('input[name="icon"]').val(event.iconpickerValue);
     });
 </script>
+<script>
+    $(document).ready(function () {
+        let sidebarWidth = $('#mySidebar').css('width');
+       
+        $(window).resize(function () {
+            screenWidth = $(window).width();
 
+            if (screenWidth < 1060) {
+                $('.containersss ').css('display', 'flex');
+                $('.containersss ').css('flex-direction', 'column');
+                $('.containersss ').css('align-items', 'center');
+                $('.containersss ').css(' justify-content', 'center');
+                $('#myEditor').css('width', '70%');
+
+            } else {
+                $('.containersss ').css('flex-direction', 'row');
+            }
+            if (screenWidth < 500) {
+                $('#myEditor').css('width', '30%');
+                // $('h1').css('width', '80vw');
+
+            } 
+        });
+    });
+</script>
 
 @endsection

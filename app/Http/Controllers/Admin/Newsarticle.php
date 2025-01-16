@@ -140,7 +140,7 @@ public function addnewscatdata(Request $request)
         'metadescription' => $request->input('metadescription')
     ]);
 
-    return redirect()->route('NewsCat')->with('success', 'User updated successfully!');
+    return redirect()->route('Newscat');
 }
 public function editnewscat($id){
     $userdata = Newscat::find($id);
@@ -169,7 +169,7 @@ public function updatenewscat(Request $request)
 public function deletenewscat($id){
     $userdata = Newscat::find($id);
     if ($userdata->delete()) {
-        return redirect()->route('NewsCat');
+        return redirect()->route('Newscat');
     } else {
         return redirect()->back()->with('error', 'Blog not found.');
     }

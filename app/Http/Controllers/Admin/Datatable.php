@@ -74,6 +74,8 @@ class Datatable extends Controller
                             Approved by {$designation->designation_name}
                         </option>";
                     }
+                }else{
+                    $statusOptions .= "<option selected disabled> None </option>";
                 }
 
                 $approveDisabled = $approvalLevel > $currentDesignationId ? 'disabled' : '';
