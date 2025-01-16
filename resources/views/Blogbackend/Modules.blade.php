@@ -86,6 +86,7 @@
         <h2>Modules List</h2>
         <div>
             <a href="{{ route('Dashboardfront') }}" class="btn btn-primary me-2">View Site</a>
+            <a href="{{ route('addmodule') }}" class="btn btn-primary me-2">AddModule</a>
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">

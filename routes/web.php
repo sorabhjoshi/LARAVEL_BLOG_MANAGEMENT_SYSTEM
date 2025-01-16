@@ -4,7 +4,9 @@
 use App\Http\Controllers\Admin\Designation;
 use App\Http\Controllers\Admin\Domain;
 use App\Http\Controllers\Admin\Languages;
+use App\Http\Controllers\Admin\MVCGeneratorController;
 use App\Http\Controllers\Admin\news_has_approval;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
 use Illuminate\Support\Facades\Route;
@@ -134,11 +136,8 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Route to fetch department by ID
     
-    Route::post('/DeleteDepartmentById/{id}', [Departments::class, 'deleteDepartmentById']);
+Route::post('/DeleteDepartmentById/{id}', [Departments::class, 'deleteDepartmentById']);
 Route::get('/GetDepartmentById/{id}', [Departments::class, 'getDepartmentById']);
-
-// Route to update department
-// Route::post('/UpdateNewsStatus', [Datatable::class, 'updateNewsStatus']);
 Route::post('/update-news-status', [Datatable::class, 'updateNewsStatus']);
 Route::post('/statusAjax', [Datatable::class, 'updateStatus']);
 Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
@@ -172,7 +171,7 @@ Route::post('/statusnewsAjax', [news_has_approval::class, 'updateStatus']);
     Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
 
     // Basic routes of pages 
-
+    Route::post('/generate-mvc', [MVCGeneratorController::class, 'generate'])->name('generate.mvc');
     Route::get('/Admin/languages', function () {
         return view('Blogbackend.languages');
     })->name('languages');
@@ -267,3 +266,4 @@ Route::get('/ajaxblogs', [blogfront::class, 'loadMoreBlogs'])->name('ajaxblogs')
 Route::get('/ajaxnews', [Newsfront::class, 'loadMoreNews'])->name('ajaxnews');
 Route::get('/load-more-news', [Newsfront::class, 'loadMoreNewscat'])->name('loadMoreNewsCat');
 Route::get('/load-more-blogs', [blogfront::class, 'loadMoreblogscat'])->name('loadMoreBlogscat');
+Route::resource('service', ServiceController::class);

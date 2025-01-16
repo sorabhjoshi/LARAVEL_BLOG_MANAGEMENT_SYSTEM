@@ -13,25 +13,20 @@
 
 <div class="containerz">
     <h2>Add Modules</h2>
-    <form method="POST" action="{{ route('modulesstore') }}">
+    <form method="POST" action="{{ route('generate.mvc') }}">
         @csrf
 
-        {{-- Module Section --}}
-        <div class="module-block mb-4">
-            <label for="module_name">Module Name:</label>
-            <input type="text" name="module_name" class="form-control mb-2" placeholder="Enter Module Name" >
+        <label for="model">Model Name:</label>
+        <input type="text" id="model" name="model" placeholder="Model Name" required>
+        <br><br>
 
-            {{-- Parent Module Dropdown --}}
-            <label for="parent_module">Select Parent Module:</label>
-            <select name="parent_module" class="form-control mb-2">
-                <option value="">-- No Parent (Main Module) --</option>
-                @foreach($modulesdata as $module)
-                    <option value="{{ $module->id }}">{{ $module->modulesname }}</option>
-                @endforeach
-            </select>
-        </div>
+        <label for="view">View</label>
+        <input type="text" id="view" name="view" placeholder="View Folder Name" required>
+        <br><br>
 
-        {{-- Submit Button --}}
+        <label for="route">Route Name:</label>
+        <input type="text" id="route" name="route" placeholder="Route Name" required>
+        <br><br>
         <button type="submit" class="btn btn-success">Save Module</button>
     </form>
 </div>
