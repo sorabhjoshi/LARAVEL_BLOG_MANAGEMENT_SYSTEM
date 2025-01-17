@@ -18,7 +18,6 @@ use App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Admin\Newsarticle;
 use App\Http\Controllers\Admin\Register;
 // use App\Http\Controllers\ContactController;
-
 use App\Http\Controllers\Frontend\blogfront;
 use App\Http\Controllers\Frontend\Home;
 use App\Http\Controllers\Frontend\Newsfront;
@@ -267,3 +266,4 @@ Route::get('/ajaxnews', [Newsfront::class, 'loadMoreNews'])->name('ajaxnews');
 Route::get('/load-more-news', [Newsfront::class, 'loadMoreNewscat'])->name('loadMoreNewsCat');
 Route::get('/load-more-blogs', [blogfront::class, 'loadMoreblogscat'])->name('loadMoreBlogscat');
 Route::resource('service', ServiceController::class);
+Route::resource('Project', App\Http\Controllers\Admin\ProjectController::class);

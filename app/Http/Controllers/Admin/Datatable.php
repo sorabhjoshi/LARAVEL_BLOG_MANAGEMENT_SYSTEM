@@ -493,17 +493,17 @@ public function rejectStatus(Request $request)
                                 <i class="fas fa-key"></i> 
                             </button>';
                 })
-                ->addColumn('edit', function ($row) {
-                    return '<a href="Modules/EditModule/' . $row->id . '" class="btn btn-sm btn-warning">
-                                <i class="fas fa-edit"></i> 
-                            </a>';
+                ->addColumn('mvc', function ($row) {
+                    return '<button id="mvc" class="btn btn-sm btn-warning" data-name="'.$row->modulesname.'">
+                               mvc
+                            </button>';
                 })
                 ->addColumn('delete', function ($row) {
                     return '<a href="Modules/DeleteModule/' . $row->id . '" class="btn btn-sm btn-danger delete-btn">
                                 <i class="fas fa-trash-alt"></i> 
                             </a>';
                 })
-                ->rawColumns(['addpermissions', 'edit', 'delete']) // Allow raw HTML
+                ->rawColumns(['addpermissions', 'mvc', 'delete']) // Allow raw HTML
                 ->make(true);
     
         } catch (\Exception $e) {

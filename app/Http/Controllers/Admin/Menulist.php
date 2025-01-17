@@ -113,9 +113,7 @@ class Menulist extends Controller
 
             saveModule($jsonDataArray);
         }
-
         $blog->json_output = json_encode($jsonDataArray);
-
         if ($blog->save()) {
             return redirect()->route('menulist')->with('success', 'Blog and modules updated successfully!');
         } else {

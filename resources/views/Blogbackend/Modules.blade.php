@@ -110,7 +110,7 @@
                     <th>Created At</th>
                     <th>Updated At</th>
                     <th>Add Permissions</th>
-                    <th>Edit</th>
+                    <th>MVC</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -182,7 +182,7 @@
                 { data: 'updated_at', name: 'updated_at' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'addpermissions', orderable: false, searchable: false },
-                { data: 'edit', orderable: false, searchable: false },
+                { data: 'mvc',name: 'mvc'},
                 { data: 'delete', orderable: false, searchable: false },
             ],
             lengthMenu: [5, 10, 25, 50], // Options for rows per page
@@ -346,5 +346,42 @@
 });
 
     });
+</script>
+
+
+<script>
+   $(document).on('click', '#mvc', function (event) {
+    event.preventDefault();
+
+    var modelname = $(this).data('name');
+    
+    // Show a confirmation dialog
+    if (confirm("Are you sure you want to generate the MVC structure for " + modelname + "?")) {
+        $.ajax({
+            url: "{{ route('generate.mvc') }}",
+            type: 'POST',
+            data: {
+                model: modelname,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (response) {
+                if (response.message === 'success') {
+                    alert('MVC created successfully!');
+                    editor.update();
+                    updateTextarea();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                alert('Error creating MVC structure.');
+            }
+        });
+    } else {
+        console.log('MVC creation canceled.');
+    }
+});
+
 </script>
 @endsection

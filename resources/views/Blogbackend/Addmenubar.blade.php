@@ -4,21 +4,18 @@
 
 @section('content')
 <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/iconset/fontawesome5-3-1.min.js"></script>
-    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
-    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
-    <link rel="stylesheet" href='{{asset('css/addmenubar.css')}}'>
-    <h1 style="text-align: center; background-color:rgb(54, 148, 192); padding:10px; border-radius:10px;">Menu Editor</h1>
-    <div class="containersss ">
-        
-    <ul id="myEditor" class="sortableLists list-group">
-       
-    </ul>
+<script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
+<script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
+<link rel="stylesheet" href='{{ asset('css/addmenubar.css') }}'>
+
+<h1 style="text-align: center; background-color:rgb(54, 148, 192); padding:10px; border-radius:10px;">Menu Editor</h1>
+<div class="containersss">
+    <ul id="myEditor" class="sortableLists list-group"></ul>
     <?php
     $id = $finalmenu_output['id'];
-    // dd($id);
     $finalmenu_output = json_decode($finalmenu_output['json_output'], true);
     ?>
-    <div class="card ">
+    <div class="card">
         <div class="card-header">Edit Item</div>
         <div class="card-body">
             <form id="frmEdit" class="form-horizontal">
@@ -48,27 +45,23 @@
                     <label for="title">Title</label>
                     <input type="text" name="title" class="form-control item-menu" id="title" placeholder="Title">
                 </div>
-                <div class="form-group">
-                    <label for="Permission">Permission</label>
-                    <input type="text" name="Permission" class="form-control item-menu" id="Permission" placeholder="Permission">
-                </div>
-                <div class="card-footer">
-                    <button type="button" id="Saveoutput" onclick="event.preventDefault();
-                                                         document.querySelector('.json-form').submit();" class="btn btn-success">Save</button>
-    <button type="button" id="btnUpdate" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Update</button>
+                <!-- Hidden Fields for modulesname and moduleid -->
+                <input type="hidden" name="modulesname" class="item-menu" id="modulesname">
+                <input type="hidden" name="moduleid" class="item-menu" id="moduleid">
 
+                <div class="card-footer">
+                    <button type="button" id="Saveoutput" class="btn btn-success">Save</button>
+                    <button type="button" id="btnUpdate" class="btn btn-primary"><i class="fas fa-sync-alt"></i> Update</button>
                     <button type="button" id="btnAdd" class="btn btn-success"><i class="fas fa-plus"></i> Add</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="output-section ">
+    <div class="output-section">
         <form action="/updatejsondata" method="POST" class="json-form">
             @csrf
-            {{-- <button type="hidden" id="outputbtn" class="btn btn-success">Output</button><br><br> --}}
-            
-            <textarea id="myTextarea"  class="form-control" rows="8" name="json_output" required></textarea>
+            <textarea id="myTextarea" class="form-control" rows="8" name="json_output" required></textarea>
             <input type="hidden" name="id" value="<?php echo $id; ?>">
             <input type="submit" value="Save" id="Save" class="btn btn-primary m-2 width-100">
         </form>
@@ -78,6 +71,24 @@
 
 @section('js')
 <script>
+    // Helper Function to Convert Text to Camel Case
+    function toCamelCase(str) {
+        return str
+            .replace(/[-_\s/]+(.)?/g, (match, chr) => (chr ? chr.toUpperCase() : '')) // Remove spaces, slashes, underscores
+            .replace(/^(.)/, (match, chr) => chr.toLowerCase()); // Ensure first character is lowercase
+    }
+
+    // Helper Function to Create a Simple Hash from a String
+    String.prototype.hashCode = function () {
+        var hash = 0, i, chr;
+        for (i = 0; i < this.length; i++) {
+            chr = this.charCodeAt(i);
+            hash = (hash << 5) - hash + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    };
+
     var iconPickerOptions = { searchText: "Search...", labelHeader: "{0}/{1}" };
     var sortableListOptions = { placeholderCss: { 'background-color': "#cccccc" } };
     var arrayjson = <?php echo json_encode($finalmenu_output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>;
@@ -91,7 +102,9 @@
             text: '#text',
             href: '#href',
             target: '#target',
-            title: '#title'
+            title: '#title',
+            modulesname: '#modulesname', 
+            moduleid: '#moduleid'        
         }
     });
 
@@ -99,30 +112,49 @@
     editor.setUpdateButton($('#btnUpdate'));
     editor.setData(arrayjson);
 
+    function updateModulesData(item) {
+        if (!item.text) return;
+        item.modulesname = toCamelCase(item.text);
+        item.moduleid = item.text.hashCode();
+        if (item.children && item.children.length > 0) {
+            item.children.forEach(updateModulesData);
+        }
+    }
+
+    // Automatically Populate Hidden Fields
+    $('#text').on('input', function () {
+        var textValue = $(this).val();
+        var camelCaseValue = toCamelCase(textValue);
+        $('#modulesname').val(camelCaseValue);
+        $('#moduleid').val(camelCaseValue.hashCode());
+    });
 
     $('#btnAdd').click(function () {
         editor.add();
+        updateTextarea();
     });
 
-  
     $('#btnUpdate').click(function () {
         editor.update();
         updateTextarea();
     });
 
-    
     $('#Saveoutput').click(function (event) {
-        event.preventDefault(); 
-        updateTextarea(); 
-        document.querySelector('.json-form').submit(); 
+        updateTextarea();
+        document.querySelector('.json-form').submit();
     });
 
-
     function updateTextarea() {
-        var jsonString = editor.getString();
-        console.log("Updated JSON:", jsonString); 
-        $('#myTextarea').val(jsonString); 
-    }
+    var jsonString = editor.getString(); // Get the JSON string
+    var jsonData = JSON.parse(jsonString); // Parse it into an object
+
+    // Update modulesname and moduleid for all items (parents and children)
+    jsonData.forEach(updateModulesData);
+
+    // Set the updated JSON back to the textarea
+    $('#myTextarea').val(JSON.stringify(jsonData, null, 2));
+}
+
 
     $('#myEditor_icon').iconpicker({
         placement: 'bottomLeft',
@@ -130,31 +162,25 @@
     }).on('iconpickerSelected', function (event) {
         $('input[name="icon"]').val(event.iconpickerValue);
     });
-</script>
-<script>
+
     $(document).ready(function () {
-        let sidebarWidth = $('#mySidebar').css('width');
-       
         $(window).resize(function () {
-            screenWidth = $(window).width();
-
+            var screenWidth = $(window).width();
             if (screenWidth < 1060) {
-                $('.containersss ').css('display', 'flex');
-                $('.containersss ').css('flex-direction', 'column');
-                $('.containersss ').css('align-items', 'center');
-                $('.containersss ').css(' justify-content', 'center');
+                $('.containersss').css({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                });
                 $('#myEditor').css('width', '70%');
-
             } else {
-                $('.containersss ').css('flex-direction', 'row');
+                $('.containersss').css('flexDirection', 'row');
             }
             if (screenWidth < 500) {
                 $('#myEditor').css('width', '30%');
-                // $('h1').css('width', '80vw');
-
-            } 
-        });
+            }
+        }).resize();
     });
 </script>
-
 @endsection

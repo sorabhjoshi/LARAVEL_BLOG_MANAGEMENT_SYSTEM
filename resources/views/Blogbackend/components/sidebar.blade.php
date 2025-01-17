@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Route;
+@endphp
 
 <style>
     :root {
@@ -242,8 +245,11 @@ color: var(--text-color);
     <div class="sidebar-content">
         <ul class="menu">
             @foreach($menu->json_output as $item)
+                @php
+                    $hasValidRoute = !empty($item['href']) && Route::has($item['href']); 
+                @endphp
                 <li class="menu-item">
-                    <a href="{{ $item['href'] ? route($item['href']) : 'javascript:void(0);' }}" class="menu-link menu-toggle">
+                    <a href="{{ $hasValidRoute ? route($item['href']) : 'javascript:void(0);' }}" class="menu-link menu-toggle">
                         <i class="menu-icon {{ $item['icon'] ?? 'fas fa-circle' }}"></i>
                         <div data-i18n="{{ $item['title'] ?? '' }}">{{ $item['text'] }}</div>
                         @if(!empty($item['children']))
@@ -253,30 +259,41 @@ color: var(--text-color);
                     @if(!empty($item['children']))
                         <ul class="menu-sub">
                             @foreach($item['children'] as $child)
-                                <li class="menu-item" id="child">
-                                    <a href="{{ $child['href'] ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link" >
-                                        <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>
-                                        <div data-i18n="{{ $child['title'] ?? '' }}">{{ $child['text'] }}</div>
-                                    </a>
-                                    @if(!empty($child['children']))
-                                        <ul class="menu-sub">
-                                            @foreach($child['children'] as $subChild)
-                                                <li class="menu-item" id="child">
-                                                    <a href="{{ $subChild['href'] ? route($subChild['href']) : 'javascript:void(0);' }}" class="menu-link" > 
-                                                        <i class="menu-icon {{ $subChild['icon'] ?? 'fas fa-circle' }}"></i>
-                                                        <div data-i18n="{{ $subChild['title'] ?? '' }}">{{ $subChild['text'] }}</div>
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                </li>
+                                @php
+                                    $childHasValidRoute = !empty($child['href']) && Route::has($child['href']);
+                                @endphp
+                                @if($childHasValidRoute || !empty($child['children']))
+                                    <li class="menu-item" id="child">
+                                        <a href="{{ $childHasValidRoute ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link">
+                                            <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>
+                                            <div data-i18n="{{ $child['title'] ?? '' }}">{{ $child['text'] }}</div>
+                                        </a>
+                                        @if(!empty($child['children']))
+                                            <ul class="menu-sub">
+                                                @foreach($child['children'] as $subChild)
+                                                    @php
+                                                        $subChildHasValidRoute = !empty($subChild['href']) && Route::has($subChild['href']);
+                                                    @endphp
+                                                    @if($subChildHasValidRoute)
+                                                        <li class="menu-item" id="child">
+                                                            <a href="{{ route($subChild['href']) }}" class="menu-link">
+                                                                <i class="menu-icon {{ $subChild['icon'] ?? 'fas fa-circle' }}"></i>
+                                                                <div data-i18n="{{ $subChild['title'] ?? '' }}">{{ $subChild['text'] }}</div>
+                                                            </a>
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </li>
+                                @endif
                             @endforeach
                         </ul>
                     @endif
                 </li>
             @endforeach
-        </ul>                     
+        </ul>
+                             
     </div>
 </aside>
 

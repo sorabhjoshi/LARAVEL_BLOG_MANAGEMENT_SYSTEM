@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -10,9 +11,9 @@ class MVCGeneratorController extends Controller
 {
     public function generate(Request $request)
     {
-        $modelName = Str::studly($request->input('model'));
-        $viewFolder = $request->input('view');
-        $routeName = $request->input('route');
+        $modelName = Str::studly(str_replace([' ', '-', '_'], '', $request->input('model')));
+        $viewFolder = $request->input('model');
+        $routeName = $request->input('model');
         $controllerName = $modelName . 'Controller';
 
         $modelPath = app_path("Models/Admin/$modelName.php");
@@ -36,18 +37,15 @@ class MVCGeneratorController extends Controller
             File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName));
             File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName));
             File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName));
-
         }
 
         // Add Route
-        $routecontrollercall = "App\Http\Controllers\Admin\{$controllerName}";
-        $routeContent = "Route::resource('$routeName', {$controllerName}::class);\n";
+        $routeContent = "Route::resource('$routeName', App\Http\Controllers\Admin\\$controllerName::class);\n";
         if (!Str::contains(File::get($routePath), $routeContent)) {
             File::append($routePath, $routeContent);
-            File::append($routePath, $routecontrollercall);
         }
 
-        return redirect()->route('addmodule')->with('success', 'MVC structure created successfully!');
+        return response()->json(['message' => 'Success']);
     }
 
     // Model Template
@@ -55,92 +53,74 @@ class MVCGeneratorController extends Controller
     {
         return "<?php
 
-        namespace App\Models\Admin;
+namespace App\Models\Admin;
 
-        use Illuminate\Database\Eloquent\Factories\HasFactory;
-        use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-        class $modelName extends Model
-        {
-            use HasFactory;
+class $modelName extends Model
+{
+    use HasFactory;
 
-            
-        }";
+    
+}";
     }
 
     // Controller Template
     protected function getControllerTemplate($controllerName, $viewFolder)
     {
+        $modelName = Str::studly($viewFolder);
+    
         return "<?php
-
-        namespace App\Http\Controllers\Admin;
-
-        use App\Models\Admin\\" . Str::studly($viewFolder) . ";
-        use Illuminate\Http\Request;
-
-        class $controllerName extends Controller
+    
+    namespace App\Http\Controllers\Admin;
+    
+    use App\Models\Admin\\$modelName;
+    use Illuminate\Http\Request;
+    
+    class $controllerName extends Controller
+    {
+        public function index()
         {
-            public function index()
-            {
-                \$$viewFolder = " . Str::studly($viewFolder) . "::all();
-                return view('Blogbackend.$viewFolder.index', compact('$viewFolder'));
-            }
-
-            public function create()
-            {
-                return view('$viewFolder.create');
-            }
-
-            public function store(Request \$request)
-            {
-                " . Str::studly($viewFolder) . "::create(\$request->all());
-                return redirect()->route('$viewFolder.index');
-            }
-
-            public function edit( \$id){
-                \$$viewFolder = " . Str::studly($viewFolder) . "::find(\$id);
-                if ($viewFolder) {
-                    return view('Blogbackend.$viewFolder.index', compact('$viewFolder'));
-
-                } else {
-                   echo'not found'; die;
-                }
-            }
-           public function update(Request \$request)
-            {
-                \$id= \$request->input('id');
-
-                \$record = " . Str::studly($viewFolder) . "::findOrFail(\$id);
-
-                \$record->update(\$request->all());
-
-                return redirect()->route('$viewFolder.index')->with('success', 'Record updated successfully!');
-            }
-
-
-               public function delete(\$id)
-                {
-                  \$$viewFolder = " . Str::studly($viewFolder) . "::find(\$id);
-
-                    if (\$$viewFolder) {
-                       
-                        \$record->delete();
-
-                        return redirect()->route('$viewFolder.index')->with('success', 'Record deleted successfully!');
-                    } else {
-                        return redirect()->route('$viewFolder.index')->with('error', 'Record not found.');
-                    }
-                }
-
-
-        }";
+            
+            return view('Blogbackend.$viewFolder.index');
+        }
+    
+        public function create()
+        {
+            return view('Blogbackend.$viewFolder.create');
+        }
+    
+        public function store(Request \$request)
+        {
+           
+            return redirect()->route('$viewFolder.index');
+        }
+    
+        public function edit(\$id)
+        {
+            
+            return view('Blogbackend.$viewFolder.edit');
+        }
+    }";
     }
 
     // View Template
     protected function getViewTemplate($viewType, $modelName)
     {
         if ($viewType === 'index') {
-            return "<h1>$modelName List</h1>";
+            return "<h1>$modelName List</h1>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id=\"table-body\">
+    </tbody>
+</table>";
         }
 
         return '';
