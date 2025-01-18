@@ -50,7 +50,7 @@
             <option value="{{ $item->id }}">{{ $item->domainname }}</option>
             @endforeach
         </select>
-        @error('category')
+        @error('Domain')
                     <div class="text-danger">{{ $message }}</div>
         @enderror
         
@@ -61,7 +61,18 @@
             <option value="{{ $item->id }}">{{ $item->languages }}</option>
             @endforeach
         </select>
-        @error('category')
+        @error('Languages')
+                    <div class="text-danger">{{ $message }}</div>
+        @enderror
+
+        <label for="Country">Country:</label>
+        <select id="Country" name="Country" >
+            <option value="" disabled selected>Select Country</option>
+            @foreach ($countries as $item)
+            <option value="{{ $item->id }}">{{ $item->name }}</option>
+            @endforeach
+        </select>
+        @error('Country')
                     <div class="text-danger">{{ $message }}</div>
         @enderror
 

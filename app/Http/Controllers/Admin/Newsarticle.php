@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Models\Admin\CountryList;
 use App\Models\Admin\Designation;
 use App\Models\Admin\Domains;
 use App\Models\Admin\Language;
@@ -25,7 +26,8 @@ public function addnewsdata(Request $request)
             'content' => 'required|string',
             'category' => 'required|string',
             'Domains' => 'required|string',
-            'Languages' => 'required|string'
+            'Languages' => 'required|string',
+            'Country' => 'required|integer'
         ]);
     
         $imagePath = null;
@@ -53,6 +55,7 @@ public function addnewsdata(Request $request)
             'user_id' => $user->id, 
             'domain' => $request->input('Domains'),
             'language' => $request->input('Languages'),
+            'country' => $request->input('Country'),
         ]);
     
         return redirect()->route('Newsarticle')->with('success', 'Blog updated successfully!');
@@ -62,12 +65,14 @@ public function editnews($id){
         $lang = Language::all();
         $domain = Domains::all();
         $userdata = News::find($id);
+        $countries = CountryList::select('id','name')->get();
         $Catdata = Newscat::select('categorytitle','id')->get();
-        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata,'domain'=>$domain,'lang'=>$lang]);
+        return view('Blogbackend.Utils.Editnews', ['userdata' => $userdata,'Catdata'=>$Catdata,'domain'=>$domain,'lang'=>$lang,'countries'=>$countries]);
 }
 
 public function updatenews(Request $request)
 {
+
     // $user = session('user');
     $request->validate([
         'id' => 'required',
@@ -75,9 +80,10 @@ public function updatenews(Request $request)
         'title' => 'required|string|max:255',
         'image' => 'nullable|image',
         'content' => 'required|string',
-        'category' => 'required|string',
-        'domain' => $request->input('Domains'),
-        'language' => $request->input('Languages'),
+        'category' => 'required',
+        'Domains' => 'required',
+        'Languages' => 'required',
+        'Country' => 'required',
     ]);
 
     $userdata = News::find($request->input('id'));
@@ -98,7 +104,9 @@ public function updatenews(Request $request)
     if ($existingSlugCount > 0) {
         $slug = $slug . '-' . time();
     }
-
+    if(!empty($request->input('Country'))){
+        $userdata->country= $request->input('Country');
+    }
     $userdata->authorname = $request->input('author_name');
     $userdata->title = $request->input('title');
     $userdata->image = $imagePath;
@@ -241,8 +249,9 @@ public function updatepagedata(Request $request)
 public function addnews(){
     $lang = Language::all();
     $domain = Domains::all();
+    $countries = CountryList::select('id','name')->get();
     $Catdata = Newscat::select('categorytitle','id')->get();
-  return view('Blogbackend/Utils/AddNews', compact('Catdata','domain','lang'));
+  return view('Blogbackend/Utils/AddNews', compact('Catdata','domain','lang','countries'));
 }
 
 public function shownews(){

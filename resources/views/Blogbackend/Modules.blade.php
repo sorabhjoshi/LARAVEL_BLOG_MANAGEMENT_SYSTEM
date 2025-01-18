@@ -139,6 +139,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     $(document).ready(function () {
@@ -354,34 +355,43 @@
     event.preventDefault();
 
     var modelname = $(this).data('name');
-    
-    // Show a confirmation dialog
-    if (confirm("Are you sure you want to generate the MVC structure for " + modelname + "?")) {
-        $.ajax({
-            url: "{{ route('generate.mvc') }}",
-            type: 'POST',
-            data: {
-                model: modelname,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (response) {
-                if (response.message === 'success') {
-                    alert('MVC created successfully!');
-                    editor.update();
-                    updateTextarea();
-                } else {
-                    alert(response.message);
+
+    swal.fire({
+        title: 'Generate MVC Structure',
+        text: `Are you sure you want to generate the MVC structure for ${modelname}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Generate',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('generate.mvc') }}",
+                type: 'POST',
+                data: {
+                    model: modelname,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    if (response.message === 'success') {
+                        swal.fire('Success', 'MVC created successfully!', 'success');
+                        editor.update();
+                        updateTextarea();
+                    } else {
+                        swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    swal.fire('Error', 'Error creating MVC structure.', 'error');
                 }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                alert('Error creating MVC structure.');
-            }
-        });
-    } else {
-        console.log('MVC creation canceled.');
-    }
+            });
+        } else {
+            console.log('MVC creation canceled.');
+        }
+    });
 });
+
 
 </script>
 @endsection

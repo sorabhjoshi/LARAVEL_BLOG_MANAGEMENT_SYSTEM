@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Models\Admin\Blog;
 use App\Models\Admin\Blogcat;
+use App\Models\Admin\CountryList;
 use App\Models\Admin\Designation;
 use App\Models\Admin\Domains;
 use App\Models\Admin\Language;
@@ -29,11 +30,12 @@ class Blogs extends Controller
     $request->validate([
         'author_name' => 'required|string|max:255',
         'title' => 'required|string|max:255',
-        'image' => 'required|image|max:2048', // Added image validation (e.g., size limit, type)
+        'image' => 'required|image|max:2048',
         'content' => 'required|string',
         'category' => 'required|string',
         'Domain' => 'required|string',
-        'Languages' => 'required|string'
+        'Languages' => 'required|string',
+        'Country' => 'required|string',
     ]);
     
     $imagePath = null;
@@ -63,6 +65,7 @@ class Blogs extends Controller
         'domain' => $request->input('Domain'),
         'user_id' => $userdata->id,  
         'language' => $request->input('Languages'),
+        'country' => $request->input('Country'),
     ]);
 
     // dd(\DB::getQueryLog());
@@ -86,8 +89,9 @@ public function editblog($id){
          $lang = Language::all();
          $domain = Domains::all();
          $userdata = Blog::find($id);
+         $countries = CountryList::select('id','name')->get();
          $Catdata = Blogcat::select('categorytitle', 'id')->get();
-         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata,'domain'=>$domain,'lang'=>$lang]);
+         return view('Blogbackend.Utils.Editblog', ['userdata' => $userdata,'Catdata'=> $Catdata,'domain'=>$domain,'lang'=>$lang,'countries'=>$countries]);
 }
 
 public function updateblog(Request $request)
@@ -101,7 +105,8 @@ public function updateblog(Request $request)
         'content' => 'required|string',
         'category' => 'required|string',
         'Domain' => 'required|string',
-        'Languages' => 'required|string'
+        'Languages' => 'required|string',
+        'Country' => 'required|string',
     ]);
 
     $userdata = Blog::find($request->input('id'));
@@ -122,7 +127,9 @@ public function updateblog(Request $request)
     if ($existingSlugCount > 0) {
         $slug = $slug . '-' . time();
     }
-
+    if(!empty($request->input('Country'))){
+        $userdata->country= $request->input('Country');
+    }
     $userdata->authorname = $request->input('author_name');
     $userdata->title = $request->input('title');
     $userdata->image = $imagePath;
@@ -214,8 +221,9 @@ public function addblog(Request $request)
     // dd(auth()->user());
     $lang = Language::all();
     $domain = Domains::all();
+    $countries = CountryList::all();
     $Catdata = Blogcat::select('categorytitle', 'id')->get();
-    return view('Blogbackend/Utils/AddBlog', compact('Catdata','domain','lang'));
+    return view('Blogbackend/Utils/AddBlog', compact('Catdata','domain','lang','countries'));
 }
 
 public function showcat(){

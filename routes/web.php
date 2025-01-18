@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Admin\CountryListController;
 use App\Http\Controllers\Admin\Designation;
 use App\Http\Controllers\Admin\Domain;
 use App\Http\Controllers\Admin\Languages;
@@ -89,6 +90,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::view('/EditUser', 'Blogbackend.Utils.Edituser')->middleware('role:Admin');
 
     // Edit and update routes
+    Route::get('/countries', [CountryListController::class, 'index'])->name('countries.index');
+Route::post('/getcountryAjax', [CountryListController::class, 'getCountries'])->name('countries.ajax');
+Route::post('/country/store', [CountryListController::class, 'store'])->name('countries.store');
+Route::get('/country/{id}', [CountryListController::class, 'edit'])->name('countries.edit');
+Route::put('/country/update/{id}', [CountryListController::class, 'update'])->name('countries.update');
+Route::delete('/country/delete/{id}', [CountryListController::class, 'destroy'])->name('countries.destroy');
     Route::get('/edit-designation/{id}', [Designation::class, 'edit'])->name('edit.designation');
     Route::put('/updateDesignationData/{id}', [Designation::class, 'update'])->name('updateDesignationData');
 
@@ -123,6 +130,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/UpdateCompanyData', [companydatas::class, 'updatecompanydata'])->middleware('role:Admin');
     Route::post('Admin/modulesstore', [Modules::class, 'store'])->name('modulesstore')->middleware('role:Admin');
     Route::post('Admin/moduleedit', [Modules::class, 'storeedit'])->name('moduleedit')->middleware('role:Admin');
+    // Route::get('Admin/AddCountry', [CountryListController::class, 'create'])->name('AddCountry')->middleware('role:Admin');
+
     // Ajax routes
     
     Route::get('blog-categories', [Blogs::class, 'blogcat'])->name('BlogCategoryList');
@@ -141,8 +150,8 @@ Route::post('/update-news-status', [Datatable::class, 'updateNewsStatus']);
 Route::post('/statusAjax', [Datatable::class, 'updateStatus']);
 Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
 
-Route::post('/newsstatusrejectAjax', [news_has_approval::class, 'rejectStatus']);
-Route::post('/statusnewsAjax', [news_has_approval::class, 'updateStatus']);
+    Route::post('/newsstatusrejectAjax', [news_has_approval::class, 'rejectStatus']);
+    Route::post('/statusnewsAjax', [news_has_approval::class, 'updateStatus']);
     Route::post('/UpdateDepartment', [Departments::class, 'updateDepartment'])->name('UpdateDepartment');
     Route::post('/GetdesignationAjax', [Datatable::class, 'GetdesignationAjax']);
     Route::post('/GetDepartmentAjax', [Datatable::class, 'GetDepartmentAjax']);
@@ -164,6 +173,7 @@ Route::post('/statusnewsAjax', [news_has_approval::class, 'updateStatus']);
     Route::put('/updateuser/{id}', [UserController::class, 'updateuser'])->name('updateuser');
     Route::post('/UpdateNews', [Newsarticle::class, 'updatenews'])->middleware('role:Admin|News-team');
     Route::post('/UpdatePageData', [Newsarticle::class, 'updatepagedata'])->middleware('role:Admin');
+    Route::post('/getcountryAjax', [CountryListController::class, 'getcountryAjax']);
     Route::post('/UpdateBlog', [Blogs::class, 'updateblog'])->middleware('role:Admin|Blog-team');
     Route::post('/storepermission', [Datatable::class, 'savePermissions'])->name('storepermission')->middleware('role:Admin');
     Route::post('/show-permissions', [Datatable::class, 'ShowPermissions'])->name('ShowPermissions')->middleware('role:Admin');
@@ -267,3 +277,4 @@ Route::get('/load-more-news', [Newsfront::class, 'loadMoreNewscat'])->name('load
 Route::get('/load-more-blogs', [blogfront::class, 'loadMoreblogscat'])->name('loadMoreBlogscat');
 Route::resource('service', ServiceController::class);
 Route::resource('Project', App\Http\Controllers\Admin\ProjectController::class);
+Route::resource('Countrylist', App\Http\Controllers\Admin\CountryListController::class);

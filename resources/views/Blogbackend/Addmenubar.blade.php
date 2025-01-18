@@ -71,14 +71,12 @@
 
 @section('js')
 <script>
-    // Helper Function to Convert Text to Camel Case
     function toCamelCase(str) {
         return str
             .replace(/[-_\s/]+(.)?/g, (match, chr) => (chr ? chr.toUpperCase() : '')) // Remove spaces, slashes, underscores
             .replace(/^(.)/, (match, chr) => chr.toLowerCase()); // Ensure first character is lowercase
     }
 
-    // Helper Function to Create a Simple Hash from a String
     String.prototype.hashCode = function () {
         var hash = 0, i, chr;
         for (i = 0; i < this.length; i++) {
@@ -121,7 +119,6 @@
         }
     }
 
-    // Automatically Populate Hidden Fields
     $('#text').on('input', function () {
         var textValue = $(this).val();
         var camelCaseValue = toCamelCase(textValue);
@@ -145,13 +142,11 @@
     });
 
     function updateTextarea() {
-    var jsonString = editor.getString(); // Get the JSON string
-    var jsonData = JSON.parse(jsonString); // Parse it into an object
-
-    // Update modulesname and moduleid for all items (parents and children)
+    var jsonString = editor.getString(); 
+    var jsonData = JSON.parse(jsonString); 
     jsonData.forEach(updateModulesData);
 
-    // Set the updated JSON back to the textarea
+   
     $('#myTextarea').val(JSON.stringify(jsonData, null, 2));
 }
 

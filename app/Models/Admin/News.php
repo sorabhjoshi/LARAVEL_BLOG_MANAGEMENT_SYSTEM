@@ -18,7 +18,8 @@ class News extends Model
         'category',
         'domain',
         'language',
-        'status'
+        'status',
+        'country'
     ];
 
     // Relationship to the Newscat model

@@ -77,7 +77,6 @@
         <thead class="thead-dark">
             <tr>
                 <th>ID</th>
-                <th>Slug</th>
                 <th>User ID</th>
                 <th>Title</th>
                 <th>City</th>
@@ -130,7 +129,6 @@
                         return meta.row + 1 + meta.settings._iDisplayStart; 
                     }
                 },
-                { data: 'slug', name: 'slug' },
                 { data: 'user_id', name: 'user_id' },
                 { data: 'title', name: 'title' },
                 { data: 'authorname', name: 'authorname' },
