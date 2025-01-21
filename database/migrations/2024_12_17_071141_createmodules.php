@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('modulesname');
             $table->string('parent_id');
             $table->string('permissions');
+            $table->integer('delete_status');
             $table->timestamps();
         });
     }

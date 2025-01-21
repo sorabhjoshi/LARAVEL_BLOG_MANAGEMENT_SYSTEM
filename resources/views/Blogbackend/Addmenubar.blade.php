@@ -71,12 +71,14 @@
 
 @section('js')
 <script>
+    // Function to convert string to camelCase
     function toCamelCase(str) {
         return str
             .replace(/[-_\s/]+(.)?/g, (match, chr) => (chr ? chr.toUpperCase() : '')) // Remove spaces, slashes, underscores
             .replace(/^(.)/, (match, chr) => chr.toLowerCase()); // Ensure first character is lowercase
     }
 
+    // Function to generate hash code for a string
     String.prototype.hashCode = function () {
         var hash = 0, i, chr;
         for (i = 0; i < this.length; i++) {
@@ -102,7 +104,8 @@
             target: '#target',
             title: '#title',
             modulesname: '#modulesname', 
-            moduleid: '#moduleid'        
+            moduleid: '#moduleid',
+            deletestatus: '#deletestatus'
         }
     });
 
@@ -110,15 +113,20 @@
     editor.setUpdateButton($('#btnUpdate'));
     editor.setData(arrayjson);
 
+    let moduleIdCounter = 1; // Start the counter at 1
+
+    // Function to update the modules data and increment moduleid
     function updateModulesData(item) {
         if (!item.text) return;
         item.modulesname = toCamelCase(item.text);
-        item.moduleid = item.text.hashCode();
+        item.moduleid = moduleIdCounter++; // Assign the current counter value and then increment it
+        item.deletestatus = '0';
         if (item.children && item.children.length > 0) {
-            item.children.forEach(updateModulesData);
+            item.children.forEach(updateModulesData); // Recursively update children if they exist
         }
     }
 
+    // Update the moduleid when text input changes
     $('#text').on('input', function () {
         var textValue = $(this).val();
         var camelCaseValue = toCamelCase(textValue);
@@ -126,31 +134,34 @@
         $('#moduleid').val(camelCaseValue.hashCode());
     });
 
+    // Add new item to the editor
     $('#btnAdd').click(function () {
         editor.add();
         updateTextarea();
     });
 
+    // Update an existing item
     $('#btnUpdate').click(function () {
         editor.update();
         updateTextarea();
     });
 
+    // Save the output
     $('#Saveoutput').click(function (event) {
         updateTextarea();
         document.querySelector('.json-form').submit();
     });
 
+    // Update the textarea with the JSON data
     function updateTextarea() {
-    var jsonString = editor.getString(); 
-    var jsonData = JSON.parse(jsonString); 
-    jsonData.forEach(updateModulesData);
+        var jsonString = editor.getString(); 
+        var jsonData = JSON.parse(jsonString); 
+        jsonData.forEach(updateModulesData);
 
-   
-    $('#myTextarea').val(JSON.stringify(jsonData, null, 2));
-}
+        $('#myTextarea').val(JSON.stringify(jsonData, null, 2));
+    }
 
-
+    // Icon picker configuration
     $('#myEditor_icon').iconpicker({
         placement: 'bottomLeft',
         animation: true
@@ -158,6 +169,7 @@
         $('input[name="icon"]').val(event.iconpickerValue);
     });
 
+    // Responsive design adjustments
     $(document).ready(function () {
         $(window).resize(function () {
             var screenWidth = $(window).width();

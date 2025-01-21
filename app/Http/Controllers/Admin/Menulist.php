@@ -98,9 +98,9 @@ class Menulist extends Controller
             {
                 foreach ($data as $item) {
                     $module = new Module();
-                    $module->modulesname = $item['text'] ?? 'Unnamed Module';
+                    $module->modulesname = $item['modulesname'] ?? 'Unnamed Module';
                     $module->parent_id = $parentId;
-                    
+                    $module->delete_status = 0;
                     $module->created_at = now();
                     $module->updated_at = now();
                     $module->save();

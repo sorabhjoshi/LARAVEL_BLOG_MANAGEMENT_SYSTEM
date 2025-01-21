@@ -3,6 +3,9 @@
 @section('title', 'Modules')
 
 @section('content')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
 <link rel="stylesheet" href='{{asset('css/blog.css')}}'>
 <style>
 #modal {
@@ -79,6 +82,8 @@
 .input-row label{
     margin-bottom: 10px;
 }
+
+
 </style>
 
 <div class="container mt-4">
@@ -86,7 +91,7 @@
         <h2>Modules List</h2>
         <div>
             <a href="{{ route('Dashboardfront') }}" class="btn btn-primary me-2">View Site</a>
-            <a href="{{ route('addmodule') }}" class="btn btn-primary me-2">AddModule</a>
+            <a href="{{ route('deletedmodule') }}" class="btn btn-primary me-2">Deleted Modules</a>
         </div>
     </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">

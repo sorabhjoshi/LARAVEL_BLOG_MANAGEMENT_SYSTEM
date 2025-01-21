@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Admin\CityListController;
 use App\Http\Controllers\Admin\CountryListController;
 use App\Http\Controllers\Admin\Designation;
 use App\Http\Controllers\Admin\Domain;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\Languages;
 use App\Http\Controllers\Admin\MVCGeneratorController;
 use App\Http\Controllers\Admin\news_has_approval;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\StateListController;
 use App\Http\Controllers\mailcontroller;
 use App\Http\Controllers\Admin\Menulist;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/Deletepages/{id}', [Newsarticle::class, 'deletepages'])->middleware('role:Admin');
     Route::get('/Deletecompany/{id}', [companydatas::class, 'deletecompany'])->middleware('role:Admin');
     Route::get('Admin/Modules/DeleteModule/{id}', [Modules::class, 'DeleteModule'])->middleware('role:Admin');
+    Route::get('Admin/Modules/recover/{id}', [Modules::class, 'RecoverModule'])->middleware('role:Admin');
 
     // Add routes
     
@@ -158,6 +161,7 @@ Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
     Route::post('/getlanguagesAjax', [Datatable::class, 'getlanguagesAjax']);
     Route::post('/menudatatable', [Datatable::class, 'menudatatable'])->name('menudatatable');
     Route::post('/getmoduleAjax', [Datatable::class, 'getmoduleAjax']);
+    Route::post('/getmodulerecoverAjax', [Datatable::class, 'getmodulerecoverAjax']);
     Route::post('/saveCompanyAddress', [Datatable::class, 'savecompanyaddress']);
     Route::post('/deleteAddress', [Datatable::class, 'deleteAddress']);
     Route::post('/getAddressData', [Datatable::class, 'getaddressdata']);
@@ -196,6 +200,10 @@ Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
     Route::get('/Admin/Modules', function () {
         return view('Blogbackend.Modules');
     })->name('Modules');
+
+    Route::get('/Admin/RecoverModules', function () {
+        return view('Blogbackend.ModulesRecover');
+    })->name('deletedmodule');
 
     Route::get('Admin/Menulist', function(){
         return view('Blogbackend.Menu');
@@ -278,3 +286,16 @@ Route::get('/load-more-blogs', [blogfront::class, 'loadMoreblogscat'])->name('lo
 Route::resource('service', ServiceController::class);
 Route::resource('Project', App\Http\Controllers\Admin\ProjectController::class);
 Route::resource('Countrylist', App\Http\Controllers\Admin\CountryListController::class);
+Route::resource('cityList', App\Http\Controllers\Admin\CityListController::class);
+Route::resource('stateList', App\Http\Controllers\Admin\StateListController::class);
+Route::get('stateList', [StateListController::class, 'index'])->name('stateList.index');
+Route::post('stateList/getStatesAjax', [StateListController::class, 'getStatesAjax'])->name('stateList.getStatesAjax');
+Route::get('stateList/{id}/edit', [StateListController::class, 'edit'])->name('stateList.edit');
+Route::put('stateList/{id}', [StateListController::class, 'update'])->name('stateList.update');
+Route::delete('stateList/{id}', [StateListController::class, 'destroy'])->name('stateList.destroy');
+
+Route::post('/getCityAjax', [CityListController::class, 'getCityAjax'])->name('getCityAjax');
+Route::post('/city/store', [CityListController::class, 'store'])->name('city.store');
+Route::get('/city/{id}', [CityListController::class, 'edit'])->name('city.edit');
+Route::put('/city/update/{id}', [CityListController::class, 'update'])->name('city.update');
+Route::delete('/city/delete/{id}', [CityListController::class, 'destroy'])->name('city.delete');

@@ -256,11 +256,11 @@ color: var(--text-color);
                             <span class="dropdown-icon mr-4"></span> <!-- Icon for dropdown toggle -->
                         @endif
                     </a>
-                    @if(!empty($item['children']))
+                    @if(!empty($item['children']) && $item['deletestatus']==0)
                         <ul class="menu-sub">
                             @foreach($item['children'] as $child)
                                 @php
-                                    $childHasValidRoute = !empty($child['href']) && Route::has($child['href']);
+                                    $childHasValidRoute = !empty($child['href']) && Route::has($child['href']) && $child['deletestatus']==0
                                 @endphp
                                 @if($childHasValidRoute || !empty($child['children']))
                                     <li class="menu-item" id="child">

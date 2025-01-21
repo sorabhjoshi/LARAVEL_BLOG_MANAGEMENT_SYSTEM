@@ -8,6 +8,10 @@ class Module extends Model
 {
     protected $table = 'modules';
     use HasFactory;
+
+    protected $fillable = [
+        'delete_status',
+     ];
     public function permission()
     {
         return $this->hasMany(permissions::class);

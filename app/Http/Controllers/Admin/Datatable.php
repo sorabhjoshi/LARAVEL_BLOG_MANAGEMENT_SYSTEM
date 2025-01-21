@@ -470,10 +470,42 @@ public function rejectStatus(Request $request)
     
 
     
+    public function getmodulerecoverAjax(Request $request)
+    {
+        try {
+            $query = Module::select('id', 'modulesname', 'parent_id')
+    ->where('delete_status', 1);
+
+            
+            if ($request->has('startDate') && $request->has('endDate')) {
+                $startDate = $request->input('startDate');
+                $endDate = $request->input('endDate');
+    
+                if (!empty($startDate) && !empty($endDate)) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+            }
+            
+            return DataTables::of($query)
+            
+                ->addColumn('recover', function ($row) {
+                    return '<a href="Modules/recover/' . $row->id . '" class="btn btn-sm btn-warning ">
+                                <i class="fa-solid fa-hammer"></i>
+                            </a>';
+                })
+                ->rawColumns(['recover']) // Allow raw HTML
+                ->make(true);
+    
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     public function getmoduleAjax(Request $request)
     {
         try {
-            $query = Module::select('id', 'modulesname', 'parent_id',  'updated_at', 'created_at');
+            $query = Module::select('id', 'modulesname', 'parent_id', 'updated_at', 'created_at')
+    ->where('delete_status', 0);
+
             
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = $request->input('startDate');

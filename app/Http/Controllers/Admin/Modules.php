@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 // use App\Models\Admim\Modules; // Import the Module model
+use App\Models\Admin\Menu;
 use App\Models\Admin\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -40,16 +41,88 @@ class Modules extends Controller
             return redirect()->back()->with('error', 'Error saving module: ' . $e->getMessage());
         }
     }
-
-    public function DeleteModule($id){
-        $modulesdata = \App\Models\Admin\Module::find($id);
-        
-        if ($modulesdata->delete()) {
-            return redirect()->back()->with( key: 'Module delete successful');
+    
+    public function RecoverModule($id)
+    {
+        $modulesdata = Module::find($id);
+    
+        $menuData = Menu::where('id', 4)->first();
+        if (!$menuData) {
+            return redirect()->back()->withErrors('Module not found.');
+        }
+        $modulesdata->delete_status = 0;
+        $modulesdata->save();
+        $jsonoutput = json_decode($menuData->json_output, true);
+    
+        $this->recovermoduledata($jsonoutput, $id);
+    
+        $menuData->json_output = json_encode($jsonoutput);
+        if ($menuData->save() ) {
+            return redirect()->back()->with('success', 'Module delete successful');
         } else {
-            return redirect()->back()->withErrors('error', key: 'Module delete unsuccessful');
+            return redirect()->back()->withErrors('Module delete unsuccessful');
         }
     }
+    public function DeleteModule($id)
+    {
+        $modulesdata = Module::find($id);
+    
+        $menuData = Menu::where('id', 4)->first();
+        if (!$menuData) {
+            return redirect()->back()->withErrors('Module not found.');
+        }
+        $modulesdata->delete_status = 1;
+        $modulesdata->save();
+        $jsonoutput = json_decode($menuData->json_output, true);
+    
+        $this->markModuleAsDeleted($jsonoutput, $id);
+    
+        $menuData->json_output = json_encode($jsonoutput);
+        if ($menuData->save() ) {
+            return redirect()->back()->with('success', 'Module delete successful');
+        } else {
+            return redirect()->back()->withErrors('Module delete unsuccessful');
+        }
+    }
+    
+    private function markModuleAsDeleted(&$menuItems, $moduleId)
+    {
+        foreach ($menuItems as &$item) {
+            if ($item['moduleid'] == $moduleId) {
+                $item['deletestatus'] = '1';
+                return; 
+            }
+    
+            if (!empty($item['children'])) {
+                foreach ($item['children'] as &$child) {
+                    if ($child['moduleid'] == $moduleId) {
+                        $child['deletestatus'] = '1';
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private function recovermoduledata(&$menuItems, $moduleId)
+    {
+        foreach ($menuItems as &$item) {
+            if ($item['moduleid'] == $moduleId) {
+                $item['deletestatus'] = '0';
+                return; 
+            }
+    
+            if (!empty($item['children'])) {
+                foreach ($item['children'] as &$child) {
+                    if ($child['moduleid'] == $moduleId) {
+                        $child['deletestatus'] = '0';
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
 
     public function editmodule($id)
     {
