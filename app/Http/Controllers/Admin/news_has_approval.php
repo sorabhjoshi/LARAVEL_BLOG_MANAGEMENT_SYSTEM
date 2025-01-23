@@ -24,11 +24,17 @@ class news_has_approval extends Controller
                 ->first();
     
             if ($existingItem) {
+                if($existingItem->designation_id > $request->input('designationid')){
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User dosen"t have permission to approve this blog.',
+                    ]);
+                }
                 $existingItem->approval = 1;
                 $existingItem->user_id = $request->input('userid');
                 $existingItem->designation_id = $request->input('designationid');
                 $existingItem->save(); 
-    
+     
                 return response()->json([
                     'success' => true,
                     'message' => 'Status updated successfully for the existing record.',
@@ -82,6 +88,12 @@ class news_has_approval extends Controller
                 ->first();
     
             if ($existingItem) {
+                if($existingItem->designation_id > $request->input('designationid')){
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User dosen"t have permission to reject this blog.',
+                    ]);
+                }
                 $existingItem->approval = 0;
                 $existingItem->user_id = $request->input('userid');
                 $existingItem->designation_id = $request->input('designationid')-1;

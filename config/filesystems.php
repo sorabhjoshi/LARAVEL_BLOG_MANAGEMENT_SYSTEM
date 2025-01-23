@@ -45,6 +45,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'FileManager' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
 
         's3' => [
             'driver' => 's3',

@@ -238,7 +238,7 @@ color: var(--text-color);
         <a href="{{route('home')}}" class="imghead">
             <img src="https://www.absglobaltravel.com/public/images/absolute-global-travel-logo.webp" alt="" class="imghead">
         </a>
-        <button class="toggle-btn" onclick="toggleNav()">
+        <button class="toggle-btn" >
             <i class="fas fa-bars"></i>
         </button>
     </div>
@@ -296,68 +296,3 @@ color: var(--text-color);
                              
     </div>
 </aside>
-
-<script>
-    function toggleNav() {
-        const sidebar = document.getElementById("mySidebar");
-        const main = document.getElementById("main");
-        sidebar.classList.toggle("closed");
-        if (window.innerWidth <= 768) {
-            sidebar.classList.toggle("open");
-        }
-    }
-</script>
-<script>
-    $(document).ready(function () {
-        let sidebarWidth = $('#mySidebar').css('width');
-        let screenWidth = $(window).width();
-
-        if (screenWidth < 768) {
-            $('.imghead').hide();
-            $('.headerimg').css('padding', '7px 8px');
-        }
-
-        $('.toggle-btn').click(function () {
-            let width = $('#mySidebar').css('width');
-
-            if (width === '300px') {
-                $('#mySidebar').css('width', '65px');
-                $('.menu').css('padding-left', '0');
-                $('.menu-toggle').css('padding', '15px 16px');
-                $('.menu-toggle-icon').hide().prev('div').hide();
-                $('.menu-item:last').find('div').hide();
-                $('.active').find('.menu-sub').hide();
-                $('.main-content').css('margin-left', '65px');
-                $('.sidebar-content').css('padding', '0 9px');
-                $('.imghead').hide();
-                $('.toggle-btn').css('margin', '6px');
-            } else if (width === '65px') {
-                $('#mySidebar').css('width', '300px');
-                $('.menu').css('padding-left', '0rem');
-                $('.menu-toggle').css('padding', '15px 16px');
-                $('.menu-toggle-icon').show().prev('div').show();
-                $('.menu-item:last').find('div').show();
-                $('.active').find('.menu-sub').show();
-                $('.main-content').css('margin-left', '300px');
-                $('.sidebar-content').css('padding', '0 9px');
-                $('.imghead').css('display', 'flex');
-                $('.toggle-btn').css('margin', '0px');
-                $('.headerimg').css('padding', '0');
-            }
-        });
-
-        $(window).resize(function () {
-            screenWidth = $(window).width();
-
-            if (screenWidth < 768) {
-                $('#mySidebar').css('width', '65px');
-                $('.main-content').css('margin-left', '65px');
-                $('.imghead').hide();
-            } else {
-                $('#mySidebar').css('width', '300px');
-                $('.main-content').css('margin-left', '300px');
-                $('.imghead').show();
-            }
-        });
-    });
-</script>

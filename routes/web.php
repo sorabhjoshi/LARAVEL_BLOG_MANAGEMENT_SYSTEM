@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CityListController;
 use App\Http\Controllers\Admin\CountryListController;
 use App\Http\Controllers\Admin\Designation;
 use App\Http\Controllers\Admin\Domain;
+use App\Http\Controllers\Admin\FileManagerController;
 use App\Http\Controllers\Admin\Languages;
 use App\Http\Controllers\Admin\MVCGeneratorController;
 use App\Http\Controllers\Admin\news_has_approval;
@@ -71,7 +72,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Add routes
     
-
+    Route::get('filemanager', [FileManagerController::class, 'index']);
     Route::post('/AddDepartmentAjax', [Departments::class, 'store'])->name('AddDepartmentAjax');
     
     Route::post('/AddDesignationData', [Designation::class, 'store'])->name('AddDesignationData');

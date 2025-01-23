@@ -80,7 +80,18 @@ class Datatable extends Controller
 
                 $approveDisabled = $approvalLevel > $currentDesignationId ? 'disabled' : '';
                 $rejectDisabled = $approvalLevel > $currentDesignationId ? 'disabled' : '';
-
+                if($news->approval->designation_id == 5){
+                    return   "<span class='badge bg-success text-white m-auto p-2'>Verified</span>
+                     <div class='status-actions m-2'>
+                            <button class='btn btn-success approve-btn' data-id='{$news->id}' {$approveDisabled}>
+                                <i class='fas fa-check'></i> Approve
+                            </button>
+                            <button class='btn btn-danger reject-btn' data-id='{$news->id}' {$rejectDisabled}>
+                                <i class='fas fa-times'></i> Reject
+                            </button>
+                        </div>
+                        ";
+                }
                 return "
                     <div class='status-container'>
                         <select class='approval-select' data-id='{$news->id}' >
@@ -138,6 +149,12 @@ public function updateStatus(Request $request)
             ->first();
 
         if ($existingItem) {
+            if($existingItem->designation_id > $request->input('designationid')){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User dosen"t have permission to approve this blog.',
+                ]);
+            }
             $existingItem->approval = 1;
             $existingItem->user_id = $request->input('userid');
             $existingItem->designation_id = $request->input('designationid');
@@ -188,6 +205,12 @@ public function rejectStatus(Request $request)
             ->first();
 
         if ($existingItem) {
+            if($existingItem->designation_id > $request->input('designationid')){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User dosen"t have permission to reject this blog.',
+                ]);
+            }
             $existingItem->approval = 0;
             $existingItem->user_id = $request->input('userid');
             $existingItem->designation_id = $request->input('designationid')-1;

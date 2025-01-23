@@ -13,15 +13,12 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     
-<script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.js');?>"></script>
-<script src="<?php echo asset('bootstrap-iconpicker\js\jquery-menu-editor.min.js');?>"></script>
     <!-- Fonts and Styles -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
-    {{-- <link rel="stylesheet" href="{{ asset('css/blog.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('bootstrap-5.3.3-dist/css/bootstrap.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -47,9 +44,6 @@
     <script src="<?php echo asset('bootstrap-iconpicker/js/bootstrap-iconpicker.min.js');?>"></script>
     <script src="<?php echo asset('bootstrap-iconpicker/js/jquery-menu-editor.min.js');?>"></script>
     <script src="/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/iconset/fontawesome5-3-1.min.js"></script>
-    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/bootstrap-iconpicker.min.js"></script>
-    <script src="http://127.0.0.1:8000/bootstrap-iconpicker/js/jquery-menu-editor.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -122,42 +116,129 @@
             navbar.classList.toggle('active');
         }
     </script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var dropdownBtns = document.querySelectorAll(".dropdown-btn");
-            dropdownBtns.forEach(function (dropdownBtn) {
-                dropdownBtn.addEventListener("click", function () {
-                    this.classList.toggle("active");
-                    var dropdownContent = this.nextElementSibling;
-                    if (dropdownContent.style.display === "block") {
-                        dropdownContent.style.display = "none";
-                        this.setAttribute('aria-expanded', 'false');
-                    } else {
-                        dropdownContent.style.display = "block";
-                        this.setAttribute('aria-expanded', 'true');
-                    }
-                });
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dropdown Menu Toggle
+        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        dropdownBtns.forEach(function (dropdownBtn) {
+            dropdownBtn.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                if (dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                    this.setAttribute('aria-expanded', 'false');
+                } else {
+                    dropdownContent.style.display = "block";
+                    this.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        // Sidebar Toggle
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const sidebar = document.getElementById("mySidebar");
+        const mainContent = document.querySelector(".main-content");
+
+        if (toggleBtn && sidebar && mainContent) {
+            toggleBtn.addEventListener('click', function () {
+                let currentWidth = sidebar.style.width;
+                if (currentWidth === '300px' || currentWidth === '') {
+                    sidebar.style.width = '65px';
+                    mainContent.style.marginLeft = '65px';
+                } else {
+                    sidebar.style.width = '300px';
+                    mainContent.style.marginLeft = '300px';
+                }
             });
 
-            var menuToggle = document.querySelector('.menu-toggle');
-            var sidebar = document.querySelector('.sidebar');
-            menuToggle.addEventListener('click', function () {
-                sidebar.classList.toggle('active');
-            }); 
+            // Adjust sidebar based on screen width
+            window.addEventListener('resize', function () {
+                let screenWidth = window.innerWidth;
+                if (screenWidth < 768) {
+                    sidebar.style.width = '65px';
+                    mainContent.style.marginLeft = '65px';
+                } else {
+                    sidebar.style.width = '300px';
+                    mainContent.style.marginLeft = '300px';
+                }
+            });
+        }
+
+        // Navbar Dropdown Toggle
+        var navbarToggles = document.querySelectorAll('.menu-toggle');
+        navbarToggles.forEach(function (toggle) {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                let parentMenuItem = toggle.closest('.menu-item');
+                parentMenuItem.classList.toggle('active');
+            });
         });
-    </script>
+
+        // Screen width adjustment for header images
+        $(document).ready(function () {
+            let screenWidth = $(window).width();
+
+            if (screenWidth < 768) {
+                $('.imghead').hide();
+                $('.headerimg').css('padding', '7px 8px');
+            }
+
+            $(window).resize(function () {
+                screenWidth = $(window).width();
+
+                if (screenWidth < 768) {
+                    $('.imghead').hide();
+                    $('.headerimg').css('padding', '7px 8px');
+                } else {
+                    $('.imghead').show();
+                    $('.headerimg').css('padding', '0');
+                }
+            });
+            $('.toggle-btn').click(function () {
+                let width = $('#mySidebar').css('width');
     
-</body>
-<script>
-    document.querySelectorAll('.menu-toggle').forEach(function (toggle) {
-        toggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            let parentMenuItem = toggle.closest('.menu-item');
-            parentMenuItem.classList.toggle('active');
+                if (width === '300px') {
+                    $('#mySidebar').css('width', '65px');
+                    $('.menu').css('padding-left', '0');
+                    $('.menu-toggle').css('padding', '15px 16px');
+                    $('.menu-toggle-icon').hide().prev('div').hide();
+                    $('.menu-item:last').find('div').hide();
+                    $('.active').find('.menu-sub').hide();
+                    $('.main-content').css('margin-left', '65px');
+                    $('.sidebar-content').css('padding', '0 9px');
+                    $('.imghead').hide();
+                    $('.toggle-btn').css('margin', '6px');
+                } else if (width === '65px') {
+                    $('#mySidebar').css('width', '300px');
+                    $('.menu').css('padding-left', '0rem');
+                    $('.menu-toggle').css('padding', '15px 16px');
+                    $('.menu-toggle-icon').show().prev('div').show();
+                    $('.menu-item:last').find('div').show();
+                    $('.active').find('.menu-sub').show();
+                    $('.main-content').css('margin-left', '300px');
+                    $('.sidebar-content').css('padding', '0 9px');
+                    $('.imghead').css('display', 'flex');
+                    $('.toggle-btn').css('margin', '0px');
+                    $('.headerimg').css('padding', '0');
+                }
+            });
+        });
+
+        // Activate menu-item when clicked
+        $('.menu-item').on('click', function () {
+            let sidebarWidth = parseFloat($('.sidebar-content').css('width'));
+
+            if (sidebarWidth <= 280) {
+                sidebar.style.width = '300px';
+                mainContent.style.marginLeft = '300px';
+                $('.imghead').css('display', 'flex');
+            }
         });
     });
-   
-    
 </script>
+
+    
+</body>
+
+
 </html>

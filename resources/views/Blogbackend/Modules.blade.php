@@ -191,7 +191,7 @@
                 { data: 'mvc',name: 'mvc'},
                 { data: 'delete', orderable: false, searchable: false },
             ],
-            lengthMenu: [5, 10, 25, 50], // Options for rows per page
+            lengthMenu: [5, 10, 25, 50], 
         });
 
         $('#filterButton').on('click', function () {

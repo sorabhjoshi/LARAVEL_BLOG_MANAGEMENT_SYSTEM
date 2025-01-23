@@ -20,4 +20,5 @@ class Newscat extends Model
     {
         return $this->hasMany(News::class, 'category', 'id');
     }
+    
 }

@@ -11,7 +11,11 @@ class blogfront
 {
     public function showblog()
 {
-    $Blogs = Blog::with('category')->get();
+    $Blogs = Blog::with('category', 'approval')
+    ->whereHas('approval', function ($query) {
+        $query->where('designation_id', 5);
+    })
+    ->get();
     $categories = Blogcat::withCount('blogs')->get();
     return view('Frontend.Blogs', compact('Blogs', 'categories'));
 }
@@ -23,33 +27,41 @@ class blogfront
     }
 
     public function showCategory($cat)
-{
-    $perPage = 2;  // Initially fetch 2 blogs
-    $categoryname = $cat;
+    {
+        $perPage = 2;  // Initially fetch 2 blogs
+        $categoryname = $cat;
     
-    $category = Blogcat::where('categorytitle', $cat)->first();
+        // Find the category by title
+        $category = Blogcat::where('categorytitle', $cat)->first();
     
-    if (!$category) {
-        abort(404, 'Category not found');
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+    
+        // Get category counts with blogs
+        $categories = Blogcat::withCount('blogs')->get();
+    
+        // Fetch blogs for the selected category with the required designation_id filter
+        $blogs = Blog::with('approval') // Load the approval relationship
+            ->where('category', $category->id)
+            ->whereHas('approval', function ($query) {
+                $query->where('designation_id', 5); // Filter by designation_id
+            })
+            ->take($perPage)
+            ->get();
+    
+        // Get all blogs for the sidebar
+        $sideblogs = Blog::all();
+    
+        return view('Frontend.Blogcat', [
+            'blogs' => $blogs,
+            'categories' => $categories,
+            'sideblogs' => $sideblogs,
+            'perPage' => $perPage,
+            'categoryname' => $categoryname
+        ]);
     }
-
-    // Get category counts
-    $categories = Blogcat::withCount('blogs')->get();
-
-    // Fetch only 2 blogs initially for the selected category
-    $blogs = Blog::where('category', $category->id)->take($perPage)->get();
-
-    // Get all side blogs for the sidebar
-    $sideblogs = Blog::all();
-
-    return view('Frontend.Blogcat', [
-        'blogs' => $blogs,
-        'categories' => $categories,
-        'sideblogs' => $sideblogs,
-        'perPage' => $perPage,
-        'categoryname' => $categoryname
-    ]);
-}
+    
 
 
 public function loadMoreblogscat(Request $request)
@@ -94,7 +106,14 @@ public function loadMoreBlogs(Request $request)
     $offset = $request->input('offset', 0);
     $limit = $request->input('limit', 2);
 
-    $blogs = Blog::skip($offset)->take($limit)->get();
+    $blogs = Blog::with('category', 'approval')
+    ->whereHas('approval', function ($query) {
+        $query->where('designation_id', 5);
+    })
+    ->skip($offset)
+    ->take($limit)
+    ->get();
+
     
     $data = $blogs->map(function ($blog) {
         return [

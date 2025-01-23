@@ -29,9 +29,14 @@
         @enderror
 
         <label for="image">Image:</label>
-        <input type="file" id="image" name="image" value={{$userdata->image}}>
+        <img src="{{asset(`$userdata->image`)}}" alt="">
+            <input type="text" id="image" class="form-control" name="image" value={{$userdata->image}}"
+                   aria-label="Image" aria-describedby="button-image">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-image">Select</button>
+            </div>
         @error('image')
-                <div class="text-danger">{{ $message }}</div>
+            <div class="text-danger">{{ $message }}</div>
         @enderror
 
         <label for="content">Content:</label>
@@ -93,6 +98,21 @@
 </div>
 @endsection
 @section('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+    });
+
+    // Set image link after selection from file manager
+    function fmSetLink($url) {
+        const modifiedUrl = $url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+    }
+</script>
 <script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"
     referrerpolicy="origin"></script>
 <script>

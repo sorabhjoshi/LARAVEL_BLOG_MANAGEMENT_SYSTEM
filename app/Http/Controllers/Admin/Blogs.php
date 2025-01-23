@@ -30,7 +30,7 @@ class Blogs extends Controller
     $request->validate([
         'author_name' => 'required|string|max:255',
         'title' => 'required|string|max:255',
-        'image' => 'required|image|max:2048',
+        'image' => 'required|string',
         'content' => 'required|string',
         'category' => 'required|string',
         'Domain' => 'required|string',
@@ -38,27 +38,17 @@ class Blogs extends Controller
         'Country' => 'required|string',
     ]);
     
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        // Handle the image upload
-        $image = $request->file('image');
-        $imageName = time() . '_' . $image->getClientOriginalName();
-        $imagePath = 'images/' . $imageName;
-        $image->move(public_path('images'), $imageName);
-    }
-
-    // Generate a unique slug based on the title
+  
     $slug = Str::slug($request->input('title'));
     $existingSlugCount = Blog::where('slug', $slug)->count();
     if ($existingSlugCount > 0) {
         $slug = $slug . '-' . time(); 
     }
     
-//    dd($request->input('Domain'));
     Blog::create([
         'authorname' => $request->input('author_name'),
         'title' => $request->input('title'),
-        'image' => $imagePath,
+        'image' =>$request->input('image'),
         'description' => $request->input('content'),
         'category' => $request->input('category'),
         'slug' => $slug,
@@ -68,7 +58,6 @@ class Blogs extends Controller
         'country' => $request->input('Country'),
     ]);
 
-    // dd(\DB::getQueryLog());
 
     return redirect()->route('Blog')->with('success', 'Blog added successfully!');
 }
@@ -101,7 +90,7 @@ public function updateblog(Request $request)
         'id' => 'required',
         'author_name' => 'required|string|max:255',
         'title' => 'required|string|max:255',
-        'image' => 'nullable|image',
+        'image' => 'nullable|string',
         'content' => 'required|string',
         'category' => 'required|string',
         'Domain' => 'required|string',
@@ -114,13 +103,6 @@ public function updateblog(Request $request)
         return redirect()->back()->withErrors('Blog not found!');
     }
 
-    $imagePath = $userdata->image; // Retain old image if not updated
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time() . '_' . $image->getClientOriginalName();
-        $imagePath = 'images/' . $imageName;
-        $image->move(public_path('images'), $imageName);
-    }
 
     $slug = Str::slug($request->input('title'));
     $existingSlugCount = Blog::where('slug', $slug)->where('id', '!=', $userdata->id)->count();
@@ -132,7 +114,7 @@ public function updateblog(Request $request)
     }
     $userdata->authorname = $request->input('author_name');
     $userdata->title = $request->input('title');
-    $userdata->image = $imagePath;
+    $userdata->image = $request->input('image');
     $userdata->description = $request->input('content');
     $userdata->category = $request->input('category');
     $userdata->slug = $slug;
