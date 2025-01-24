@@ -1,19 +1,33 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\Controller;
 // use App\Models\Admim\Modules; // Import the Module model
 use App\Models\Admin\Menu;
 use App\Models\Admin\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\DB;
 
 class Modules extends Controller
+{   
+
+    public function index()
 {
+    $tables = DB::select('SHOW TABLES');
+    $tableNames = [];
+    foreach ($tables as $table) {
+        foreach ($table as $tableName) {
+            $tableNames[] = $tableName;
+        }
+    }
+
+    // Pass table names to the view
+    return view('Blogbackend.Modules', compact('tableNames'));
+}
     public function Addmodule(){
-        $modulesdata = \App\Models\Admin\Module::all(); 
+        $modulesdata = Module::all(); 
         return view('Blogbackend.Utils.Addmodule', ['modulesdata' => $modulesdata]);
     }
 

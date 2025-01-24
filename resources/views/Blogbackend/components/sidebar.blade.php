@@ -262,7 +262,7 @@ color: var(--text-color);
                                 @php
                                     $childHasValidRoute = !empty($child['href']) && Route::has($child['href']) && $child['deletestatus']==0
                                 @endphp
-                                @if($childHasValidRoute || !empty($child['children']))
+                                @if(($childHasValidRoute || !empty($child['children']) && $child['deletestatus']==0))
                                     <li class="menu-item" id="child">
                                         <a href="{{ $childHasValidRoute ? route($child['href']) : 'javascript:void(0);' }}" class="menu-link">
                                             <i class="menu-icon {{ $child['icon'] ?? 'fas fa-circle' }}"></i>

@@ -359,44 +359,47 @@
    $(document).on('click', '#mvc', function (event) {
     event.preventDefault();
 
-    var modelname = $(this).data('name');
+    var modelname = $(this).data('name'); // Get the model name dynamically from the button
 
+    // Create a dropdown with table names
+    let tableOptions = `
+        <select id="tableDropdown" class="swal2-select">
+            <option value="" disabled selected>Select a table</option>
+            @foreach ($tableNames as $tableName)
+                <option value="{{ $tableName }}">{{ $tableName }}</option>
+            @endforeach
+        </select>
+    `;
+
+    // Show the SweetAlert modal
     swal.fire({
         title: 'Generate MVC Structure',
-        text: `Are you sure you want to generate the MVC structure for ${modelname}?`,
+        html: `
+            <p>Are you sure you want to generate the MVC structure for <strong>${modelname}</strong>?</p>
+            ${tableOptions}
+        `,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, Generate',
         cancelButtonText: 'Cancel',
+        preConfirm: () => {
+            const selectedTable = $('#tableDropdown').val(); // Get the selected table
+            if (!selectedTable) {
+                swal.showValidationMessage('Please select a table before proceeding.');
+            }
+            return selectedTable; // Return the selected table for further processing
+        }
     }).then((result) => {
         if (result.isConfirmed) {
-            $.ajax({
-                url: "{{ route('generate.mvc') }}",
-                type: 'POST',
-                data: {
-                    model: modelname,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    if (response.message === 'success') {
-                        swal.fire('Success', 'MVC created successfully!', 'success');
-                        editor.update();
-                        updateTextarea();
-                    } else {
-                        swal.fire('Error', response.message, 'error');
-                    }
-                },
-                error: function (xhr) {
-                    console.error(xhr.responseText);
-                    swal.fire('Error', 'Error creating MVC structure.', 'error');
-                }
-            });
-        } else {
-            console.log('MVC creation canceled.');
+            const selectedTable = result.value; // The selected table value
+            if (selectedTable) {
+                // Redirect to the GenerateMVC route with the selected table and model name
+                window.location.href = `{{ route('generate.mvc') }}?model=${modelname}&table=${selectedTable}`;
+            }
         }
     });
 });
 
-
-</script>
+ </script>
+ 
 @endsection

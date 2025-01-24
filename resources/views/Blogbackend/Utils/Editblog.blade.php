@@ -100,17 +100,14 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Open file manager on button click
         document.getElementById('button-image').addEventListener('click', (event) => {
             event.preventDefault();
             window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
         });
     });
-
-    // Set image link after selection from file manager
     function fmSetLink($url) {
-        const modifiedUrl = $url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
-        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+        const modifiedUrl = $url.replace(/^https?:\/\/[^\/]+\//, ''); 
+        document.getElementById('image').value = modifiedUrl; 
     }
 </script>
 <script src="https://cdn.tiny.cloud/1/71ai8b7zzyf1jrb5kikhfovyrho0d7arpvrutm5n4hddovi8/tinymce/6/tinymce.min.js"

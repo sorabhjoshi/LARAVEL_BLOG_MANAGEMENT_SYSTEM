@@ -184,8 +184,15 @@ Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
     Route::post('/show-permissions', [Datatable::class, 'ShowPermissions'])->name('ShowPermissions')->middleware('role:Admin');
     Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
 
+
+    // Route::get('/Admin/MVCGeneration', function () {
+    //     return view('Blogbackend.Domain');
+    // })->name('GenerateMVC');
+
     // Basic routes of pages 
-    Route::post('/generate-mvc', [MVCGeneratorController::class, 'generate'])->name('generate.mvc');
+    Route::get('/generate-mvc', [MVCGeneratorController::class, 'generate'])->name('generate.mvc');
+    Route::post('/generateing-mvc', [MVCGeneratorController::class, 'generatingmvc'])->name('Generating');
+
     Route::get('/Admin/languages', function () {
         return view('Blogbackend.languages');
     })->name('languages');
@@ -198,9 +205,8 @@ Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
         return view('Blogbackend.Designation');
     })->name('Designation');
 
-    Route::get('/Admin/Modules', function () {
-        return view('Blogbackend.Modules');
-    })->name('Modules');
+    Route::get('/Admin/Modules', [Modules::class, 'index']
+    )->name('Modules');
 
     Route::get('/Admin/RecoverModules', function () {
         return view('Blogbackend.ModulesRecover');
@@ -300,3 +306,4 @@ Route::post('/city/store', [CityListController::class, 'store'])->name('city.sto
 Route::get('/city/{id}', [CityListController::class, 'edit'])->name('city.edit');
 Route::put('/city/update/{id}', [CityListController::class, 'update'])->name('city.update');
 Route::delete('/city/delete/{id}', [CityListController::class, 'destroy'])->name('city.delete');
+Route::resource('company', App\Http\Controllers\Admin\CompanyController::class);
