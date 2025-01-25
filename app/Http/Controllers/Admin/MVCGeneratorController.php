@@ -28,7 +28,7 @@ class MVCGeneratorController extends Controller
 
     public function generatingmvc(Request $request)
     {
-        $modelName = Str::studly(str_replace(['-', '_'], ' ', $request->input('model')));
+        $modelName = Str::studly(str_replace(['-', '_'], ' ', $request->input('model'))); 
         $columns = $request->input('columns');
         $tableName = $request->input('table');
 
@@ -36,41 +36,39 @@ class MVCGeneratorController extends Controller
             return back()->with('error', 'Please select at least one column.');
         }
 
-        
-            // Paths for generated files
-            $modelPath = app_path("Models/Admin/$modelName.php");
-            $controllerPath = app_path("Http/Controllers/Admin/{$modelName}Controller.php");
-            $viewPath = resource_path("views/Blogbackend/" . strtolower($modelName));
-            $routePath = base_path('routes/web.php');
-            $routeName = strtolower($modelName); // Route name (lowercase)
+        // Paths for generated files
+        $modelPath = app_path("Models/Admin/$modelName.php");
+        $controllerPath = app_path("Http/Controllers/Admin/{$modelName}Controller.php");
+        $viewPath = resource_path("views/Blogbackend/" . strtolower($modelName));
+        $routePath = base_path('routes/web.php');
+        $routeName = strtolower($modelName); // Route name (lowercase)
 
-            // Generate Model
-            if (!File::exists($modelPath)) {
-                File::put($modelPath, $this->getModelTemplate($modelName, $columns, $tableName));
-            }
+        // Generate Model
+        if (!File::exists($modelPath)) {
+            File::put($modelPath, $this->getModelTemplate($modelName, $columns, $tableName));
+        }
 
-            // Generate Controller
-            if (!File::exists($controllerPath)) {
-                File::put($controllerPath, $this->getControllerTemplate($modelName,$columns));
-            }
+        // Generate Controller
+        if (!File::exists($controllerPath)) {
+            File::put($controllerPath, $this->getControllerTemplate($modelName,$columns));
+        }
 
-            // Create View Directory and Files
-            if (!File::exists($viewPath)) {
-                File::makeDirectory($viewPath, 0755, true);
+        // Create View Directory and Files
+        if (!File::exists($viewPath)) {
+            File::makeDirectory($viewPath, 0755, true);
 
-                File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName, $columns));
-                File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName, $columns));
-                File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName, $columns));
-            }
+            File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName, $columns));
+            File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName, $columns));
+            File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName, $columns));
+        }
 
-            // Add Route
-            $routeContent = "Route::resource('$routeName', App\Http\Controllers\Admin\\{$modelName}Controller::class);\n";
-            if (!Str::contains(File::get($routePath), $routeContent)) {
-                File::append($routePath, $routeContent);
-            }
+        // Add Route
+        $routeContent = "Route::resource('$routeName', App\Http\Controllers\Admin\\{$modelName}Controller::class);\n";
+        if (!Str::contains(File::get($routePath), $routeContent)) {
+            File::append($routePath, $routeContent);
+        }
 
-            return redirect()->route('home')->with('success', 'MVC files generated successfully!');
-        
+        return redirect()->route('home')->with('success', 'MVC files generated successfully!');
     }
 
     protected function getModelTemplate($modelName, $columns, $tableName)
@@ -99,11 +97,11 @@ class $modelName extends Model
 ";
     }
 
-    protected function getControllerTemplate($modelName,$columns)
+    protected function getControllerTemplate($modelName, $columns)
     {
-        $cols = implode(",        ", array_map(function ($col) {
-            return "'$col'";
-        }, $columns));
+        $validationRules = implode(",\n            ", array_map(fn($col) => "'$col' => 'required'", $columns));
+        $cols = implode(", ", array_map(fn($col) => "'$col'", $columns));
+
         return "<?php
 
 namespace App\Http\Controllers\Admin;
@@ -115,10 +113,10 @@ use App\Http\Controllers\Controller;
 class {$modelName}Controller extends Controller
 {
     public function index()
-    { 
+    {
         \$columns = [$cols];
-        \${$modelName} = $modelName::select('id',{$cols});
-        return view('Blogbackend." . strtolower($modelName) . ".index', compact('$modelName','columns'));
+        \${$modelName} = $modelName::all();
+        return view('Blogbackend." . strtolower($modelName) . ".index', compact('$modelName', 'columns'));
     }
 
     public function create()
@@ -129,12 +127,13 @@ class {$modelName}Controller extends Controller
     public function store(Request \$request)
     {
         \$validated = \$request->validate([
-            // Add validation rules
+            $validationRules
         ]);
 
         $modelName::create(\$validated);
 
-        return redirect()->route('" . strtolower($modelName) . ".index')->with('success', 'Record created successfully!');
+        return redirect()->route('" . strtolower($modelName) . ".index')
+            ->with('success', 'Record created successfully!');
     }
 
     public function edit(\$id)
@@ -146,13 +145,14 @@ class {$modelName}Controller extends Controller
     public function update(Request \$request, \$id)
     {
         \$validated = \$request->validate([
-            // Add validation rules
+            $validationRules
         ]);
 
         \${$modelName} = $modelName::findOrFail(\$id);
         \${$modelName}->update(\$validated);
 
-        return redirect()->route('" . strtolower($modelName) . ".index')->with('success', 'Record updated successfully!');
+        return redirect()->route('" . strtolower($modelName) . ".index')
+            ->with('success', 'Record updated successfully!');
     }
 
     public function destroy(\$id)
@@ -160,24 +160,99 @@ class {$modelName}Controller extends Controller
         \${$modelName} = $modelName::findOrFail(\$id);
         \${$modelName}->delete();
 
-        return redirect()->route('" . strtolower($modelName) . ".index')->with('success', 'Record deleted successfully!');
+        return redirect()->route('" . strtolower($modelName) . ".index')
+            ->with('success', 'Record deleted successfully!');
     }
 }
 ";
     }
 
     protected function getViewTemplate($viewName, $modelName, $columns)
-{
-    // Ensure $columns is treated as an array of strings.
+    {
+         // Ensure $columns is treated as an array of strings.
     $columnsHtml = implode("\n", array_map(fn($col) => "<th>{{ ucfirst('$col') }}</th>", $columns));
-    $fieldsHtml = implode("\n", array_map(fn($col) => "<label for='$col'>{{ ucfirst('$col') }}</label><input type='text' name='$col' id='$col' required>", $columns));
+    
+    // Check if 'id' exists in the columns and add it as a hidden field if present
+    $fieldsHtml = implode("\n", array_map(function ($col) use ($modelName) {
+        // If the column is 'id', add it as a hidden input
+        if ($col == 'id') {
+            return "<input type='hidden' name='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}'>";
+        }
 
-    switch ($viewName) {
-        case 'index':
-            return "
+        return "
+        <div class='form-group'>
+            <label for='$col'>{{ ucfirst('$col') }}</label>
+            <input type='text' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
+        </div>";
+    }, $columns));
+
+
+        switch ($viewName) {
+            case 'index':
+                return "
 @extends('Blogbackend.components.layout')
 
 @section('content')
+    <style>
+        /* Custom Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons a, .action-buttons button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-buttons button {
+            background-color: #dc3545;
+        }
+            .action-buttons a{
+            text-decoration: none;
+        }
+            h1{
+            padding: 10px;
+            background-color: #4b5c70;
+            border-radius: 10px;    
+            margin: 10px 0;
+            color: white
+        }
+            .adddata{
+            padding: 10px;
+            background-color: #4b5c70;
+            border-radius: 10px;    
+            margin: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+            width: 150px;
+        }
+            .adddata:hover{
+            background-color: #2c3e50;
+            color: white;
+            }
+            
+    </style>
     <div class='container'>
         <h1>List of $modelName</h1>
         <table>
@@ -188,33 +263,71 @@ class {$modelName}Controller extends Controller
                 </tr>
             </thead>
             <tbody>
-    @foreach ($modelName as \$model)
+    @foreach ($$modelName as \$model)
         <tr>
             @foreach (\$columns as \$column)
-                <td>{{ \$model[\$column] }}</td>
+                <td>{{ \$model->\$column }}</td>
             @endforeach
-            <td>
-                <a href=\"{{ route(strtolower('$modelName') . '.edit', \$model->id) }}\">Edit</a>
+            <td class='action-buttons'>
+                <a href=\"{{ route(strtolower('$modelName') . '.edit', \$model->id) }}\"><i class='fas fa-edit'></i></a>
                 <form action=\"{{ route(strtolower('$modelName') . '.destroy', \$model->id) }}\" method=\"POST\">
                     @csrf
                     @method('DELETE')
-                    <button type=\"submit\">Delete</button>
+                    <button type=\"submit\"><i class='fas fa-trash-alt'></i></button>
                 </form>
             </td>
         </tr>
     @endforeach
     </tbody>
         </table>
-        <a href='{{ route('" . strtolower($modelName) . ".create') }}'>Create New</a>
+        <a class='adddata' href='{{ route('" . strtolower($modelName) . ".create') }}'>Create New</a>
     </div>
 @endsection
 ";
-        case 'create':
-            return "
+            case 'create':
+                return "
 @extends('Blogbackend.components.layout')
 
 @section('content')
-    <div class='container'>
+    <style>
+        /* Custom Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type='text'] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type='submit'] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .containercreate{
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button[type='submit']:hover {
+            background-color: #218838;
+        }
+    </style>
+    <div class='containercreate'>
         <h1>Create $modelName</h1>
         <form action='{{ route('" . strtolower($modelName) . ".store') }}' method='POST'>
             @csrf
@@ -224,14 +337,52 @@ class {$modelName}Controller extends Controller
     </div>
 @endsection
 ";
-        case 'edit':
-            return "
+            case 'edit':
+                return "
 @extends('Blogbackend.components.layout')
 
 @section('content')
-    <div class='container'>
+    <style>
+        /* Custom Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type='text'] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type='submit'] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .containercreate{
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button[type='submit']:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <div class='containercreate'>
         <h1>Edit $modelName</h1>
-        <form action='{{ route('" . strtolower($modelName) . ".update', \$model->id) }}' method='POST'>
+        <form action='{{ route('" . strtolower($modelName) . ".update', $$modelName->".str_replace("/", "", "/id").") }}' method='POST'>
             @csrf
             @method('PUT')
             $fieldsHtml
@@ -240,7 +391,6 @@ class {$modelName}Controller extends Controller
     </div>
 @endsection
 ";
+        }
     }
-}
-
 }
