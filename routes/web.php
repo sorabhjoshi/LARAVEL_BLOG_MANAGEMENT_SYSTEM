@@ -307,3 +307,6 @@ Route::get('/city/{id}', [CityListController::class, 'edit'])->name('city.edit')
 Route::put('/city/update/{id}', [CityListController::class, 'update'])->name('city.update');
 Route::delete('/city/delete/{id}', [CityListController::class, 'destroy'])->name('city.delete');
 Route::resource('bloglist', App\Http\Controllers\Admin\BlogListController::class);
+Route::resource('company', App\Http\Controllers\Admin\CompanyController::class);
+Route::resource('pages', App\Http\Controllers\Admin\PagesController::class);
+Route::resource('testing', App\Http\Controllers\Admin\TestingController::class);

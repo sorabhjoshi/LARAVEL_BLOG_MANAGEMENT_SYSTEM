@@ -27,10 +27,12 @@ class MVCGeneratorController extends Controller
     }
 
     public function generatingmvc(Request $request)
-    {
+    {  
         $modelName = Str::studly(str_replace(['-', '_'], ' ', $request->input('model'))); 
         $columns = $request->input('columns');
         $tableName = $request->input('table');
+        $fields = $request->input('fields');
+
 
         if (!$columns) {
             return back()->with('error', 'Please select at least one column.');
@@ -57,9 +59,9 @@ class MVCGeneratorController extends Controller
         if (!File::exists($viewPath)) {
             File::makeDirectory($viewPath, 0755, true);
 
-            File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName, $columns));
-            File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName, $columns));
-            File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName, $columns));
+            File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName, $columns, $fields));
+            File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName, $columns,$fields));
+            File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName, $columns,$fields));
         }
 
         // Add Route
@@ -89,6 +91,7 @@ class $modelName extends Model
     use HasFactory;
 
     protected \$table = '$tableName';
+    public \$timestamps = false;
 
     protected \$fillable = [
         $fillable
@@ -102,6 +105,9 @@ class $modelName extends Model
         $validationRules = implode(",\n            ", array_map(fn($col) => "'$col' => 'required'", $columns));
         $cols = implode(", ", array_map(fn($col) => "'$col'", $columns));
 
+        $fillable = implode(",\n        ", array_map(function ($col) {
+            return "'$col'";
+        }, $columns));
         return "<?php
 
 namespace App\Http\Controllers\Admin;
@@ -114,7 +120,7 @@ class {$modelName}Controller extends Controller
 {
     public function index()
     {
-        \$columns = [$cols];
+        \$columns = [$fillable];
         \${$modelName} = $modelName::all();
         return view('Blogbackend." . strtolower($modelName) . ".index', compact('$modelName', 'columns'));
     }
@@ -126,11 +132,7 @@ class {$modelName}Controller extends Controller
 
     public function store(Request \$request)
     {
-        \$validated = \$request->validate([
-            $validationRules
-        ]);
-
-        $modelName::create(\$validated);
+        $modelName::create(\$request->all());
 
         return redirect()->route('" . strtolower($modelName) . ".index')
             ->with('success', 'Record created successfully!');
@@ -144,12 +146,8 @@ class {$modelName}Controller extends Controller
 
     public function update(Request \$request, \$id)
     {
-        \$validated = \$request->validate([
-            $validationRules
-        ]);
-
         \${$modelName} = $modelName::findOrFail(\$id);
-        \${$modelName}->update(\$validated);
+        \${$modelName}->update(\$request->all());
 
         return redirect()->route('" . strtolower($modelName) . ".index')
             ->with('success', 'Record updated successfully!');
@@ -167,24 +165,58 @@ class {$modelName}Controller extends Controller
 ";
     }
 
-    protected function getViewTemplate($viewName, $modelName, $columns)
+    protected function getViewTemplate($viewName, $modelName, $columns,$fields)
     {
-         // Ensure $columns is treated as an array of strings.
     $columnsHtml = implode("\n", array_map(fn($col) => "<th>{{ ucfirst('$col') }}</th>", $columns));
     
     // Check if 'id' exists in the columns and add it as a hidden field if present
-    $fieldsHtml = implode("\n", array_map(function ($col) use ($modelName) {
+    $fieldsHtml = implode("\n", array_map(function ($type, $col) use ($modelName) {
         // If the column is 'id', add it as a hidden input
-        if ($col == 'id') {
+        if ($col === 'id') {
             return "<input type='hidden' name='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}'>";
         }
-
-        return "
-        <div class='form-group'>
-            <label for='$col'>{{ ucfirst('$col') }}</label>
-            <input type='text' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
-        </div>";
-    }, $columns));
+    
+        // Generate different inputs based on the type
+        switch ($type) {
+            case 'text':
+            case 'email':
+            case 'date':
+            case 'file':
+                return "
+                <div class='form-group'>
+                    <label for='$col'>{{ ucfirst('$col') }}</label>
+                    <input type='$type' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
+                </div>";
+            case 'textarea':
+                return "
+                <div class='form-group'>
+                    <label for='$col'>{{ ucfirst('$col') }}</label>
+                    <textarea name='$col' id='$col' class='form-control' required>{{ isset(\$$modelName) ? \$$modelName->$col : '' }}</textarea>
+                </div>";
+            case 'checkbox':
+                return "
+                <div class='form-group'>
+                    <label for='$col'>{{ ucfirst('$col') }}</label>
+                    <input type='checkbox' name='$col' id='$col' {{ isset(\$$modelName) && \$$modelName->$col ? 'checked' : '' }} class='form-check-input'>
+                </div>";
+            case 'radio':
+                return "
+                <div class='form-group'>
+                    <label>{{ ucfirst('$col') }}</label>
+                    <div>
+                        <input type='radio' name='$col' value='1' {{ isset(\$$modelName) && \$$modelName->$col == 1 ? 'checked' : '' }}> Yes
+                        <input type='radio' name='$col' value='0' {{ isset(\$$modelName) && \$$modelName->$col == 0 ? 'checked' : '' }}> No
+                    </div>
+                </div>";
+            default:
+                return "
+                <div class='form-group'>
+                    <label for='$col'>{{ ucfirst('$col') }}</label>
+                    <input type='text' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
+                </div>";
+        }
+    }, $fields, array_keys($fields)));
+    
 
 
         switch ($viewName) {
@@ -231,7 +263,7 @@ class {$modelName}Controller extends Controller
             text-decoration: none;
         }
             h1{
-            padding: 10px;
+            padding: 10px 30px;
             background-color: #4b5c70;
             border-radius: 10px;    
             margin: 10px 0;
@@ -245,13 +277,29 @@ class {$modelName}Controller extends Controller
             color: white;
             text-decoration: none;
             display: block;
+            text-align: center;
             width: 150px;
         }
             .adddata:hover{
             background-color: #2c3e50;
             color: white;
+            text-decoration: none;
+            transition: 0.5s ease-in-out;
             }
-            
+            #edit{
+                color: black;
+            }
+            #delete{
+                color: black;
+            }
+            #edit:hover{
+                color: rgb(255, 255, 255);
+                background-color: #044b97;
+            }
+            #delete:hover{
+                color: rgb(255, 255, 255);
+                background-color: #972b04;
+            }
     </style>
     <div class='container'>
         <h1>List of $modelName</h1>
@@ -269,11 +317,11 @@ class {$modelName}Controller extends Controller
                 <td>{{ \$model->\$column }}</td>
             @endforeach
             <td class='action-buttons'>
-                <a href=\"{{ route(strtolower('$modelName') . '.edit', \$model->id) }}\"><i class='fas fa-edit'></i></a>
+                <a id='edit' href=\"{{ route(strtolower('$modelName') . '.edit', \$model->id) }}\"><i class='fas fa-edit'></i></a>
                 <form action=\"{{ route(strtolower('$modelName') . '.destroy', \$model->id) }}\" method=\"POST\">
                     @csrf
                     @method('DELETE')
-                    <button type=\"submit\"><i class='fas fa-trash-alt'></i></button>
+                    <button id='delete' type=\"submit\"><i class='fas fa-trash-alt'></i></button>
                 </form>
             </td>
         </tr>
