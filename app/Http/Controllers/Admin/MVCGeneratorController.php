@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -11,6 +12,21 @@ use App\Http\Controllers\Controller;
 
 class MVCGeneratorController extends Controller
 {
+    // web.php
+
+// TableController.php
+public function getTableColumns($table)
+{   
+    try {
+        // Fetch column names from the database
+        $columns = \Schema::getColumnListing($table);
+
+        return response()->json(['columns' => $columns]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Unable to fetch columns.'], 500);
+    }
+}
+
     public function generate(Request $request)
     {
         $modelName = $request->input('model');
@@ -20,10 +36,16 @@ class MVCGeneratorController extends Controller
         if (!Schema::hasTable($tableName)) {
             return back()->with('error', "Table '$tableName' does not exist.");
         }
-
+        $tables = DB::select('SHOW TABLES');
+        $tableNames = [];
+        foreach ($tables as $table) {
+        foreach ($table as $tableName) {
+            $tableNames[] = $tableName;
+        }
+    }  
         $columns = Schema::getColumnListing($tableName);
 
-        return view('Blogbackend.Utils.GenerateMVC', compact('tableName', 'columns', 'modelName'));
+        return view('Blogbackend.Utils.GenerateMVC', compact('tableName', 'columns', 'modelName','tableNames'));
     }
 
     public function generatingmvc(Request $request)
@@ -181,12 +203,12 @@ class {$modelName}Controller extends Controller
             case 'text':
             case 'email':
             case 'date':
-            case 'file':
                 return "
                 <div class='form-group'>
                     <label for='$col'>{{ ucfirst('$col') }}</label>
                     <input type='$type' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
                 </div>";
+           
             case 'textarea':
                 return "
                 <div class='form-group'>
@@ -199,6 +221,18 @@ class {$modelName}Controller extends Controller
                     <label for='$col'>{{ ucfirst('$col') }}</label>
                     <input type='checkbox' name='$col' id='$col' {{ isset(\$$modelName) && \$$modelName->$col ? 'checked' : '' }} class='form-check-input'>
                 </div>";
+                case 'file':
+                    return "
+                    <div class='form-group'>
+                        <label for='image'>Image:</label>
+                        <div class='input-group'>
+                        <div class='input-group-append'>
+                                <button class='btn btn-outline-secondary' type='button' id='button-image'>Select</button>
+                            </div>
+                            <input type='text' id='image' class='form-control' name='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : old('$col') }}' required>
+                        </div>
+                    </div>";
+                
             case 'radio':
                 return "
                 <div class='form-group'>
@@ -384,6 +418,23 @@ class {$modelName}Controller extends Controller
         </form>
     </div>
 @endsection
+@section('js')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+    });
+
+    // Set image link after selection from file manager
+    function fmSetLink(\$url) {
+        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+    }
+</script>
+@endsection
 ";
             case 'edit':
                 return "
@@ -438,6 +489,24 @@ class {$modelName}Controller extends Controller
         </form>
     </div>
 @endsection
+@section('js')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+    });
+
+    // Set image link after selection from file manager
+    function fmSetLink(\$url) {
+        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+    }
+</script>
+@endsection
+
 ";
         }
     }
