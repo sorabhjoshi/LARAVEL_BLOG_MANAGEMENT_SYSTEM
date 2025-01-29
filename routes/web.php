@@ -183,13 +183,20 @@ Route::post('/statusrejectAjax', [Datatable::class, 'rejectStatus']);
     Route::post('/storepermission', [Datatable::class, 'savePermissions'])->name('storepermission')->middleware('role:Admin');
     Route::post('/show-permissions', [Datatable::class, 'ShowPermissions'])->name('ShowPermissions')->middleware('role:Admin');
     Route::post('/deletepermission', [Datatable::class, 'deletePermission'])->name('deletePermission')->middleware('role:Admin');
-
+    Route::get('/testing', [\App\Http\Controllers\Admin\TestingController::class, 'index'])->name('Testing');
+    Route::get('/testing/create', [\App\Http\Controllers\Admin\TestingController::class, 'create']);
+    Route::post('/testing/store', [\App\Http\Controllers\Admin\TestingController::class, 'store']);
+    Route::get('/testing/edit/{id}', [\App\Http\Controllers\Admin\TestingController::class, 'edit']);
+    Route::post('/testing/update', [\App\Http\Controllers\Admin\TestingController::class, 'update']);
+    Route::post('/testing/delete/{id}', [\App\Http\Controllers\Admin\TestingController::class, 'delete']);// Testing Routes
 
     // Route::get('/Admin/MVCGeneration', function () {
     //     return view('Blogbackend.Domain');
     // })->name('GenerateMVC');
 
     // Basic routes of pages 
+    Route::post('/createmvc', [MVCGeneratorController::class, 'mvc']);
+    Route::get('/getColumns/{table}', [MVCGeneratorController::class, 'getColumns']);
     Route::get('/api/get-table-columns/{table}', [MVCGeneratorController::class, 'getTableColumns']);
     Route::get('/generate-mvc', [MVCGeneratorController::class, 'generate'])->name('generate.mvc');
     Route::post('/generateing-mvc', [MVCGeneratorController::class, 'generatingmvc'])->name('Generating');
@@ -309,3 +316,7 @@ Route::put('/city/update/{id}', [CityListController::class, 'update'])->name('ci
 Route::delete('/city/delete/{id}', [CityListController::class, 'destroy'])->name('city.delete');
 
 
+
+
+
+// Testing Routes

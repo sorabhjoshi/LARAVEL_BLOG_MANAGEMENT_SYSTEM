@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-
 class MVCGeneratorController extends Controller
 {
+    public function getColumns($table)
+    {
+        // Get the column list from the table
+        $columns = Schema::getColumnListing($table);
+    
+        return response()->json(['columns' => $columns]);
+    }
     // web.php
 
 // TableController.php
@@ -19,7 +26,7 @@ public function getTableColumns($table)
 {   
     try {
         // Fetch column names from the database
-        $columns = \Schema::getColumnListing($table);
+        $columns = Schema::getColumnListing($table);
 
         return response()->json(['columns' => $columns]);
     } catch (\Exception $e) {
@@ -29,485 +36,477 @@ public function getTableColumns($table)
 
     public function generate(Request $request)
     {
-        $modelName = $request->input('model');
-        $tableName = $request->input('table');
-
-        // Ensure the table exists
-        if (!Schema::hasTable($tableName)) {
-            return back()->with('error', "Table '$tableName' does not exist.");
-        }
+        
         $tables = DB::select('SHOW TABLES');
         $tableNames = [];
         foreach ($tables as $table) {
-        foreach ($table as $tableName) {
-            $tableNames[] = $tableName;
+            foreach ($table as $tableName) {
+                $tableNames[] = $tableName;
+            }
         }
-    }  
-        $columns = Schema::getColumnListing($tableName);
+        $modelName = $request->input('model');
+        $tablename =  $request->input('table');
+        $columns = Schema::getColumnListing($tablename);
+        return view('Blogbackend.Utils.GenerateMVC', compact('columns', 'modelName', 'tablename','tableNames'));
+        // return view('Blogbackend.Utils.GenerateMVC', compact('tableName', 'columns', 'modelName','tableNames'));
+    }
+    public function mvc(Request $request)
+    {   
+        $selectedData = json_decode($request->input('selected_data'), true);
+        $inputTypes = $request->input('inputTypes', []);
+        $module = $request->modelName;
+        $tablename = $request->tablename;
+        $columns = $request->input('columns', []);
 
-        return view('Blogbackend.Utils.GenerateMVC', compact('tableName', 'columns', 'modelName','tableNames'));
+        if (!$module) {
+            return redirect()->back()->withErrors('Module not found');
+        }
+
+        // Format module names
+        $module_name = ucfirst(strtolower(str_replace(' ', '', $module)));
+        $plural_module_name = $module_name . 's';
+
+        // Paths for MVC components
+        $modelPath = app_path("Models/$plural_module_name.php");
+        $controllerPath = app_path("Http/Controllers/Admin/{$module_name}Controller.php");
+        $viewDirectory = resource_path("views/Blogbackend/$module_name");
+        // Cleanup existing files
+        $this->cleanupFiles($modelPath, $controllerPath, $viewDirectory);
+        // Generate Model and Controller
+        Artisan::call("make:model $plural_module_name");
+        Artisan::call("make:controller Admin/{$module_name}Controller");
+
+        $this->updateModel($modelPath, $tablename);
+        // Generate Controller Methods
+        $this->updateController($controllerPath, $tablename, $columns, $module_name);
+
+        // Generate Views
+        $this->generateViews($viewDirectory, $module_name, $tablename, $columns, $inputTypes,$selectedData);
+
+        // Clear View Cache
+        Artisan::call('view:clear');
+
+        // Register Routes
+        $this->registerRoutes($module_name);
+
+        return redirect('/Admin/Modules')->with('success', 'MVC structure recreated successfully.');
     }
 
-    public function generatingmvc(Request $request)
-    {  
-        $modelName = Str::studly(str_replace(['-', '_'], ' ', $request->input('model'))); 
-        $columns = $request->input('columns');
-        $tableName = $request->input('table');
-        $fields = $request->input('fields');
-
-
-        if (!$columns) {
-            return back()->with('error', 'Please select at least one column.');
-        }
-
-        // Paths for generated files
-        $modelPath = app_path("Models/Admin/$modelName.php");
-        $controllerPath = app_path("Http/Controllers/Admin/{$modelName}Controller.php");
-        $viewPath = resource_path("views/Blogbackend/" . strtolower($modelName));
-        $routePath = base_path('routes/web.php');
-        $routeName = strtolower($modelName); // Route name (lowercase)
-
-        // Generate Model
-        if (!File::exists($modelPath)) {
-            File::put($modelPath, $this->getModelTemplate($modelName, $columns, $tableName));
-        }
-
-        // Generate Controller
-        if (!File::exists($controllerPath)) {
-            File::put($controllerPath, $this->getControllerTemplate($modelName,$columns));
-        }
-
-        // Create View Directory and Files
-        if (!File::exists($viewPath)) {
-            File::makeDirectory($viewPath, 0755, true);
-
-            File::put("$viewPath/index.blade.php", $this->getViewTemplate('index', $modelName, $columns, $fields));
-            File::put("$viewPath/create.blade.php", $this->getViewTemplate('create', $modelName, $columns,$fields));
-            File::put("$viewPath/edit.blade.php", $this->getViewTemplate('edit', $modelName, $columns,$fields));
-        }
-
-        // Add Route
-        $routeContent = "Route::resource('$routeName', App\Http\Controllers\Admin\\{$modelName}Controller::class);\n";
-        if (!Str::contains(File::get($routePath), $routeContent)) {
-            File::append($routePath, $routeContent);
-        }
-
-        return redirect()->route('home')->with('success', 'MVC files generated successfully!');
-    }
-
-    protected function getModelTemplate($modelName, $columns, $tableName)
+    protected function cleanupFiles($modelPath, $controllerPath, $viewDirectory)
     {
-        $fillable = implode(",\n        ", array_map(function ($col) {
-            return "'$col'";
-        }, $columns));
-
-        return "<?php
-
-namespace App\Models\Admin;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class $modelName extends Model
-{
-    use HasFactory;
-
-    protected \$table = '$tableName';
-    public \$timestamps = false;
-
-    protected \$fillable = [
-        $fillable
-    ];
-}
-";
+        if (file_exists($modelPath))
+            unlink($modelPath);
+        if (file_exists($controllerPath))
+            unlink($controllerPath);
+        if (File::exists($viewDirectory))
+            File::deleteDirectory($viewDirectory);
     }
 
-    protected function getControllerTemplate($modelName, $columns)
+    protected function updateController($controllerPath, $tablename, $columns, $module_name)
     {
-        $validationRules = implode(",\n            ", array_map(fn($col) => "'$col' => 'required'", $columns));
-        $cols = implode(", ", array_map(fn($col) => "'$col'", $columns));
-
-        $fillable = implode(",\n        ", array_map(function ($col) {
-            return "'$col'";
-        }, $columns));
-        return "<?php
-
-namespace App\Http\Controllers\Admin;
-
-use App\Models\Admin\\$modelName;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-
-class {$modelName}Controller extends Controller
-{
+        $columnsString = implode("', '", $columns);
+        $methods = <<<EOD
+    // Index method
     public function index()
     {
-        \$columns = [$fillable];
-        \${$modelName} = $modelName::all();
-        return view('Blogbackend." . strtolower($modelName) . ".index', compact('$modelName', 'columns'));
+        \$columns = ['$columnsString'];
+        \$data = DB::table("$tablename")->select(\$columns)->get();
+        return view('Blogbackend.$module_name.index', compact('columns', 'data'));
     }
-
+    
+    // Create method
     public function create()
     {
-        return view('Blogbackend." . strtolower($modelName) . ".create');
+        return view('Blogbackend.$module_name.create');
     }
-
-    public function store(Request \$request)
-    {
-        $modelName::create(\$request->all());
-
-        return redirect()->route('" . strtolower($modelName) . ".index')
-            ->with('success', 'Record created successfully!');
-    }
-
+    
+    // Edit method
     public function edit(\$id)
     {
-        \${$modelName} = $modelName::findOrFail(\$id);
-        return view('Blogbackend." . strtolower($modelName) . ".edit', compact('$modelName'));
+        \$columns = ['$columnsString'];
+        \$text = DB::table('$tablename')->where('id', \$id)->first();
+        return view('Blogbackend.$module_name.edit', compact('text', 'columns'));
     }
-
-    public function update(Request \$request, \$id)
-    {
-        \${$modelName} = $modelName::findOrFail(\$id);
-        \${$modelName}->update(\$request->all());
-
-        return redirect()->route('" . strtolower($modelName) . ".index')
-            ->with('success', 'Record updated successfully!');
-    }
-
-    public function destroy(\$id)
-    {
-        \${$modelName} = $modelName::findOrFail(\$id);
-        \${$modelName}->delete();
-
-        return redirect()->route('" . strtolower($modelName) . ".index')
-            ->with('success', 'Record deleted successfully!');
-    }
-}
-";
-    }
-
-    protected function getViewTemplate($viewName, $modelName, $columns,$fields)
-    {
-    $columnsHtml = implode("\n", array_map(fn($col) => "<th>{{ ucfirst('$col') }}</th>", $columns));
     
-    // Check if 'id' exists in the columns and add it as a hidden field if present
-    $fieldsHtml = implode("\n", array_map(function ($type, $col) use ($modelName) {
-        // If the column is 'id', add it as a hidden input
-        if ($col === 'id') {
-            return "<input type='hidden' name='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}'>";
+    // Store method
+    public function store(Request \$request)
+    {
+        // Define dynamic validation rules
+        \$rules = [];
+        
+        // Generate validation rules based on column types
+        foreach (['$columnsString'] as \$col) {
+         if (\$col == 'id') {
+                continue;
+            }
+            \$type = \$inputTypes[\$col] ?? 'string';  // Default to 'string' if no type is specified
+            
+            if (\$type == 'text' || \$type == 'string') {
+                \$rules[\$col] = 'required|string|max:255';
+            } elseif (\$type == 'number' || \$type == 'integer') {
+                \$rules[\$col] = 'required|integer';
+            } elseif (\$type == 'email') {
+                \$rules[\$col] = 'required|email';
+            } elseif (\$type == 'date') {
+                \$rules[\$col] = 'required|date';
+            } else {
+                \$rules[\$col] = 'required';
+            }
+        }
+
+        // Validate the incoming request data
+        \$validatedData = \$request->validate(\$rules);
+         \$validatedData['image'] =\$request->image;
+        // Insert validated data into the database
+        DB::table('$tablename')->insert(\$validatedData);
+
+        return redirect('/$module_name')->with('success', '$module_name created successfully.');
+    }
+    
+    // Update method
+    public function update(Request \$request)
+    {
+        // Define dynamic validation rules
+        \$rules = [];
+        
+        // Generate validation rules based on column types
+        foreach (['$columnsString'] as \$col) {
+            \$type = \$inputTypes[\$col] ?? 'string';  // Default to 'string' if no type is specified
+            
+            // Skip the 'id' column for validation
+            if (\$col == 'id') {
+                continue;
+            }
+            
+            if (\$type == 'text' || \$type == 'string') {
+                \$rules[\$col] = 'required|string|max:255';
+            } elseif (\$type == 'number' || \$type == 'integer') {
+                \$rules[\$col] = 'required|integer';
+            } elseif (\$type == 'email') {
+                \$rules[\$col] = 'required|email';
+            } elseif (\$type == 'date') {
+                \$rules[\$col] = 'required|date';
+            } else {
+                \$rules[\$col] = 'required';
+            }
+        }
+
+        // Validate the incoming request data
+        \$validatedData = \$request->validate(\$rules);
+        \$validatedData['image'] =\$request->image;
+        // Update validated data in the database
+        DB::table('$tablename')->where('id', \$request->id)->update(\$validatedData);
+
+        return redirect('/$module_name')->with('success', '$module_name updated successfully.');
+    }
+    
+    // Delete method
+    public function delete(\$id)
+    {
+        DB::table('$tablename')->where('id', \$id)->delete();
+        return redirect('/$module_name')->with('success', '$module_name deleted successfully.');
+    }
+EOD;
+
+
+        // Read the controller content
+        $controllerContent = file_get_contents($controllerPath);
+
+        // Add use statement below the namespace declaration
+        $controllerContent = preg_replace('/namespace\s+[A-Za-z0-9\\\]+;/', '$0' . "\nuse Illuminate\Support\Facades\DB;", $controllerContent);
+
+        // Insert the methods into the controller
+        $controllerContent = preg_replace('/\{/', "{\n" . $methods, $controllerContent, 1);
+
+        // Write the updated content back to the controller file
+        file_put_contents($controllerPath, $controllerContent);
+    }
+    protected function generateViews($viewDirectory, $module_name, $tablename, $columns, $inputTypes, $selectedData)
+    {
+        File::makeDirectory($viewDirectory, 0755, true);
+    
+        // Ensure 'id' is part of the columns for processing, but it won't be displayed in the table or form
+        if (!in_array('id', $columns)) {
+            array_unshift($columns, 'id'); // Add 'id' as the first column
         }
     
-        // Generate different inputs based on the type
-        switch ($type) {
-            case 'text':
-            case 'email':
-            case 'date':
-                return "
-                <div class='form-group'>
-                    <label for='$col'>{{ ucfirst('$col') }}</label>
-                    <input type='$type' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
-                </div>";
-           
-            case 'textarea':
-                return "
-                <div class='form-group'>
-                    <label for='$col'>{{ ucfirst('$col') }}</label>
-                    <textarea name='$col' id='$col' class='form-control' required>{{ isset(\$$modelName) ? \$$modelName->$col : '' }}</textarea>
-                </div>";
-            case 'checkbox':
-                return "
-                <div class='form-group'>
-                    <label for='$col'>{{ ucfirst('$col') }}</label>
-                    <input type='checkbox' name='$col' id='$col' {{ isset(\$$modelName) && \$$modelName->$col ? 'checked' : '' }} class='form-check-input'>
-                </div>";
-                case 'file':
-                    return "
-                    <div class='form-group'>
-                        <label for='image'>Image:</label>
-                        <div class='input-group'>
-                        <div class='input-group-append'>
-                                <button class='btn btn-outline-secondary' type='button' id='button-image'>Select</button>
-                            </div>
-                            <input type='text' id='image' class='form-control' name='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : old('$col') }}' required>
-                        </div>
-                    </div>";
-                
-            case 'radio':
-                return "
-                <div class='form-group'>
-                    <label>{{ ucfirst('$col') }}</label>
-                    <div>
-                        <input type='radio' name='$col' value='1' {{ isset(\$$modelName) && \$$modelName->$col == 1 ? 'checked' : '' }}> Yes
-                        <input type='radio' name='$col' value='0' {{ isset(\$$modelName) && \$$modelName->$col == 0 ? 'checked' : '' }}> No
-                    </div>
-                </div>";
-            default:
-                return "
-                <div class='form-group'>
-                    <label for='$col'>{{ ucfirst('$col') }}</label>
-                    <input type='text' name='$col' id='$col' value='{{ isset(\$$modelName) ? \$$modelName->$col : '' }}' class='form-control' required>
-                </div>";
-        }
-    }, $fields, array_keys($fields)));
-    
-
-
-        switch ($viewName) {
-            case 'index':
-                return "
-@extends('Blogbackend.components.layout')
-
-@section('content')
-    <style>
-        /* Custom Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-buttons a, .action-buttons button {
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .action-buttons button {
-            background-color: #dc3545;
-        }
-            .action-buttons a{
-            text-decoration: none;
-        }
-            h1{
-            padding: 10px 30px;
-            background-color: #4b5c70;
-            border-radius: 10px;    
-            margin: 10px 0;
-            color: white
-        }
-            .adddata{
-            padding: 10px;
-            background-color: #4b5c70;
-            border-radius: 10px;    
-            margin: 10px 0;
-            color: white;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            width: 150px;
-        }
-            .adddata:hover{
-            background-color: #2c3e50;
-            color: white;
-            text-decoration: none;
-            transition: 0.5s ease-in-out;
-            }
-            #edit{
-                color: black;
-            }
-            #delete{
-                color: black;
-            }
-            #edit:hover{
-                color: rgb(255, 255, 255);
-                background-color: #044b97;
-            }
-            #delete:hover{
-                color: rgb(255, 255, 255);
-                background-color: #972b04;
-            }
-    </style>
-    <div class='container'>
-        <h1>List of $modelName</h1>
-        <table>
+        // Index View
+        $tableHeaders = '';
+        $indexContent = <<<EOD
+        @extends('Blogbackend.components.layout')
+        <link rel="stylesheet" href="{{ asset('css/Backend/blog.css') }}">
+        @section('content')
+        <div class="info" style="background: white;">
+        <div class="container mt-4">
+            <h2>$module_name List</h2>
+        <a href="{{ '/' . 'lcfirst('$module_name')' . '/create' }}" class="btn btn-primary">Add $module_name</a>
+        <table id="table">
             <thead>
                 <tr>
-                    $columnsHtml
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    @foreach ($$modelName as \$model)
-        <tr>
-            @foreach (\$columns as \$column)
-                <td>{{ \$model->\$column }}</td>
-            @endforeach
-            <td class='action-buttons'>
-                <a id='edit' href=\"{{ route(strtolower('$modelName') . '.edit', \$model->id) }}\"><i class='fas fa-edit'></i></a>
-                <form action=\"{{ route(strtolower('$modelName') . '.destroy', \$model->id) }}\" method=\"POST\">
+                </div>
+                </div>
+        EOD;
+    
+        // Add table headers dynamically, excluding 'id' from being shown
+        foreach ($columns as $col) {
+            if ($col != 'id') {
+                $tableHeaders .= "<th>" . ucfirst($col) . "</th>";
+            }
+        }
+    
+        $indexContent .= $tableHeaders . "<th>Actions</th></tr></thead><tbody>";
+    
+        // Add rows, excluding 'id' from being shown in the table
+        $indexContent .= <<<EOD
+            @foreach(\$data as \$row)
+            <tr>
+        EOD;
+    
+        foreach ($columns as $col) {
+            if ($col != 'id') {
+                $indexContent .= "<td>{{ \$row->$col }}</td>";
+            }
+        }
+    
+        $indexContent .= <<<EOD
+                <td>
+                    <a href="{{ '/' . '$module_name' . '/edit/' . \$row->id }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ '/' . '$module_name' . '/delete/' . \$row->id }}" method="POST" style="display:inline;">
                     @csrf
-                    @method('DELETE')
-                    <button id='delete' type=\"submit\"><i class='fas fa-trash-alt'></i></button>
-                </form>
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-        </table>
-        <a class='adddata' href='{{ route('" . strtolower($modelName) . ".create') }}'>Create New</a>
-    </div>
-@endsection
-";
-            case 'create':
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endsection
+    EOD;
+    
+        // Helper function to generate select2 field
+        function generateSelect2Field($col, $config) {
+            $coll = ucwords($col);
+            if ($config['method'] === 'table') {
                 return "
-@extends('Blogbackend.components.layout')
-
-@section('content')
-    <style>
-        /* Custom Styles */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type='text'] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button[type='submit'] {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .containercreate{
-            width: 50%;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        button[type='submit']:hover {
-            background-color: #218838;
-        }
-    </style>
-    <div class='containercreate'>
-        <h1>Create $modelName</h1>
-        <form action='{{ route('" . strtolower($modelName) . ".store') }}' method='POST'>
-            @csrf
-            $fieldsHtml
-            <button type='submit'>Create</button>
-        </form>
-    </div>
-@endsection
-@section('js')
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Open file manager on button click
-        document.getElementById('button-image').addEventListener('click', (event) => {
-            event.preventDefault();
-            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
-        });
-    });
-
-    // Set image link after selection from file manager
-    function fmSetLink(\$url) {
-        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
-        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
-    }
-</script>
-@endsection
-";
-            case 'edit':
+                <div class='input-group'>
+                    <label>$coll</label><br>
+                    <select class='form-control select2' name='$col' id='$col'>
+                        <option value=''>Select $coll</option>
+                        @foreach(DB::table('{$config['table']}')->select('{$config['column']}')->distinct()->get() as \$item)
+                            <option value='{{ \$item->{$config['column']} }}'>
+                                {{ \$item->{$config['column']} }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>";
+            } else {
+                $options = array_combine(
+                    explode(',', $config['key']), 
+                    explode(',', $config['value'])
+                );
+                $optionsHtml = '';
+                foreach ($options as $key => $value) {
+                    $optionsHtml .= "<option value='$key'>$value</option>";
+                }
                 return "
-@extends('Blogbackend.components.layout')
-
-@section('content')
-    <style>
-        /* Custom Styles */
-        .form-group {
-            margin-bottom: 15px;
+                <div class='input-group'>
+                    <label>$coll</label><br>
+                    <select class='form-control select2' name='$col' id='$col'>
+                        <option value=''>Select $coll</option>
+                        $optionsHtml
+                    </select>
+                </div>";
+            }
         }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
+    
+        // Create View
+        $formFields = '';
+        foreach ($inputTypes as $col => $type) {
+            if ($col != 'id') {
+                if ($type === 'select2') {
+                    // Find configuration for this select2 field
+                    $config = collect($selectedData)->firstWhere('columnName', $col);
+                    if ($config) {
+                        $formFields .= generateSelect2Field($col, $config);
+                    }
+                } elseif ($type === 'file') {
+                    // Special handling for file input
+                    $coll = ucwords($col);
+                    $formFields .= "
+                    <div class='mb-3'>
+                        <label class='form-label fw-bold'>$coll</label><br>
+                        <div class='d-flex flex-column align-items-center'>
+                            <div class='input-group'>
+                                <input type='text' id='image_label' class='form-control' name='image'
+                                       placeholder='Select an image...' aria-label='Image'>
+                                <button class='btn btn-outline-secondary' type='button' id='button-image'>Select</button>
+                            </div>
+                        </div>
+                    </div>";
+                } else {
+                    // Existing input field generation code for other types (text, number, etc.)
+                    $coll = ucwords($col);
+                    $formFields .= " 
+                    <div class='input-group'>
+                        <label>$coll</label><br>
+                        <input type='$type' name='$col' />
+                    </div>";
+                }
+            }
         }
-
-        input[type='text'] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        
+    
+        // Add select2 initialization script
+        $createContent = <<<EOD
+        @extends('Blogbackend.components.layout')
+        <link rel="stylesheet" href="{{ asset('css/Backend/create.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        
+        @section('content')
+        <main id="main" class="main">
+            <h1 class="header">Create $module_name</h1>
+            <form class="simple" method="post" action="/$module_name/store" enctype="multipart/form-data">
+                <div class="form1">
+                    @csrf
+                    $formFields
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </main>
+        @endsection
+    
+        @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: 'Select an option'
+                });
+            });
+        </script>
+        @endsection
+        EOD;
+    
+        // Edit View - Similar modifications for edit view
+        $editFields = '';
+        foreach ($inputTypes as $col => $type) {
+            if ($col === 'id') {
+                // For 'id', we keep it as a hidden input with the current value
+                $editFields .= "<input type='hidden' name='$col' value='{{ \$text->$col }}' />";
+            } else {
+                if ($type === 'select2') {
+                    // Handle select2 fields
+                    $config = collect($selectedData)->firstWhere('columnName', $col);
+                    if ($config) {
+                        $editFields .= generateSelect2Field($col, $config, "{{ \$item->$col }}");
+                    }
+                } elseif ($type === 'file') {
+                    // Special handling for file input type
+                    $coll = ucwords($col);
+                    $editFields .= "
+                    <div class='mb-3'>
+                      <label class='form-label fw-bold'>$coll</label><br>
+                      <div class='d-flex flex-column align-items-center'>
+                          <img src='{{ asset(\$text->$col) }}' alt='Uploaded Image' class='img-thumbnail mb-2' height='100' width='100'>
+                          <div class='input-group'>
+                              <input type='text' id='image_label' class='form-control' name='image'
+                                  placeholder='Select an image...' aria-label='Image'>
+                              <button class='btn btn-outline-secondary' type='button' id='button-image'>Select</button>
+                          </div>
+                      </div>
+                  </div>";
+                } else {
+                    // Handle other input types (text, number, etc.)
+                    $coll = ucwords($col);
+                    $editFields .= " 
+                    <div class='input-group'>
+                        <label>$coll</label><br>
+                        <input type='$type' name='$col' value='{{ \$text->$col }}' />
+                    </div>";
+                }
+            }
         }
-
-        button[type='submit'] {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .containercreate{
-            width: 50%;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        button[type='submit']:hover {
-            background-color: #0056b3;
-        }
-    </style>
-    <div class='containercreate'>
-        <h1>Edit $modelName</h1>
-        <form action='{{ route('" . strtolower($modelName) . ".update', $$modelName->".str_replace("/", "", "/id").") }}' method='POST'>
-            @csrf
-            @method('PUT')
-            $fieldsHtml
-            <button type='submit'>Update</button>
-        </form>
-    </div>
-@endsection
-@section('js')
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Open file manager on button click
-        document.getElementById('button-image').addEventListener('click', (event) => {
-            event.preventDefault();
-            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
-        });
-    });
-
-    // Set image link after selection from file manager
-    function fmSetLink(\$url) {
-        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
-        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+        
+    
+        $editContent = <<<EOD
+        @extends('Blogbackend.components.layout')
+        <link rel="stylesheet" href="{{ asset('css/Backend/create.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        
+        @section('content')
+        <main id="main" class="main">
+            <h1 class="header">Edit $module_name</h1>
+            <form class="simple" method="post" action="/$module_name/update" enctype="multipart/form-data">
+                <div class="form1">
+                    @csrf
+                    @method('POST')
+                    <input type="hidden" name="tablename" value="$tablename">
+                    $editFields
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </main>
+        @endsection
+    
+        @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: 'Select an option'
+                });
+            });
+        </script>
+        @endsection
+        EOD;
+    
+        // Save views
+        file_put_contents("$viewDirectory/index.blade.php", $indexContent);
+        file_put_contents("$viewDirectory/create.blade.php", $createContent);
+        file_put_contents("$viewDirectory/edit.blade.php", $editContent);
     }
-</script>
-@endsection
+    
+    private function updateModel($modelPath, $tablename)
+    {
+        if (file_exists($modelPath)) {
+            $modelContent = file_get_contents($modelPath);
 
-";
+            // Add the $table property if it doesn't already exist
+            if (!str_contains($modelContent, '$table')) {
+                $tableProperty = "\n    protected \$table = '$tablename';\n";
+                $modelContent = preg_replace('/class\s+\w+\s+extends\s+Model\s*\{/', "$0$tableProperty", $modelContent);
+                file_put_contents($modelPath, $modelContent);
+            }
         }
+    }
+
+    protected function registerRoutes($module_name)
+    {
+        $routePath = base_path('routes/web.php');
+
+        // Read the current content of the routes file
+        $routeContent = file_get_contents($routePath);
+
+        // Regular expression to find existing routes for the module
+        $pattern = "/Route::get\('\/$module_name.?delete\('.?\);/s";
+
+        // Remove the existing routes if any
+        $updatedRouteContent = preg_replace($pattern, '', $routeContent); 
+
+        // Append the new routes to the updated content
+        $routes = <<<EOD
+// $module_name Routes
+Route::get('/'.lcfirst('$module_name'), [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'index'])->name('$module_name');
+Route::get('/'.lcfirst('$module_name').'/create', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'create']);
+Route::post('/'.lcfirst('$module_name').'/store', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'store']);
+Route::get('/'.lcfirst('$module_name').'/edit/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'edit']);
+Route::post('/'.lcfirst('$module_name').'/update', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'update']);
+Route::post('/'.lcfirst('$module_name').'/delete/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'delete']);
+EOD;
+
+        // Append the new routes to the file
+        file_put_contents($routePath, $updatedRouteContent . $routes);
     }
 }
