@@ -264,10 +264,16 @@
                     <th>Category</th>
                     <th>Domain</th>
                     <th>Language</th>
+                    @can('blog-edit')
                     <th>Status</th>
+                    @endcan
                     <th>Created At</th>
+                    @can('blog-edit')
                     <th>Edit</th>
+                    @endcan
+                    @can('blog-edit')
                     <th>Delete</th>
+                    @endcan
                 </tr>
             </thead>
             <tbody>
@@ -280,6 +286,7 @@
                     <td>{{ $item->categories->categorytitle }}</td>
                     <td>{{ $item->domainrel ? $item->domainrel->domainname : 'N/A' }}</td>
                     <td>{{ $item->langrel ? $item->langrel->languages : 'N/A' }}</td>
+                    @can('blog-edit')
                     <td>
                         <div class="status-container">
                             @if(optional($item->approval)->designation_id == 5)
@@ -319,17 +326,23 @@
                             @endif
                         </div>
                     </td>
+                    @endcan
+                    
                     
                     
                     
                     
                     <td>{{ $item->created_at->diffForHumans() }}</td>
+                    @can('blog-edit')
                     <td>
                         <a href="{{ route('EditBlog', $item->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
                     </td>
+                    @endcan
+                    @can('blog-delete')
                     <td>
                         <a href="{{ route('DeleteBlog', $item->id) }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
                     </td>
+                    @endcan
                 </tr>
                 @endforeach
             </tbody>

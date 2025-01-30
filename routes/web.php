@@ -95,11 +95,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     // Edit and update routes
     Route::get('/countries', [CountryListController::class, 'index'])->name('countries.index');
-Route::post('/getcountryAjax', [CountryListController::class, 'getCountries'])->name('countries.ajax');
-Route::post('/country/store', [CountryListController::class, 'store'])->name('countries.store');
-Route::get('/country/{id}', [CountryListController::class, 'edit'])->name('countries.edit');
-Route::put('/country/update/{id}', [CountryListController::class, 'update'])->name('countries.update');
-Route::delete('/country/delete/{id}', [CountryListController::class, 'destroy'])->name('countries.destroy');
+    Route::post('/getcountryAjax', [CountryListController::class, 'getCountries'])->name('countries.ajax');
+    Route::post('/country/store', [CountryListController::class, 'store'])->name('countries.store');
+    Route::get('/country/{id}', [CountryListController::class, 'edit'])->name('countries.edit');
+    Route::put('/country/update/{id}', [CountryListController::class, 'update'])->name('countries.update');
     Route::get('/edit-designation/{id}', [Designation::class, 'edit'])->name('edit.designation');
     Route::put('/updateDesignationData/{id}', [Designation::class, 'update'])->name('updateDesignationData');
 
@@ -320,3 +319,9 @@ Route::delete('/city/delete/{id}', [CityListController::class, 'destroy'])->name
 
 
 // Testing Routes
+Route::get('/Testing', [\App\Http\Controllers\Admin\TestingController::class, 'index'])->name('Testing');
+Route::get('/Testing/create', [\App\Http\Controllers\Admin\TestingController::class, 'create']);
+Route::post('/Testing/store', [\App\Http\Controllers\Admin\TestingController::class, 'store']);
+Route::get('/Testing/edit/{id}', [\App\Http\Controllers\Admin\TestingController::class, 'edit']);
+Route::post('/Testing/update', [\App\Http\Controllers\Admin\TestingController::class, 'update']);
+Route::post('/Testing/delete/{id}', [\App\Http\Controllers\Admin\TestingController::class, 'delete']);

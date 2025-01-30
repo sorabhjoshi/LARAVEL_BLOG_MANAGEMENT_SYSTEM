@@ -206,8 +206,12 @@
                 <th>Meta Keywords</th>
                 <th>Meta Description</th>
                 <th>Created At</th>
+                @can('blogcat-edit')
                 <th>Edit</th>
+                @endcan
+                @can('blogcat-delete')
                 <th>Delete</th>
+                @endcan
             </tr>
         </thead>
         <tbody>
@@ -219,12 +223,16 @@
                 <td>{{ $item->metakeywords }}</td>
                 <td>{{ $item->metadescription }}</td>
                 <td>{{ $item->created_at->diffForHumans() }}</td>
+                @can('blogcat-edit')
                 <td>
                     <a href="{{ route('EditBlogCat', $item->id) }}" class="btn btn-warning">Edit</a>
                 </td>
+                @endcan
+                @can('blogcat-delete')
                 <td>
                     <a href="{{ route('DeleteBlogCat', $item->id) }}" class="btn btn-danger">Delete</a>
                 </td>
+                @endcan
             </tr>
             @endforeach
         </tbody>

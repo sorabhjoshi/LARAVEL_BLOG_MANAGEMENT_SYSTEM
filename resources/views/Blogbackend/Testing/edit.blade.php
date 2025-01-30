@@ -3,8 +3,6 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <?php
 use Illuminate\Support\Facades\DB;
-
-
 ?>
 @section('content')
 <main id="main" class="main">
@@ -13,26 +11,34 @@ use Illuminate\Support\Facades\DB;
         <div class="form1">
             @csrf
             @method('POST')
-            <input type="hidden" name="tablename" value="testing">
+            <input type="hidden" name="tablename" value="department">
             <input type='hidden' name='id' value='{{ $text->id }}' />
                 <div class='input-group'>
-                    <label>Name</label><br>
-                    <select class='form-control select2' name='name' id='name'>
-                        <option value=''>Select Name</option>
+                    <label>Department_name</label><br>
+                    <select class='form-control select2' name='department_name' id='department_name'>
+                        <option value=''>Select Department_name</option>
                         @foreach(DB::table('designation')->select('designation_name')->distinct()->get() as $item)
                             <option value='{{ $item->designation_name }}'>
                                 {{ $item->designation_name }}
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> 
+                    <div class='input-group'>
+                        <label>Created_at</label><br>
+                        <input type='date' name='created_at' value='{{ $text->created_at }}' />
+                    </div> 
+                    <div class='input-group'>
+                        <label>Updated_at</label><br>
+                        <input type='date' name='updated_at' value='{{ $text->updated_at }}' />
+                    </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
 </main>
 @endsection
 
-@section('scripts')
+@section('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -41,5 +47,20 @@ use Illuminate\Support\Facades\DB;
             placeholder: 'Select an option'
         });
     });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+// Open file manager on button click
+document.getElementById('button-image').addEventListener('click', (event) => {
+    event.preventDefault();
+    window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+});
+});
+
+    // Set image link after selection from file manager
+ function fmSetLink($url) {
+const modifiedUrl = $url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+}
 </script>
 @endsection

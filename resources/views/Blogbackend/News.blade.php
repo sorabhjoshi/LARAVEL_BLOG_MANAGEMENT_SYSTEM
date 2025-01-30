@@ -85,8 +85,12 @@
                 <th>Language</th>
                 <th>Status</th>
                 <th>Created At</th>
+                @can('news-edit')
                 <th>Edit</th>
+                @endcan
+                @can('news-delete')
                 <th>Delete</th>
+                @endcan
             </tr>
         </thead>
         <tbody></tbody>
@@ -101,6 +105,15 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
+    $(document).ready(function () {
+    if (!@json(auth()->user()->can('news-edit'))) {
+        $('.edit-btn').remove();
+    }
+    if (!@json(auth()->user()->can('news-delete'))) {
+        $('.delete-btn').remove();
+    }
+});
+
     $(document).ready(function () {         
         $.ajaxSetup({
             headers: {
@@ -137,8 +150,12 @@
                 { data: 'language', name: 'language' },
                 { data: 'status',name: 'status'},
                 { data: 'created_at', name: 'created_at' },
+                @can('news-edit')
                 { data: 'edit', orderable: false, searchable: false },
+                @endcan
+                @can('news-delete')
                 { data: 'delete', orderable: false, searchable: false },
+                @endcan
             ],
         });
 

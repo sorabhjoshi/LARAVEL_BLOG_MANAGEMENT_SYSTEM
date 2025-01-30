@@ -11,8 +11,8 @@ class TestingController extends Controller
     // Index method
     public function index()
     {
-        $columns = ['id'];
-        $data = DB::table("testing")->select($columns)->get();
+        $columns = ['id', 'department_name', 'created_at', 'updated_at'];
+        $data = DB::table("department")->select($columns)->get();
         return view('Blogbackend.Testing.index', compact('columns', 'data'));
     }
     
@@ -25,19 +25,19 @@ class TestingController extends Controller
     // Edit method
     public function edit($id)
     {
-        $columns = ['id'];
-        $text = DB::table('testing')->where('id', $id)->first();
+        $columns = ['id', 'department_name', 'created_at', 'updated_at'];
+        $text = DB::table('department')->where('id', $id)->first();
         return view('Blogbackend.Testing.edit', compact('text', 'columns'));
     }
     
     // Store method
     public function store(Request $request)
-    {
+    {   
         // Define dynamic validation rules
         $rules = [];
         
         // Generate validation rules based on column types
-        foreach (['id'] as $col) {
+        foreach (['id', 'department_name', 'created_at', 'updated_at'] as $col) {
          if ($col == 'id') {
                 continue;
             }
@@ -58,9 +58,11 @@ class TestingController extends Controller
 
         // Validate the incoming request data
         $validatedData = $request->validate($rules);
-         $validatedData['image'] =$request->image;
+        if(array_key_exists('image', $validatedData)){
+            $validatedData['image'] =$request->image;
+        }
         // Insert validated data into the database
-        DB::table('testing')->insert($validatedData);
+        DB::table('department')->insert($validatedData);
 
         return redirect('/Testing')->with('success', 'Testing created successfully.');
     }
@@ -72,7 +74,7 @@ class TestingController extends Controller
         $rules = [];
         
         // Generate validation rules based on column types
-        foreach (['id'] as $col) {
+        foreach (['id', 'department_name', 'created_at', 'updated_at'] as $col) {
             $type = $inputTypes[$col] ?? 'string';  // Default to 'string' if no type is specified
             
             // Skip the 'id' column for validation
@@ -95,9 +97,11 @@ class TestingController extends Controller
 
         // Validate the incoming request data
         $validatedData = $request->validate($rules);
-        $validatedData['image'] =$request->image;
+        if(array_key_exists('image', $validatedData)){
+            $validatedData['image'] =$request->image;
+        }
         // Update validated data in the database
-        DB::table('testing')->where('id', $request->id)->update($validatedData);
+        DB::table('department')->where('id', $request->id)->update($validatedData);
 
         return redirect('/Testing')->with('success', 'Testing updated successfully.');
     }
@@ -105,7 +109,7 @@ class TestingController extends Controller
     // Delete method
     public function delete($id)
     {
-        DB::table('testing')->where('id', $id)->delete();
+        DB::table('department')->where('id', $id)->delete();
         return redirect('/Testing')->with('success', 'Testing deleted successfully.');
     }
     //

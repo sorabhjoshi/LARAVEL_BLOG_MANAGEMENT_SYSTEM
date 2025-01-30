@@ -156,7 +156,9 @@ public function getTableColumns($table)
 
         // Validate the incoming request data
         \$validatedData = \$request->validate(\$rules);
-         \$validatedData['image'] =\$request->image;
+         if(array_key_exists('image', \$validatedData)){
+            \$validatedData['image'] =\$request->image;
+        }
         // Insert validated data into the database
         DB::table('$tablename')->insert(\$validatedData);
 
@@ -193,7 +195,9 @@ public function getTableColumns($table)
 
         // Validate the incoming request data
         \$validatedData = \$request->validate(\$rules);
-        \$validatedData['image'] =\$request->image;
+        if(array_key_exists('image', \$validatedData)){
+            \$validatedData['image'] =\$request->image;
+        }
         // Update validated data in the database
         DB::table('$tablename')->where('id', \$request->id)->update(\$validatedData);
 
@@ -235,11 +239,14 @@ EOD;
         $indexContent = <<<EOD
         @extends('Blogbackend.components.layout')
         <link rel="stylesheet" href="{{ asset('css/Backend/blog.css') }}">
+        <?php
+        use Illuminate\Support\Facades\DB;
+        ?>
         @section('content')
         <div class="info" style="background: white;">
         <div class="container mt-4">
             <h2>$module_name List</h2>
-        <a href="{{ '/' . 'lcfirst('$module_name')' . '/create' }}" class="btn btn-primary">Add $module_name</a>
+        <a href="{{ '/' . lcfirst('$module_name') . '/create' }}" class="btn btn-primary">Add $module_name</a>
         <table id="table">
             <thead>
                 <tr>
@@ -280,6 +287,21 @@ EOD;
             @endforeach
         </tbody>
     </table>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+    });
+
+    // Set image link after selection from file manager
+    function fmSetLink(\$url) {
+        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+    }
+    </script>
     @endsection
     EOD;
     
@@ -361,7 +383,9 @@ EOD;
         @extends('Blogbackend.components.layout')
         <link rel="stylesheet" href="{{ asset('css/Backend/create.css') }}">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        
+         <?php
+        use Illuminate\Support\Facades\DB;
+        ?>
         @section('content')
         <main id="main" class="main">
             <h1 class="header">Create $module_name</h1>
@@ -375,7 +399,7 @@ EOD;
         </main>
         @endsection
     
-        @section('scripts')
+        @section('js')
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
@@ -384,6 +408,21 @@ EOD;
                     placeholder: 'Select an option'
                 });
             });
+        </script>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+        });
+
+        // Set image link after selection from file manager
+        function fmSetLink(\$url) {
+        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+        }
         </script>
         @endsection
         EOD;
@@ -433,7 +472,9 @@ EOD;
         @extends('Blogbackend.components.layout')
         <link rel="stylesheet" href="{{ asset('css/Backend/create.css') }}">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        
+        <?php
+        use Illuminate\Support\Facades\DB;
+        ?>
         @section('content')
         <main id="main" class="main">
             <h1 class="header">Edit $module_name</h1>
@@ -449,7 +490,7 @@ EOD;
         </main>
         @endsection
     
-        @section('scripts')
+        @section('js')
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
@@ -458,6 +499,21 @@ EOD;
                     placeholder: 'Select an option'
                 });
             });
+        </script>
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+        // Open file manager on button click
+        document.getElementById('button-image').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open('/file-manager/fm-button', 'fm', 'width=700,height=400');
+        });
+        });
+
+            // Set image link after selection from file manager
+         function fmSetLink(\$url) {
+        const modifiedUrl = \$url.replace(/^https?:\/\/[^\/]+\//, ''); // Removes protocol and domain
+        document.getElementById('image').value = modifiedUrl; // Set value to the image input field
+        }
         </script>
         @endsection
         EOD;
@@ -498,12 +554,12 @@ EOD;
         // Append the new routes to the updated content
         $routes = <<<EOD
 // $module_name Routes
-Route::get('/'.lcfirst('$module_name'), [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'index'])->name('$module_name');
-Route::get('/'.lcfirst('$module_name').'/create', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'create']);
-Route::post('/'.lcfirst('$module_name').'/store', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'store']);
-Route::get('/'.lcfirst('$module_name').'/edit/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'edit']);
-Route::post('/'.lcfirst('$module_name').'/update', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'update']);
-Route::post('/'.lcfirst('$module_name').'/delete/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'delete']);
+Route::get('/$module_name', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'index'])->name('$module_name');
+Route::get('/$module_name/create', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'create']);
+Route::post('/$module_name/store', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'store']);
+Route::get('/$module_name/edit/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'edit']);
+Route::post('/$module_name/update', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'update']);
+Route::post('/$module_name/delete/{id}', [\App\Http\Controllers\Admin\\{$module_name}Controller::class, 'delete']);
 EOD;
 
         // Append the new routes to the file
